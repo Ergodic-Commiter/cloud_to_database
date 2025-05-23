@@ -1,0 +1,7 @@
+# python 3.12.2
+# onedrivesdk==2.0.1
+office365-rest-python-client==2.6.2
+pandas==2.2.3
+pydantic==2.11.4
+pytest==8.3.5
+python-dotenv==1.1.0

@@ -1,6 +1,4 @@
 
-from pathlib import Path
-from dotenv import load_dotenv
 from src import onedriver
 
 

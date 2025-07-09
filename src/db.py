@@ -1,4 +1,3 @@
-from operator import attrgetter as α, methodgetter as σ
 import re
 
 import pandas as pd
@@ -28,7 +27,7 @@ def parse_format(fmt_str:str):
 
 def row_to_colspec(t_row:tuple): 
     try: 
-        r_name = t_row.Name1
+        r_name = t_row.Name1    # Matches λ_mutate below.  
         r_format = parse_format(t_row.Format)
         r_comment = t_row.Description
         return alq.Column(r_name, r_format, comment=r_comment)
@@ -55,7 +54,6 @@ if __name__ == '__main__':
     λ_mutate = dict(
         Name0 = lambda df: df['Field Name'].str.strip().str.replace(' ', ''), 
         Name1 = lambda df: index_duplicates(df['Name0']))
-
     ptlf_ref = ('data/PTLF-cols.xlsx', 'LO', 'ptlf_cols')
     ptlf_df = (read_excel_table(*ptlf_ref).assign(**λ_mutate))
     ptlf_cols = [row_to_colspec(rr) for rr in ptlf_df.itertuples()]

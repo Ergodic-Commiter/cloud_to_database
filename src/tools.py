@@ -1,3 +1,4 @@
+from functools import partial, reduce
 from operator import attrgetter, methodcaller as ϱ
 from pathlib import WindowsPath, Path
 import re
@@ -9,6 +10,23 @@ from openpyxl.utils.exceptions import InvalidFileException
 import pandas as pd
 from toolz import compose_left
 
+
+class partial2(partial):   
+    """An improved version of partial with Ellipsis (...) as a placeholder."""
+    __module__ = 'epic_py'
+    def __call__(self, *args, **keywords):
+        keywords = {**self.keywords, **keywords}
+        iargs = iter(args)
+        args = (next(iargs) if arg is ... else arg for arg in self.args)
+        return self.func(*args, *iargs, **keywords)
+
+
+def thread(val, *forms):
+    # Unifica pytoolz.thread_(first|last) con ellipsis.      
+    eval_ff = (lambda vv, ff: 
+        partial2(*ff)(vv) if isinstance(ff, tuple) else ff(vv))
+    return reduce(eval_ff, forms, val)
+    
 
 
 def read_excel_table(

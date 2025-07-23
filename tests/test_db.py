@@ -13,12 +13,13 @@ def run_single_query(conn, query=None):
     elif ε_module(conn, 'pyodbc'): 
         cursor = conn.cursor()
         cursor.execute(query)
-        return cursor.fetchone()
+        scalar = cursor.fetchone()[0]
+        return scalar
     else: 
         raise ValueError("Connection module must have [pyodbc, sqlalchemy]")
 
 
 def test_connection_alive(db_connection):
     result = run_single_query(db_connection, "SELECT 1")
-    assert result[0] == 1
+    assert result == 1
 

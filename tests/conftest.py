@@ -11,18 +11,14 @@ from pytest import fixture
 import sqlalchemy as alq
 from toolz import (curried as cz, dicttoolz as dz, functoolz as fz, itertoolz as iz)
 
-from src.tools import partial2, thread 
-
-# Old experiments
-from office365.sharepoint.client_context import ClientContext
-
-ROOT = Path(__file__).parents[1]
-sys.path.insert(0, str(ROOT/'src'))
+from src.tools import partial2, thread
 import config as cfg
+from tests import ROOT 
 
 load_dotenv(ROOT/'.env')
 
 logger = getLogger(__name__)
+
 
 # Parser options. 
 def pytest_addoption(parser):
@@ -67,38 +63,29 @@ def db_params(user_creds, request):
         ...: 'ActiveDirectoryPassword',     # Default
         'sp': 'ActiveDirectoryServicePrincipal', 
         'entra': 'ActiveDirectoryInteractive'}
-    params = {
-        'Driver': cfg.sqldriver, 
-        'Server': cfg.sqlserver, 
-        'Database': cfg.sqldatabase, 
-        'UID': user_creds['user'], 
-        'PWD': user_creds['password'],
-        'Encrypt': 'yes',
-        'TrustServerCertificate': 'no', 
-        'Authentication': auths.get(user_type, auths[...])}
+    params = dict(Driver=cfg.sqldriver, 
+        Server=cfg.sqlserver, Database=cfg.sqldatabase, 
+        UID=user_creds['user'], PWD=user_creds['password'], 
+        Encrypt='yes', TrustServerCertificate='no', 
+        Authentication = auths.get(user_type) or auths[...])
     return params
 
 
 @fixture(scope='session')
 def db_connection(db_params, request):
-    dict_to_dbstr = fz.compose_left(σ('items'), 
-        partial2(starmap, '{}={};'.format), ''.join) 
-    # dd ⟼ ''.join( f"{kk}={vv};" for kk, vv in dd.items() )
     conn_type = request.config.getoption("--conn-type")
-    match conn_type: 
-        case 'pyodbc': 
-            conn_str = dict_to_dbstr(db_params)
-            logger.info(f"Connection String:\n{conn_str}")
-            with connect(conn_str) as conn: 
-                yield conn 
-        case 'sqlalchemy':  
-            conn_str = dict_to_dbstr(db_params)
-            with alq.create_engine(eng_str).connect() as conn: 
-                yield conn
-    return 
+    conn_str = ''.join('{}={};'.format(*k_v) for k_v in db_params.items())
+    logger.info(f"PyODBC conn string:\n{conn_str}")
+    if conn_type == 'pyodbc': 
+        with connect(conn_str) as conn:
+            yield conn
+    elif conn_type == 'sqlalchemy': 
+        conn_query = dict(odbc_connect=conn_str)
+        conn_url = alq.engine.URL.create("mssql+pyodbc", query=conn_query)
+        with alq.create_engine(conn_url).connect() as conn: 
+            yield conn
 
-
-## These were for Sharepoint experiments, but aren't used in recent versions. 
+## Estos eran para experimentos de Sharepoint, pero ya no los usamos. 
 @fixture(scope='session')   # function, class, module, package, session
 def a_site():       # ProcesamientoMediosdePago 
     return "https://bineomex.sharepoint.com/sites/Data-Prod/"

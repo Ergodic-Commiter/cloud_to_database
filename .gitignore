@@ -1,4 +1,9 @@
 .env
+config.cfg
+
+.vscode
 
 **__pycache__
-.vscode
+**.xlsx
+**.csv
+**.DS_Store

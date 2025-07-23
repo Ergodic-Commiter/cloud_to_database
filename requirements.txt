@@ -1,6 +1,7 @@
 # python 3.12.2
 # onedrivesdk==2.0.1
 azure-identity==1.23.0
+joblib==1.5.1
 msgraph-sdk==1.31.0
 office365-rest-python-client==2.6.2
 openpyxl==3.1.5

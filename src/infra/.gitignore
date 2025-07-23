@@ -1,0 +1,6 @@
+# Archivo de secretos: copiar de template.env 
+env.sh
+config.py
+
+# Archivo de datos
+PTLF_2024-12-30.txt

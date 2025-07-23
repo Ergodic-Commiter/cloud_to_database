@@ -1,2 +1,5 @@
 [tool.pytest.ini_options]
-addopts = "--tb=line"
+    addopts = "--tb=line"
+
+[tool.pylint."MESSAGES CONTROL"]
+disable=["missing-class-docstring", "missing-final-newline", "missing-function-docstring", "missing-module-docstring", "non-ascii-module-import", "non-ascii-name", "superfluous-parens", "trailing-whitespace", "trailing-newlines", "unnecessary-lambda-assignment", "use-dict-literal", "consider-using-f-string"]

@@ -1,38 +1,31 @@
 from operator import methodcaller as σ
 import sqlalchemy as alq
-from sqlalchemy import orm, schema 
 from toolz import curried as cz
 
-from ..tools import read_excel_table, partial2, star, thread
-from .. import config as cfg
-from .. import db
-from . import run
+from src import tools 
+from src import config as cfg
+from . import engine as db_engine
 
 
 def main(): 
-    # Get the columns, index duplicate names, and into a table. 
+    alq_engine = db_engine.get_engine()
+    alq_metadata = alq.MetaData()
+
     λ_mutate = dict(
         Name0 = lambda df: df['Field Name'].str.strip().str.replace(' ', ''), 
-        Name1 = lambda df: run.index_duplicates(df['Name0']))
+        Name1 = lambda df: db_engine.index_duplicates(df['Name0']))
     
     ptlf_ref = ('data/PTLF-cols.xlsx', 'LO', 'ptlf_cols')
-    ptlf_df = run.read_excel_table(*ptlf_ref).assign(**λ_mutate)
-    ptlf_cols = [run.row_to_colspec(rr) for rr in ptlf_df.itertuples()]
-    ptlf_tbl = alq.Table('PTLF', db.metadata, *ptlf_cols)
-    
-    # ptlf_tbl = thread(('data/PTLF-cols.xlsx', 'LO', 'ptlf_cols'), 
-    #     star(run.read_excel_table), 
-    #     partial2(σ('assign'), **λ_mutate), 
-    #     σ('itertuples'), 
-    #     cz.map(run.row_to_colspec), 
-    #     star(partial2(alq.Table, 'PTLF', db.metadata, ...)))
+    ptlf_df = tools.read_excel_table(*ptlf_ref).assign(**λ_mutate)
+    ptlf_cols = [db_engine.row_to_colspec(rr) for rr in ptlf_df.itertuples()]
+    ptlf_tbl = alq.Table('PTLF', alq_metadata, *ptlf_cols)
     
     # Write to file and create in database. 
-    sql_str = str(schema.CreateTable(ptlf_tbl)
-        .compile(dialect=db.engine.dialect))
-    with open("refs/ptlf_create.sql", 'w', encoding='utf-8') as f: 
-        f.write(sql_str)    
-    db.metadata.create_all(db.engine)
+    sql_str = str(alq.schema.CreateTable(ptlf_tbl)
+        .compile(dialect=alq_engine.dialect))
+    with open("refs/ptlf_create.sql", 'w', encoding='utf-8') as _f: 
+        _f.write(sql_str)    
+    alq_metadata.create_all(alq_engine)
 
 
 if __name__ == '__main__':     

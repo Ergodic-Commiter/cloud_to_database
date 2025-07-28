@@ -24,7 +24,6 @@ def download_from_sharepoint(file_url, CTX, down_as='pickle'):
 
     
 
-
 if __name__ == "__main__": 
     creds = cfg.get_creds('persona')
     site_url = "https://bineomex.sharepoint.com/sites/medios-pago-2/SitePages/ProjectHome.aspx"

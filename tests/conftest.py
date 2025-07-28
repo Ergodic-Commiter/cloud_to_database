@@ -1,21 +1,15 @@
 from itertools import starmap
 from logging import getLogger
-from operator import methodcaller as σ, contains
-from os import getenv
+from operator import itemgetter as ɣ, methodcaller as σ, contains
+from os import environ
 from pathlib import Path
 import sys
 
-from dotenv import load_dotenv
-from pyodbc import connect
 from pytest import fixture
-import sqlalchemy as alq
-from toolz import (curried as cz, dicttoolz as dz, functoolz as fz, itertoolz as iz)
 
 from src.tools import partial2, thread
-import config as cfg
-from tests import ROOT 
+from src import config as cfg, db
 
-load_dotenv(ROOT/'.env')
 
 logger = getLogger(__name__)
 
@@ -24,66 +18,30 @@ logger = getLogger(__name__)
 def pytest_addoption(parser):
     user_type = dict(name='--user-type', 
         action='store', default='sp', 
-        help="User type: [personal, project]")
+        help="User type: [personal, project, entra, sql, sp]")
     conn_type = dict(name='--conn-type', 
         action='store', default='pyodbc', 
         help="Connection type: [pyodbc, sqlalchemy]")
-    
     for opt_dict in (user_type, conn_type): 
         name = opt_dict.pop('name')
         parser.addoption(name, **opt_dict)
     return 
 
-
 # The fixtures: 
 @fixture(scope='session')
-def user_creds(request):
-    user_type = request.config.getoption("--user-type")
-    e_msg = ("Specify '--user-type' from [personal, project, sp] for choosing "
-        "credentials from '.env'")
-    var_names = ('user', 'password')
-    match user_type: 
-        case 'personal': 
-            env_names = ('AZURE_USER_PERSONAL', 'AZURE_PASS_PERSONAL')
-        case 'project' | 'entra': 
-            env_names = ('AZURE_USER_PROJECT', 'AZURE_PASSWORD_PROJECT')
-        case 'sp': 
-            env_names = ('AZURE_CLIENT', 'AZURE_SECRET')
-        case '_': 
-            raise e_msg
-    the_creds = dz.valmap(getenv, 
-        dict(zip(var_names, env_names)))
-    return the_creds 
-   
+def user_type(request): 
+    return request.config.getoption('--user-type')
 
 @fixture(scope='session')
-def db_params(user_creds, request):
-    user_type = request.config.getoption("--user-type")
-    auths = {
-        ...: 'ActiveDirectoryPassword',     # Default
-        'sp': 'ActiveDirectoryServicePrincipal', 
-        'entra': 'ActiveDirectoryInteractive'}
-    params = dict(Driver=cfg.sqldriver, 
-        Server=cfg.sqlserver, Database=cfg.sqldatabase, 
-        UID=user_creds['user'], PWD=user_creds['password'], 
-        Encrypt='yes', TrustServerCertificate='no', 
-        Authentication = auths.get(user_type) or auths[...])
-    return params
-
+def conn_type(request): 
+    return request.config.getoption('--conn-type')
 
 @fixture(scope='session')
-def db_connection(db_params, request):
-    conn_type = request.config.getoption("--conn-type")
-    conn_str = ''.join('{}={};'.format(*k_v) for k_v in db_params.items())
-    logger.info(f"PyODBC conn string:\n{conn_str}")
-    if conn_type == 'pyodbc': 
-        with connect(conn_str) as conn:
-            yield conn
-    elif conn_type == 'sqlalchemy': 
-        conn_query = dict(odbc_connect=conn_str)
-        conn_url = alq.engine.URL.create("mssql+pyodbc", query=conn_query)
-        with alq.create_engine(conn_url).connect() as conn: 
-            yield conn
+def conn_fixture(user_type, conn_type): 
+    with db.get_connection(user_type, conn_type) as conn: 
+        yield conn
+
+
 
 ## Estos eran para experimentos de Sharepoint, pero ya no los usamos. 
 @fixture(scope='session')   # function, class, module, package, session

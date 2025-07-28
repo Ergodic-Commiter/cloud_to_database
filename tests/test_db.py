@@ -1,16 +1,19 @@
 import sys
 from pathlib import Path
 from pyodbc import connect 
+from pytest import mark
 import sqlalchemy as alq
 
-ε_module = lambda obj, m_str: m_str in type(obj).__module__
+from src.db import engine
+
+χ_module = lambda obj, m_str: m_str in type(obj).__module__
 
 
 def run_single_query(conn, query=None): 
     query = query or 'SELECT 1'
-    if ε_module(conn, 'sqlalchemy'): 
+    if χ_module(conn, 'sqlalchemy'): 
         return conn.execute(alq.text(query)).scalar()
-    elif ε_module(conn, 'pyodbc'): 
+    elif χ_module(conn, 'pyodbc'): 
         cursor = conn.cursor()
         cursor.execute(query)
         scalar = cursor.fetchone()[0]
@@ -19,7 +22,15 @@ def run_single_query(conn, query=None):
         raise ValueError("Connection module must have [pyodbc, sqlalchemy]")
 
 
-def test_connection_alive(db_connection):
-    result = run_single_query(db_connection, "SELECT 1")
+@mark.parametrize('user_type', ['sql', 'sp'])
+def test_sqlalchemy_connection(user_type):
+    conn = engine.get_connection(user_type, 'sqlalchemy')
+    result = run_single_query(conn, "SELECT 1")
+    assert result == 1
+
+@mark.parametrize('user_type', ['sql', 'sp'])
+def test_pyodbc_connection(user_type):
+    conn = engine.get_connection(user_type, 'pyodbc')
+    result = run_single_query(conn, "SELECT 1")
     assert result == 1
 

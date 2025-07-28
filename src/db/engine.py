@@ -1,4 +1,5 @@
 import re
+
 import pandas as pd
 from pyodbc import connect
 import sqlalchemy as alq
@@ -24,11 +25,13 @@ def _parse_format(fmt_str:str):
     raise ValueError(f"Format string '{fmt_str}' cannot parse base '{base_type}'.")
 
 
-def row_to_colspec(t_row:tuple): 
+def row_to_colspec(t_row:tuple, description=True):
+    _cols = ['Name1', 'Format', 'Description']
+    
     try: 
         r_name = t_row.Name1    # Matches λ_mutate below.  
         r_format = _parse_format(t_row.Format)
-        r_comment = t_row.Description
+        r_comment = t_row.Description if description else None
         return alq.Column(r_name, r_format, comment=r_comment)
     except Exception as e: 
         e_msg = f"Error with row: {t_row}\n\nOriginal error: {e}"

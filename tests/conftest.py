@@ -11,9 +11,6 @@ from src.tools import partial2, thread
 from src import config as cfg, db
 
 
-logger = getLogger(__name__)
-
-
 # Parser options. 
 def pytest_addoption(parser):
     user_type = dict(name='--user-type', 

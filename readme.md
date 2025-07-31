@@ -25,7 +25,9 @@ En la ejecución global se especifica en `src/db/__init__.py`.
 Si necesitan cambiarlo, procuren no "empujarlo" a la rama `main`.  
 
 # Otras notas
-- modificamos los formatos `S9(15)V99` por `S9(15)V(2)` de acuerdo a la longitud de 17.
+- Modificamos los formatos `S9(15)V99` por `S9(15)V(2)` de acuerdo a la longitud de 17.
+- También ajustamos los nombres de `Field Name` para que no hubiera repetidos y alguno que otro typo 
+  que se veía desajustado, se guarda en el Excel correspondiente.    
 
 # Instalación de Python
 - Una forma recomendada de manejar ambientes de Python es mediante `pyenv`.  

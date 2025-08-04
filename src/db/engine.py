@@ -33,7 +33,6 @@ def _format_groups(fmt_str:str):
 #   sql_variant, table, uniqueidentifier, xml
 
 
-
 def index_duplicates(srs:pd.Series):
     duplicates = srs.duplicated(False)
     occurrence = srs.groupby(srs).cumcount() + 1

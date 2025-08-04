@@ -7,6 +7,7 @@ import pandas as pd
 
 import config as cfg
 
+
 def download_from_sharepoint(file_url, CTX, down_as='pickle'):
     response = File.open_binary(CTX, file_url)
     bytes_file_obj = io.BytesIO()

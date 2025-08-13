@@ -6,4 +6,5 @@ config.cfg
 **__pycache__
 **.xlsx
 **.csv
+**.ZIP
 **.DS_Store

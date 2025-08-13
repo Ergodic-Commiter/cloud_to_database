@@ -2,12 +2,9 @@ from functools import partial, reduce
 from pathlib import Path
 from typing import Union
 
-from openpyxl import load_workbook
-from openpyxl.utils import exceptions as ee
-import pandas as pd
 from toolz import functoolz as fz
 
-from .helpers0 import shortcut_target, str_camel_to_snake
+from .helpers import shortcut_target, str_camel_to_snake, OpenTable
 
 
 class partial2(partial):   
@@ -48,27 +45,3 @@ def thread(val, *forms):
         partial2(*ff)(vv) if isinstance(ff, tuple) else ff(vv))
     return reduce(eval_ff, forms, val)
     
-
-def read_excel_table(
-    a_file: Union[str, Path], a_sheet: str, a_table: str=None, **kwargs
-    ) -> pd.DataFrame:
-    """(file, sheet, table) returns pandas.DataFrame of values."""
-    import pandas as pd
-    a_file = Path(a_file)
-    
-    if a_table is None:
-        str_camel_2_snake = fz.compose_left(str_plus, ϱ('to_snake'))
-        a_table = str_camel_2_snake(a_sheet)
-
-    try:
-        a_wb = load_workbook(a_file, data_only=True)
-    except (ee.InvalidFileException, PermissionError) as e:
-        b_file = shortcut_target(a_file)
-        a_wb = load_workbook(b_file, data_only=True)
-
-    a_ws  = a_wb[a_sheet]
-    a_tbl = a_ws.tables[a_table]
-    rows_ls = [[ cell.value for cell in row ] for row in a_ws[a_tbl.ref]]
-    tbl_df  = pd.DataFrame(data=rows_ls[1:],
-            index=None, columns=rows_ls[0], **kwargs)
-    return tbl_df

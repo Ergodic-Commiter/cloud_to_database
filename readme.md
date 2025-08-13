@@ -18,12 +18,16 @@ te agradeceré que me escribas por [Teams][teams].
 - `data-fiserv`:      _Resource group_
 - `fiserv-reports`:   _SQL server_      
 - `fiserv-db`:        _SQL database_    ($5.25 USD)
+- `medios-pago-data-dev`: _Service Principal_  
+- `mediospago`:       _Azure Container_ (ya existe)
 
 El servidor SQL tiene muchas configuraciones truculentas: 
 - Se revisan permisos para el usuario que crea las tablas.  
-- Incluso si tiene un service principal, se tiene que agregar por aparte.  
+- Incluso si tiene un _service principal_, se tiene que agregar por aparte.  
 - Y para esto, la identidad del servidor tiene que estar activada y tener permisos
   de leer Entra ID. 
+- El _service principal_ tiene que tener permisos de lectura en el contenedor de Azure.  
+  👀 `Contributor` no es suficiente para leer, se necesita `Blob Data Contributor`.  
   
 
 ### Instalación del repositorio

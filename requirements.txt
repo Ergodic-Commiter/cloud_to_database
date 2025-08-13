@@ -1,12 +1,14 @@
 # python 3.12.2
 # onedrivesdk==2.0.1
 azure-identity==1.23.0
+azure-storage-blob==12.26.0
 joblib==1.5.1
 msgraph-sdk==1.31.0
 office365-rest-python-client==2.6.2
 openpyxl==3.1.5
 pandas==2.2.3
 pydantic==2.11.4
+pylint==3.3.8
 pyodbc==5.2.0
 pytest==8.3.5   # 6.2.5
 python-dotenv==1.1.0

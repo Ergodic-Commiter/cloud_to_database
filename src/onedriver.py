@@ -5,7 +5,7 @@ from office365.sharepoint.files.file import File
 from openpyxl import load_workbook
 import pandas as pd
 
-import config as cfg
+from . import config as cfg
 
 
 def download_from_sharepoint(file_url, CTX, down_as='pickle'):

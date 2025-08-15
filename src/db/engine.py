@@ -1,16 +1,16 @@
+# pylint:disable=no-name-in-module
 from operator import attrgetter as ɑ, methodcaller as ρ
 from pathlib import Path
 import re
-from warnings import warn
 
 import pandas as pd
-from pyodbc import connect  # pylint:disable=no-name-in-module
+from pyodbc import connect 
 from toolz import functoolz as fz
 import sqlalchemy as alq
 from sqlalchemy.engine import URL
 
 from src import config as cfg, db, tools
-from src.db.typer import TypeManager
+from src.db import typer
 
 
 def _format_groups(fmt_str:str): 
@@ -65,13 +65,13 @@ def get_connection(user_type='sp', conn_type='sqlalchemy'):
     raise ValueError(f"Conn type {conn_type} is not {{pyodbc, sqlalchemy}}")
         
 
-def get_engine(fast_exec=False): 
+def get_engine(**kwargs): 
     db_params = get_params()
     conn_str = ''.join('{}={};'.format(*k_v) 
             for k_v in db_params.items())
     conn_qry = {'odbc_connect': conn_str}
     conn_url = URL.create('mssql+pyodbc', query=conn_qry)
-    return alq.create_engine(conn_url, fast_executemany=fast_exec)
+    return alq.create_engine(conn_url, **kwargs)
 
 
 def read_specs():
@@ -84,16 +84,57 @@ def read_specs():
     return specs_df
 
 
-def attrs_to_df(specs_0):
-    attrs = list(map(TypeManager.from_specs, specs_0.itertuples()))
-    meta = dict(
-        Name0=ɑ('_specs._3'),  # corresponds to "Field Name"
-        Name1=ɑ('specs.Name1'), 
-        pytype=ɑ('pytype.__name__'), 
-        mssql=fz.compose_left(ρ('mssql_col'), str))
-    λ_meta = fz.juxt(*meta.values())
-    attrs_data = list(map(λ_meta, attrs))
-    return pd.DataFrame(attrs_data, columns=list(meta.keys()))
+def read_ptlf(file, types_from='lambda'):
+    ptlf_specs = read_specs()
+    #len_0 = ptlf_specs.Length.sum()
+    #max_l = check_file_rows(file, 'less_than', sum_len=len_0)
+    ptlf_attrs = list(map(typer.TypeManager.from_specs, ptlf_specs.itertuples()))
+    if types_from == 'widths': 
+        λ_fromstr = ρ('pd_fromstr', with_name=True)
+        ptlf_dtypes = dict(map(λ_fromstr, ptlf_attrs))
+        pre_df = pd.read_fwf(file, encoding='latin1', 
+            widths=ptlf_specs.Length, names=ptlf_specs.Name1, na_filter=False)
+        return pre_df.astype(ptlf_dtypes)
+
+    if types_from == 'lambda': 
+        λ_fromrow = ρ('pd_fromrow', row_name='value', with_name=True)
+        mutates = dict(map(λ_fromrow, ptlf_attrs))
+        ptlf_0 = pd.read_fwf(file, encoding='latin1', dtype=str, 
+            colspecs=[(0, None)], header=None, names=['value'])
+        return pd.DataFrame({knm: vλ(ptlf_0) for knm, vλ in mutates.items()}) 
+
+    err_msg = f"types_from variable {types_from} must be one of {{widths, lambda}}."
+    raise ValueError(err_msg)
+
+    
+
+def trim_file(a_file, length): 
+    a_file = Path(a_file)
+    trim_2 = a_file.parents[1]/'trim'/a_file.name
+    λ_trim = lambda ll: ll[:length]+b'\n'
+    with open(a_file, 'rb') as r, open(trim_2, 'wb') as w: 
+        for line in r: 
+            w.write(λ_trim(line))
+    return str(trim_2)
+
+    
+def check_file_rows(file, mode='all_equal', **kwargs):
+    with open(file, 'r', encoding='latin1') as f:
+        lengths = list(map(len, f))
+    if mode == 'all_equal': 
+        l0 = lengths[0]
+        assert all(ll == l0 for ll in lengths),\
+            f"Lines in '{file}' have different lengths."
+        return l0
+    if mode == 'less_than': 
+        max_l = max(lengths)
+        sum_len = kwargs['sum_length']
+        assert max_l <= sum_len,\
+            f"There are lines longer ({max_l}) than the specified length {sum_len}"
+        return max_l
+    err_msg = f"Check rows mode {mode} can only be one of [all_equal, less_than]"
+    raise ValueError(err_msg)
+
 
 
 def specs_to_excel(specs_1): 
@@ -106,38 +147,14 @@ def specs_to_excel(specs_1):
     with pd.ExcelWriter(file, **writer_args) as xl:
         specs_1.to_excel(xl, **excel_args)    
 
+def attrs_to_df(specs_0):
+    attrs = list(map(typer.TypeManager.from_specs, specs_0.itertuples()))
+    meta = dict(
+        Name0=ɑ('_specs._3'),  # corresponds to "Field Name"
+        Name1=ɑ('specs.Name1'), 
+        pytype=ɑ('pytype.__name__'), 
+        mssql=fz.compose_left(ρ('mssql_col'), str))
+    λ_meta = fz.juxt(*meta.values())
+    attrs_data = list(map(λ_meta, attrs))
+    return pd.DataFrame(attrs_data, columns=list(meta.keys()))
 
-def check_lengths(file, mode='latin1'):
-    with open(file, 'r', encoding='latin1') as f:
-        lengths = list(map(len, f))
-    l0 = lengths[0]
-    assert all(ll == l0 for ll in lengths),\
-        f"Lines in '{file}' with mode '{mode}' have different lengths."
-    return l0
-
-
-def trim_file(a_file, length): 
-    a_file = Path(a_file)
-    trim_2 = a_file.parents[1]/'trim'/a_file.name
-    λ_trim = lambda ll: ll[:length]+b'\n'
-    with open(a_file, 'rb') as r, open(trim_2, 'wb') as w: 
-        for line in r: 
-            w.write(λ_trim(line))
-    return str(trim_2)
-
-
-def read_ptlf(file):
-    ptlf_specs = read_specs()
-    len_0 = ptlf_specs.Length.sum()
-    len_1 = check_lengths(file)
-    if len_1 != len_0: 
-        warn(f"Length of lines {len_1} doesn't correspond to specifications {len_0}")
-        file = trim_file(file, len_0)
-
-    ptlf_attrs = map(TypeManager.from_specs, ptlf_specs.itertuples())
-    ptlf_types = dict((attr.specs.Name1, attr.pytype) for attr in ptlf_attrs)
-    pre_df = pd.read_fwf(file, encoding='latin1', 
-        widths=ptlf_specs.Length, names=ptlf_specs.Name1, na_filter=False)
-    return pre_df.astype(ptlf_types)
-
-    

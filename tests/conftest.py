@@ -1,14 +1,7 @@
-from itertools import starmap
-from logging import getLogger
-from operator import itemgetter as ɣ, methodcaller as σ, contains
-from os import environ
-from pathlib import Path
-import sys
 
 from pytest import fixture
 
-from src.tools import partial2, thread
-from src import config as cfg, db
+from src import db
 
 
 # Parser options. 

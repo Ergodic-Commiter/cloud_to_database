@@ -1,9 +1,10 @@
 from datetime import datetime as dt
 from sys import argv
+import zipfile as zp
 
-from src import db, config as cfg
 from src.storage import engine
 
+# pylint:ignore=invalid-name
 
 def download_fpsl(container, date_str): 
     a_date = dt.strptime(date_str, '%Y-%m-%d').date()
@@ -15,8 +16,8 @@ def download_fpsl(container, date_str):
 
 def unzip_fpsl(date_str): 
     file_from = f'data/temp/zips/PTLF_{date_str}.ZIP'
-    file_to = f'data/temp/text'
-    with ZipFile(file_from, 'r') as f: 
+    file_to = 'data/temp/text'
+    with zp.ZipFile(file_from, 'r') as f: 
         f.extractall(path=file_to)
 
 

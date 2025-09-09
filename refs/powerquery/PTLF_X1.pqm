@@ -1,0 +1,95 @@
+let
+    // ===============================
+    // PARÁMETROS DESDE EXCEL
+    // ===============================
+    ParametroNumTarjeta = Excel.CurrentWorkbook(){[Name="par_num_tarjeta"]}[Content],
+    ValorNumTarjeta = try ParametroNumTarjeta{0}[Column1] otherwise null,
+
+    ParametroFechaInicio = Excel.CurrentWorkbook(){[Name="par_fecha_inicio"]}[Content],
+    ValorFechaInicio = try ParametroFechaInicio{0}[Column1] otherwise null,
+
+    ParametroFechaFin = Excel.CurrentWorkbook(){[Name="par_fecha_fin"]}[Content],
+    ValorFechaFin = try ParametroFechaFin{0}[Column1] otherwise null,
+
+    ParametroNumAut = Excel.CurrentWorkbook(){[Name="par_num_aut"]}[Content],
+    ValorNumAut = try ParametroNumAut{0}[Column1] otherwise null,
+
+    ParametroMontoMin = Excel.CurrentWorkbook(){[Name="par_monto_min"]}[Content],
+    ValorMontoMin = try Number.From(ParametroMontoMin{0}[Column1]) otherwise null,
+
+    ParametroMontoMax = Excel.CurrentWorkbook(){[Name="par_monto_max"]}[Content],
+    ValorMontoMax = try Number.From(ParametroMontoMax{0}[Column1]) otherwise null,
+
+    // ===============================
+    // NORMALIZAR FECHAS
+    // ===============================
+    FechaInicioSoloFecha = if ValorFechaInicio <> null 
+        then Date.From(DateTimeZone.From(ValorFechaInicio)) 
+        else null,
+
+    FechaFinSoloFecha = if ValorFechaFin <> null 
+        then Date.From(DateTimeZone.From(ValorFechaFin)) 
+        else null,
+
+    // ===============================
+    // CONSTRUCCIÓN DE FILTROS
+    // ===============================
+    // Filtro de tarjeta
+    FiltroTarjeta = if ValorNumTarjeta <> null and ValorNumTarjeta <> "" 
+        then "num_tarjeta LIKE '" & Text.From(ValorNumTarjeta) & "%'" 
+        else null,
+
+    // Filtro de fechas
+    FiltroFechas =
+        if FechaInicioSoloFecha <> null and FechaFinSoloFecha <> null then
+            "f_posteo BETWEEN '" & Date.ToText(FechaInicioSoloFecha, "yyyy-MM-dd") & 
+            "' AND '" & Date.ToText(FechaFinSoloFecha, "yyyy-MM-dd") & "'"
+        else if FechaInicioSoloFecha <> null then
+            "f_posteo >= '" & Date.ToText(FechaInicioSoloFecha, "yyyy-MM-dd") & "'"
+        else if FechaFinSoloFecha <> null then
+            "f_posteo <= '" & Date.ToText(FechaFinSoloFecha, "yyyy-MM-dd") & "'"
+        else
+            null,
+
+    // Filtro de num_autorizacion con LIKE
+    FiltroAut = if ValorNumAut <> null and ValorNumAut <> "" 
+        then "num_autorizacion LIKE '" & Text.From(ValorNumAut) & "%'" 
+        else null,
+
+    // Filtro de montos
+    FiltroMontos =
+        if ValorMontoMin <> null and ValorMontoMax <> null then
+            "monto_txn BETWEEN " & Number.ToText(ValorMontoMin) & " AND " & Number.ToText(ValorMontoMax)
+        else if ValorMontoMin <> null then
+            "monto_txn >= " & Number.ToText(ValorMontoMin)
+        else if ValorMontoMax <> null then
+            "monto_txn <= " & Number.ToText(ValorMontoMax)
+        else
+            null,
+
+    // ===============================
+    // COMBINAR FILTROS
+    // ===============================
+    Condiciones = List.RemoveNulls({FiltroTarjeta, FiltroFechas, FiltroAut, FiltroMontos}),
+    WhereClause = if List.Count(Condiciones) > 0 
+        then " WHERE " & Text.Combine(Condiciones, " AND ") 
+        else "",
+
+    // ===============================
+    // CONSULTA SQL FINAL
+    // ===============================
+    ConsultaSQL = 
+        "SELECT TOP(10000) * 
+         FROM dbo.v_ptlf_token" & WhereClause,
+
+    // Ejecutar consulta
+    Origen = Sql.Database(
+        "fiserv-reports.database.windows.net:1433",
+        "fiserv-db",
+        [Query = ConsultaSQL]),
+
+    // Ajuste de tipo de datos: 
+    ConTipos = Table.TransformColumnTypes(Origen, 
+        {{"f_posteo", type date}, {"monto_txn", Currency.Type}})
+in
+    ConTipos

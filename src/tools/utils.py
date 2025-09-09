@@ -39,10 +39,12 @@ class OpenTable(XLTable):
     
     def get_dataframe(self, **kwargs):
         import pandas as pd
-        df_args = dict(index=None, **kwargs)
         a_ws = self.get_sheet() 
-        rows_ls = [[cell.value for cell in row] for row in a_ws[self._table.ref]]
-        return pd.DataFrame(data=rows_ls[1:], columns=rows_ls[0], **df_args)
+        λ_name = lambda nn: nn.strip().replace(' ', '_')
+        rows_ls = [map(ɑ('value'), row) for row in a_ws[self._table.ref]]
+        the_df = pd.DataFrame(data=rows_ls[1:], 
+            columns=map(λ_name, rows_ls[0]), index=None, **kwargs)
+        return the_df
 
     @property
     def boundaries(self): 

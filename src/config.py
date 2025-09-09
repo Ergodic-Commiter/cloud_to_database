@@ -5,10 +5,14 @@ from azure.identity import ClientSecretCredential
 from dotenv import load_dotenv
 from toolz import dicttoolz as dz
 
+from src import errors as ee
+
 
 ROOT = Path(__file__).parents[1]
 load_dotenv(ROOT/'.env', override=True)
 
+
+DATA_LOC = 'data/temp'
 XL_REF = ('data/PTLF-cols-1.xlsx', 'LO', 'ptlf_cols')
 
 
@@ -22,15 +26,13 @@ def get_creds(user_type=None):
         sql = ('AZURE_USER_SQL', 'AZURE_PASS_SQL'),
         sp = ('AZURE_SP_CLIENT', 'AZURE_SP_SECRET'))
     if user_type not in env_names: 
-        err_msg = (f"User type '{user_type}' must be one of {list(env_names.keys())}")
-        raise ValueError(err_msg)
+        raise ee.KeyCredentialsError(user_type, 'user-password')
     env_vals = [os.environ[nm] for nm in env_names[user_type]]
     return dict(zip(cred_keys, env_vals))
 
 
 def azure_creds(user_type=None): 
     user_type = user_type or 'sp'
-    valid_types = {'sp'}
     if user_type == 'sp': 
         env_keys = dict(tenant_id='AZURE_TENANT', 
             subscription_id='AZURE_SUBSCRIPTION_TEST', 
@@ -38,4 +40,4 @@ def azure_creds(user_type=None):
             client_id='AZURE_SP_CLIENT')
         creds = dz.valmap(lambda vv: os.environ[vv], env_keys)
         return ClientSecretCredential(**creds) 
-    raise ValueError(f"User type '{user_type}' not from {valid_types}")
+    raise ee.KeyCredentialsError(user_type, 'Azure')

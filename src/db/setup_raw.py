@@ -1,17 +1,17 @@
 from operator import methodcaller as σ
 import sqlalchemy as alq
 
-from src.db import engine as db_eng, typer
-
+from src.db import engine, typer, data
 # pylint:disable=invalid-name
 
 
-if __name__ == '__main__':     
-    ptlf_df = db_eng.read_specs()
+if __name__ == '__main__':    
+
+    ptlf_df = data.read_specs()
     ptlf_attrs = map(typer.TypeManager.from_specs, ptlf_df.itertuples())
     ptlf_cols = list(map(σ('alq_mssql'), ptlf_attrs))
     
-    alq_engine = db_eng.get_engine()
+    alq_engine = engine.get_engine()
     alq_metadata = alq.MetaData()
     ptlf_tbl = alq.Table('PTLF_raw', alq_metadata, *ptlf_cols)
     

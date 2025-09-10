@@ -73,7 +73,7 @@ def file_meta(path:Path|str) -> dict:
     date_match = re.search(r'(\d{4}-\d{2}-\d{2})', path.name)
     if not date_match: 
         raise ValueError(f"Path named {path.name} doesnt match date format 'YYYY-MM-DD'")
-    date_file = dt.strptime(date_match.group(0), '%Y-%m-%d')
+    date_file = dt.strptime(date_match.group(0), '%Y-%m-%d').date()
     data_date = date_file.strftime('%y%m%d')
     meta = dict(
         file_name = path.name,

@@ -29,7 +29,7 @@ GRANT ALTER ON SCHEMA::dev TO r_dev;    -- ❌
 
 GRANT SELECT ON OBJECT::dbo.PTLF_ops   TO r_ops; -- ❌
 DENY  SELECT ON OBJECT::dbo.PTLF_raw   TO r_ops; -- ❌
-DENY  SELECT ON OBJECT::dbo.PTLF_track TO r_ops; -- ❌
+GRANT SELECT ON OBJECT::dbo.PTLF_track TO r_ops; -- ✅
 
 
 GRANT SELECT, INSERT, UPDATE ON OBJECT::dbo.PTLF_track TO r_etl;

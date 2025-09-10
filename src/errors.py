@@ -33,6 +33,10 @@ class PandasConversionError(ErrorControversias):
     def __init__(self, col, typeid): 
         super().__init__(f"Columna {col} de tipo {typeid} no puede convertirse en pandas.")
 
+class PTLF_FlowError(ErrorControversias): 
+    def __init__(self, dfile, event): 
+        super().__init__(f"Fallo en flujo: '{dfile}'-'{event}'")
+
 class PTLFReadError(ErrorControversias):
     def __init__(self, dfile, reason):
         super().__init__(f"Fallo de lectura: '{dfile}' debido a '{reason}'.")

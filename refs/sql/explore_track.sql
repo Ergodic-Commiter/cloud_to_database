@@ -19,19 +19,18 @@ LEFT JOIN (SELECT
     GROUP BY [NGBBSE24-AUTH-POST-DAT]
     ) r
 ON t.data_date = r.date_str
-WHERE n_records <> n_rows
-ORDER BY file_name
+--WHERE n_records <> n_rows
+ORDER BY file_name DESC
 GO
 
 
 DELETE FROM PTLF_raw 
-WHERE [NGBBSE24-AUTH-POST-DAT] in ('250704', '250710'); 
+WHERE [NGBBSE24-AUTH-POST-DAT] in ('250904', '250603'); 
 GO
 
 DELETE FROM PTLF_track
-WHERE data_date in ('250704'); 
+WHERE data_date in ('250904', '250603'); 
 GO 
-
 
 -- Para encontrar las dependencias de DATE_STR. 
 SELECT OBJECT_SCHEMA_NAME(referencing_id) AS schema_name,

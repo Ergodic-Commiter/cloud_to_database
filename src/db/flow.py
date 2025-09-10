@@ -10,7 +10,7 @@ import zipfile as zf
 from azure.storage.blob import ContainerClient
 import pandas as pd
 from toolz import curried as cz, dicttoolz as dz, functoolz as fz
-import sqlalchemy as alq
+import sqlalchemy as alq 
 from sqlalchemy.engine import Engine
 from sqlalchemy.exc import IntegrityError
 
@@ -18,6 +18,7 @@ from src import tools, config as cfg, errors as ee
 from src.db import track, utils
 from src.db.typer import Typer
 
+# pylint: disable=anomalous-backslash-in-string
 
 @dataclass()
 class FlowConfig: 
@@ -63,12 +64,21 @@ class DayDataFlow:
             return self.at_dir('failed/1-types').with_suffix('.txt')
         raise ValueError(f"Which Path {which} must be one of [data, unzip, cloud]")
             
+    @classmethod
+    def from_data(cls, data_file:Path): 
+        txt_fmt = r"^(.*)/text/PTLF_([\d\-]{10}$)"
+        if (mm := re.match(txt_fmt, str(data_file))) is None: 
+            raise ee.PTLF_FlowError(data_file.name, 'DataFileTitle') 
+        _workdir, _datestr = mm.groups()
+        the_date = dt.strptime(_datestr, '%Y-%m-%d').date()
+        the_dir = Path(_workdir)
+        return cls(FlowConfig(the_date, the_dir))
 
     @classmethod
     def from_zipfile(cls, zip_file:Path, missing_ok=False): 
         zip_fmt = r"(.*)/zips/.*/PRD_TRXS_PTLF_([\d\-]{10}).ZIP"
         if (mm := re.match(zip_fmt, str(zip_file))) is None: 
-            raise ee.ZipPTLF_Error(zip_file)
+            raise ee.PTLF_FlowError(zip_file.name, 'ZipFileTitle')
             
         _workdir, _datestr = mm.groups()
         the_date = dt.strptime(_datestr, '%Y-%m-%d').date()
@@ -109,7 +119,7 @@ class DayDataFlow:
         data_df = self.read_data(specs)
         if self.reports.get('ReadData'):
             print("Errors when reading data")
-            report_str = str(self.reports['ReadData']) 
+            report_str = str(dict(self.reports['ReadData'])) 
             self.get_path('report').write_text(report_str)
         try:
             self.upload_data(data_df, engine, debug)
@@ -155,7 +165,7 @@ class DayDataFlow:
         self.reports['ReadData'] = reporter
         df_key = df_1['NGBBSE24-AUTH-POST-DAT']
         if (df_key != df_key[0]).all(): 
-            raise ee.PTLFReadError(self.datafile.name, 'PostingDates') 
+            raise ee.PTLF_FlowError(self.datafile.name, 'PostingDates') 
         data_date = dt.strptime(df_key[0], '%y%m%d').date()
         self.dates_off = (data_date - self.cfg.date).days
         return df_1
@@ -173,7 +183,7 @@ class DayDataFlow:
         try: 
             an_id = track.start_raw(engine, meta)
         except IntegrityError as er:
-            raise ee.PTLFUploadError(self.datafile.name, 'TrackStart') from er
+            raise ee.PTLF_FlowError(self.datafile.name, 'TrackStart') from er
         status = 'failed'
         try:
             a_df.to_sql(**sql_params)
@@ -221,4 +231,22 @@ def specs_plus_to_excel(specs_1):
         specs_1.to_excel(xl, **excel_args)    
 
 
-
+def files_to_dataframe(data_dir=None): 
+    data_dir = data_dir or Path(cfg.DATA_LOC/'temp')
+    ptlf_gen = map(utils.file_meta, data_dir.glob("**/PTLF_[0-9\-]*"))
+    dir_status = {'text' : 'incierto', 
+        'failed/3-start' : 'pos.repetido',
+        'failed/4-upload': 'err.carga'}
+    mutates = dict(
+        data_date = pd.NaT, 
+        n_meta = lambda df: df['n_records'], 
+        n_data = pd.NA, 
+        estatus = lambda df: df['file_path'].str
+            .extract(rf"{data_dir}/(.*)/PTLF").replace(dir_status))
+    χ_extension = lambda df: ~df['file_name'].str.endswith('.txt', na=False)
+    keep_cols = ['file_name', 'data_date', 'n_meta', 'n_data', 'estatus']
+    ptlf_df = (pd.DataFrame.from_records(ptlf_gen)
+        .assign(**mutates)
+        .loc[χ_extension, keep_cols])
+    ptlf_df.to_clipboard(index=False, header=False, excel=True)
+    return ptlf_df

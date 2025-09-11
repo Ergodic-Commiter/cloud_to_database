@@ -5,33 +5,36 @@ import re
 
 import pandas as pd
 # pylint: disable=invalid-name
-# pylint: disable=consider-using-with
 
 
 def prev_datestr(datestr, dt_format='%y%m%d'): 
+    """Ya no se usa"""
     a_date = dt.strptime(datestr, dt_format)
     p_date = a_date + delta(days=-1)
     return p_date.strftime(dt_format)
 
 
 class classproperty(property):
-    # Python compliqueitor.
+    # Python beauty. 
     def __get__(self, _, owner):
         return self.fget(owner)
 
 
 def noner(func): 
+    """Para funciones que se quiebran con None."""
     return lambda x: func(x) if x is not None else None
 
 
 def index_duplicates(srs:pd.Series):
+    """Si en la serie hay repetidos, los numeramos para que no haya."""
     duplicates = srs.duplicated(False)
     occurrence = srs.groupby(srs).cumcount() + 1
     suffix = ('_' + occurrence.astype(str)).where(duplicates, '')
     return srs+suffix
 
 
-def trim_file(a_file, length): 
+def trim_file(a_file, length):
+    """Hubieron algunos fixed-widths con filas más largas que lo supuestos.""" 
     a_file = Path(a_file)
     trim_2 = a_file.parents[1]/'trim'/a_file.name
     λ_trim = lambda ll: ll[:length]+b'\n'
@@ -41,15 +44,17 @@ def trim_file(a_file, length):
     return str(trim_2)
 
     
-def check_file_rows(file, mode='all_equal', **kwargs):
+def check_file_rows(file, mode='all-equal', **kwargs):
+    """Revisar la longitud de las filas de los archivos fixed-widths: 
+    {all-equal, less-than}"""
     with open(file, 'r', encoding='latin1') as f:
         lengths = list(map(len, f))
-    if mode == 'all_equal': 
+    if mode == 'all-equal': 
         l0 = lengths[0]
         assert all(ll == l0 for ll in lengths),\
             f"Lines in '{file}' have different lengths."
         return l0
-    if mode == 'less_than': 
+    if mode == 'less-than': 
         max_l = max(lengths)
         sum_len = kwargs['sum_length']
         assert max_l <= sum_len,\
@@ -59,7 +64,8 @@ def check_file_rows(file, mode='all_equal', **kwargs):
     raise ValueError(err_msg)
 
 
-def sha256_file(path:str, chunk=1024*1024) -> bytes:
+def sha256_file(path:str, chunk=1024*1024) -> bytes:  # 10**20. 
+    """Se usa para asegurar que los archivos no se cargan duplicados en SQL."""
     h = hashlib.sha256()
     with open(path, "rb") as f:
         for b in iter(lambda: f.read(chunk), b""):
@@ -68,6 +74,7 @@ def sha256_file(path:str, chunk=1024*1024) -> bytes:
 
 
 def file_meta(path:Path|str) -> dict:
+    """Función asociada a la SQL-tabla PTLF-track."""
     path = Path(path)
     n_records = sum(1 for _ in open(path, encoding='latin1'))
     date_match = re.search(r'(\d{4}-\d{2}-\d{2})', path.name)

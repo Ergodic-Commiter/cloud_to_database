@@ -4,7 +4,8 @@ import zipfile as zp
 
 from src.storage import engine
 
-# pylint:ignore=invalid-name
+# pylint: disable=invalid-name
+# pylint: disable=redefined-outer-name
 
 def download_fpsl(container, date_str): 
     a_date = dt.strptime(date_str, '%Y-%m-%d').date()

@@ -4,8 +4,7 @@ from sys import argv
 from time import time
 import zipfile
 
-from src import errors as ee
-from src.db import flow, engine
+from src.ptlf import flow, engine, errors as ee
 # pylint:disable=invalid-name
 
 is_ptlf_zip = lambda pp: re.compile(r"(PTLF_[\d-]{10}).ZIP").search(str(pp))

@@ -12,11 +12,11 @@ import pandas as pd
 from toolz import curried as cz, dicttoolz as dz, functoolz as fz
 import sqlalchemy as alq 
 from sqlalchemy.engine import Engine
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError, OperationalError
 
-from src import tools, config as cfg, errors as ee
-from src.db import track, utils
-from src.db.typer import Typer
+from src import tools, config as cfg
+from src.ptlf import track, utils, errors as ee
+from src.ptlf.typer import Typer
 
 # pylint: disable=anomalous-backslash-in-string
 
@@ -33,37 +33,8 @@ class DayDataFlow:
         self.cfg = config
         self.dates_off = 0
         self.reports = {}
-
-    @property
-    def datestr(self):
-        return self.cfg.date.strftime('%y%m%d')
-
-    @property
-    def datestr2(self):
-        return self.cfg.date.strftime('%Y-%m-%d')
-
-    @property
-    def datafile(self): 
-        return self.at_dir('text')
     
-    def at_dir(self, a_dir): 
-        wdir = self.cfg.work_dir
-        fname = f'PTLF_{self.datestr2}'
-        return wdir/a_dir/fname
-    
-    def get_path(self, which) -> Path: 
-        if which == 'data': 
-            return self.at_dir('text')
-        zip_name = f'PRD_TRXS_PTLF_{self.datestr2}.ZIP'
-        if which == 'unzip': 
-            return self.at_dir('zips').with_name(zip_name)
-        if which == 'cloud': 
-            cloud_dir = self.cfg.date.strftime("fiserv/%Y/%-m/%-d")
-            return Path(cloud_dir)/zip_name
-        if which == 'report': 
-            return self.at_dir('failed/1-types').with_suffix('.txt')
-        raise ValueError(f"Which Path {which} must be one of [data, unzip, cloud]")
-            
+    # Pasada la inicialización, las funciones se enlistan de alto nivel a bajo nivel. 
     @classmethod
     def from_data(cls, data_file:Path): 
         txt_fmt = r"^(.*)/text/PTLF_([\d\-]{10}$)"
@@ -87,26 +58,10 @@ class DayDataFlow:
         flow.extract_zipfile(missing_ok)
         return flow
 
-    def determine_stage(self, engine:Engine, 
-            container:Optional[ContainerClient]=None):
-        meta = alq.MetaData()
-        track_t = alq.Table('PTLF_track', meta, autoload_with=engine)
-        hasfile_stmt = (alq.select(track_t)
-            .where(track_t.c.file_name == self.datafile.name))
-        with engine.begin() as conn: 
-            has_file = conn.execute(hasfile_stmt).first() is not None
-        if has_file: 
-            return 0
-        if self.datafile.is_file():
-            return 1
-        if self.get_path('unzip').is_file(): 
-            return 2
-        if container is None: 
-            return -1 
-        the_blob = container.get_blob_client(str(self.get_path('cloud')))
-        return 3 if the_blob.exists() else -1 
-         
+
     def run(self, engine:Engine, specs=None, debug=False):
+        """Este proceso se encarga del procesamiento de carga. 
+        Además es el único donde se hace error-handling."""
         failpaths = cz.valmap(self.at_dir, dict(
                 ConvertTypes='failed/1-types',
                 PostingDates='failed/2-dates',
@@ -131,10 +86,8 @@ class DayDataFlow:
 
 
     def download_cloud(self, container:ContainerClient): 
-        zip_name = f'PRD_TRXS_PTLF_{self.datestr2}.ZIP'
-        blob_dir = self.cfg.date.strftime("fiserv/%Y/%-m/%-d")
-        blob_from = f"{blob_dir}/{zip_name}"
-        zip_to = self.at_dir('zips').with_name(zip_name)
+        blob_from = str(self.get_path('cloud'))
+        zip_to = self.get_path('unzip')
         with open(zip_to, 'wb') as f:
             blob_stream = container.download_blob(blob_from)
             f.write(blob_stream.readall())  
@@ -193,6 +146,60 @@ class DayDataFlow:
         finally: 
             track.finish_raw(engine, an_id, status)
 
+    def determine_stage(self, engine:Engine, 
+            container:Optional[ContainerClient]=None):
+        meta = alq.MetaData()
+        try: 
+            track_t = alq.Table('PTLF_track', meta, autoload_with=engine)
+        except OperationalError as er:
+            raise ee.PTLFConnError('AutoloadTable') from er
+        hasfile_stmt = (alq.select(track_t)
+            .where(track_t.c.file_name == self.datafile.name))
+        with engine.begin() as conn: 
+            has_file = conn.execute(hasfile_stmt).first() is not None
+        if has_file: 
+            return 0
+        if self.datafile.is_file():
+            return 1
+        if self.get_path('unzip').is_file(): 
+            return 2
+        if container is None: 
+            return -1 
+        the_blob = container.get_blob_client(str(self.get_path('cloud')))
+        return 3 if the_blob.exists() else -1 
+         
+
+    # Funciones y propiedades utilitarias.
+    @property
+    def datestr(self):
+        return self.cfg.date.strftime('%y%m%d')
+
+    @property
+    def datestr2(self):
+        return self.cfg.date.strftime('%Y-%m-%d')
+
+    @property
+    def datafile(self): 
+        return self.at_dir('text')
+    
+    def at_dir(self, a_dir): 
+        wdir = self.cfg.work_dir
+        fname = f'PTLF_{self.datestr2}'
+        return wdir/a_dir/fname
+    
+    def get_path(self, which) -> Path: 
+        if which == 'data': 
+            return self.at_dir('text')
+        zip_name = f'PRD_TRXS_PTLF_{self.datestr2}.ZIP'
+        if which == 'unzip': 
+            return self.at_dir('zips').with_name(zip_name)
+        if which == 'cloud': 
+            cloud_dir = self.cfg.date.strftime("fiserv/%Y/%-m/%-d")
+            return Path(cloud_dir)/zip_name
+        if which == 'report': 
+            return self.at_dir('failed/1-types').with_suffix('.txt')
+        raise ValueError(f"Which Path {which} must be one of [data, unzip, cloud]")
+
     def __repr__(self): 
         return f"<DayDataFlow at {self.datafile.name}>"
 
@@ -221,13 +228,12 @@ def specs_plus(specs_0):
 
 
 def specs_plus_to_excel(specs_1): 
-    file, sheet, table = cfg.XL_REF
-    specs_ref = tools.OpenTable(file, sheet, table)
+    specs_ref = tools.OpenTable(*cfg.XL_REF)
     _, min_row, max_col, _ = specs_ref.boundaries
     writer_args = dict(engine='openpyxl', mode='a', if_sheet_exists='overlay')  
-    excel_args = dict(sheet_name=sheet, startrow=min_row-1, startcol=max_col+1, 
-        header=True, index=False)
-    with pd.ExcelWriter(file, **writer_args) as xl:
+    excel_args = dict(sheet_name=specs_ref.ws_name, header=True, index=False,
+        startrow=min_row-1, startcol=max_col+1)
+    with pd.ExcelWriter(specs_ref.wb_path, **writer_args) as xl:
         specs_1.to_excel(xl, **excel_args)    
 
 

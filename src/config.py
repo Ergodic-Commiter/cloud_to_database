@@ -5,7 +5,7 @@ from azure.identity import ClientSecretCredential
 from dotenv import load_dotenv
 from toolz import dicttoolz as dz
 
-from src import errors as ee
+from src.ptlf import errors as ee
 
 
 ROOT = Path(__file__).parents[1]
@@ -14,6 +14,9 @@ load_dotenv(ROOT/'.env', override=True)
 
 DATA_LOC = 'data/temp'
 XL_REF = ('data/PTLF-cols-1.xlsx', 'LO', 'ptlf_cols')
+
+def onedrive_path(): 
+    return os.environ['ONEDRIVE_PATH']
 
 
 def get_creds(user_type=None):

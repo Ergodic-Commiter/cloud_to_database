@@ -1,10 +1,7 @@
+from datetime import datetime
 from msal import PublicClientApplication
 import requests
-from datetime import datetime, timedelta
-# El objetivo de este script es de activar los recursos de Azure. 
-# Al final no se ha podido lograr:  
-# Los permisos de Azure para habilitar recursos no son fáciles. 
-
+# pylint: disable=missing-timeout
 
 
 app = PublicClientApplication("YOUR_CLIENT_ID", 
@@ -17,8 +14,7 @@ token = result["access_token"]
 
 headers = {
     "Authorization": f"Bearer {token}",
-    "Content-Type": "application/json"
-}
+    "Content-Type": "application/json"}
 
 payload = {
     "principalId": "USER_OBJECT_ID",
@@ -30,15 +26,10 @@ payload = {
         "startDateTime": datetime.utcnow().isoformat() + "Z",
         "expiration": {
             "type": "AfterDuration",
-            "duration": "PT4H"
-        }
-    }
-}
+            "duration": "PT4H"}}}
 
 response = requests.post(
     "https://graph.microsoft.com/v1.0/roleManagement/directory/roleEligibilityScheduleRequests",
-    headers=headers,
-    json=payload
-)
+    headers=headers, json=payload)
 
 print(response.status_code, response.text)

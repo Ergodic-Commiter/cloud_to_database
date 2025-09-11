@@ -10,11 +10,14 @@ GO
 
 
 -- N_RECORDS OK. 
-SELECT t.file_name, t.data_date, t.n_records, r.n_rows
+SELECT t.file_name, 
+  CONVERT(DATE, t.data_date, 12) as data_date, 
+  t.n_records as n_meta, r.n_data, 
+  'cargado' as estatus
 FROM PTLF_track t
 LEFT JOIN (SELECT
     [NGBBSE24-AUTH-POST-DAT] as date_str, 
-    COUNT(*) as n_rows
+  COUNT(*) as n_data
     FROM PTLF_raw 
     GROUP BY [NGBBSE24-AUTH-POST-DAT]
     ) r

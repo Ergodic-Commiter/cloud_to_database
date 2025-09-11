@@ -2,9 +2,8 @@ from datetime import date, datetime as dt
 from pathlib import Path
 from sys import argv
 
-from src.db import flow, engine
+from src.ptlf import flow, engine
 from src import config as cfg, storage as stg
-# pylint: disable=broad-exception-caught
 # pylint: disable=invalid-name
 
 

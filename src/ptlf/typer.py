@@ -13,8 +13,7 @@ import sqlalchemy as alq
 from sqlalchemy.dialects import mssql
 from toolz import functoolz as fz
 
-from src import errors as ee
-from src.db import utils
+from src.ptlf import utils, errors as ee
 # pylint:disable=abstract-method
 # pylint:disable=invalid-name
 # pylint:disable=no-member
@@ -32,7 +31,6 @@ class FieldSpecs:
     def slice(self): 
         ff, ll = ɑ('From', 'Length')(self)
         return slice(ff, ff+ll)
-
 
 
 class Typer: 
@@ -55,7 +53,7 @@ class Typer:
 
     # Inicialización (de subclases). 
     def __init__(self, raw_row:NamedTuple):
-        """All subclasses start with RAW-ROW (from dataframe)"""
+        """Subclasses usually start with RAW-ROW (from dataframe)"""
         self._specs = raw_row
 
     @classmethod
@@ -143,7 +141,7 @@ class Typer:
     def _coerce(self, str_srs):
         raise NotImplementedError
     
-    def _valid_srs(self, str_srs): 
+    def _is_valid(self, str_srs): 
         return pd.Series(True, index=str_srs.index)
     
     def _finalize(self, prs_srs): 
@@ -175,14 +173,8 @@ class StrConverter(Typer):
         return mssql.VARCHAR(len_)
 
     def _coerce(self, str_srs):
-        return str_srs.str.strip()
+        return str_srs.str.strip().replace('', pd.NA)
 
-    def _is_valid(self, str_srs):
-        return pd.Series(True, index=str_srs.index)
-
-    def _finalize(self, prs_srs):
-        return prs_srs.astype(self.pandas_dtype)
- 
     
 class IntConverter(Typer): 
     typeid = 'int'
@@ -201,7 +193,7 @@ class IntConverter(Typer):
         return pd.to_numeric(pre, errors="coerce")
 
     def _is_valid(self, str_srs):
-        return str_srs.str.fullmatch(r"\s*\d+\s*", na=False)
+        return str_srs.str.fullmatch(r"\s*\d*", na=False)
 
     def _finalize(self, prs_srs):
         return prs_srs.astype(self.pandas_dtype)
@@ -260,10 +252,11 @@ class DecimalConverter(Typer):
         return mssql.DECIMAL(prec, scale)
 
     def _coerce(self, str_srs): 
-        return str_srs.str.strip().replace('', pd.NA)
+        pre = str_srs.str.strip().replace('', pd.NA)
+        return pd.to_numeric(pre, errors='coerce')
 
     def _is_valid(self, str_srs): 
-        return str_srs.str.fullmatch(r'\s*\d+\s*', na=False)
+        return str_srs.str.fullmatch(r'\s*[\-\+]?\d*', na=False)
 
     def _finalize(self, prs_srs): 
         _b, _l, v9 = self.format_groups
@@ -286,14 +279,14 @@ class DatetimeConverter(Typer):
     def mssql_col(self): 
         return mssql.DATETIME2()
 
-    def _coerce(self, str_srs): 
-        return str_srs
-
+    def _coerce(self, str_srs: pd.Series) -> pd.Series:
+        return pd.to_datetime(str_srs, errors="coerce", unit="D", origin="julian")
+    
     def _is_valid(self, str_srs): 
         return str_srs.str.fullmatch(r'\d{19}')
 
     def _finalize(self, prs_srs): 
-        return pd.to_datetime(prs_srs, unit='D', origin='julian')
+        return prs_srs
 
 
 
@@ -320,7 +313,7 @@ class DateConverter(Typer):
         return str_srs.str.fullmatch(r'\d{6}')
 
     def _finalize(self, prs_srs): 
-        return pd.to_datetime(prs_srs, "%y%m%d").dt.date
+        return prs_srs 
 
 
 
@@ -340,16 +333,10 @@ class FracTimeConverter(Typer):
     def mssql_col(self): 
         return mssql.TIMESTAMP
 
-    def _coerce(self, str_srs): 
-        pass 
-
     def _is_valid(self, str_srs): 
         pass
 
     def _finalize(self, prs_srs): 
         pass 
 
-    def pd_series(self, str_srs, errors=False): 
-        if not errors:
-            return pd.to_datetime(str_srs, '%H%M%S%T')
-        raise ee.PandasConversionError(self.cfg.Name1, self.typeid)
+ 

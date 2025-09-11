@@ -1,15 +1,19 @@
 import io
+
+import joblib
 from office365.runtime.auth.user_credential import UserCredential
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.files.file import File
 from openpyxl import load_workbook
 import pandas as pd
 
-from . import config as cfg
+from src import config as cfg
+# pylint: disable=inconsistent-return-statements
+# pylint: disable=invalid-name
 
 
-def download_from_sharepoint(file_url, CTX, down_as='pickle'):
-    response = File.open_binary(CTX, file_url)
+def download_from_sharepoint(f_url, context, down_as='pickle'):
+    response = File.open_binary(context, f_url)
     bytes_file_obj = io.BytesIO()
     bytes_file_obj.write(response.content)
     bytes_file_obj.seek(0)
@@ -20,7 +24,7 @@ def download_from_sharepoint(file_url, CTX, down_as='pickle'):
     if down_as == 'workbook': 
         return load_workbook(bytes_file_obj)
     if down_as == 'csv': 
-        io_str = io.StringIO(bytes_file_object.get_value().decode())
+        io_str = io.StringIO(bytes_file_obj.getvalue().decode())
         return pd.read_csv(io_str)
 
     

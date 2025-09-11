@@ -1,7 +1,7 @@
 from pytest import mark
 import sqlalchemy as alq
 
-from src.db import engine
+from src.ptlf import engine
 
 χ_module = lambda obj, m_str: m_str in type(obj).__module__
 

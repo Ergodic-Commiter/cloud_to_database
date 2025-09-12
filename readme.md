@@ -43,7 +43,7 @@ El servidor SQL tiene muchas configuraciones truculentas:
 
   Tenemos discrepancia en la versión de `unixodbc` para Infra (Juan José), y x-Datos (Diego).  
   Infra usó 17 y x-Datos, 18.  
-  En la ejecución global se especifica en `src/db/__init__.py`.  
+  En la ejecución global se especifica en `src/ptlf/__init__.py`.  
   Si necesita cambiar, favor de no "empujarlo" a la rama `main`.  
 
 - Utilizamso  `mssql` con `pyodbc`.  Para Mac:  

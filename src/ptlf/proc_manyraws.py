@@ -4,7 +4,7 @@ from sys import argv
 from time import time
 import zipfile
 
-from src.ptlf import flow, engine, errors as ee
+from src.ptlf import flow, engine, errors as ee, typer
 # pylint:disable=invalid-name
 
 is_ptlf_zip = lambda pp: re.compile(r"(PTLF_[\d-]{10}).ZIP").search(str(pp))
@@ -38,7 +38,7 @@ if __name__ == '__main__':
     eng_args = dict(fast_executemany=False, echo='debug') if debug else {}
     alq_eng = engine.get_engine(**eng_args)
 
-    specs_dict = flow.read_specs()
+    specs_dict = typer.read_specs()
     zips = list(filter(is_ptlf_zip, Path(a_dir).iterdir()))
     time0 = time()
     for ll, lilzip in enumerate(zips):

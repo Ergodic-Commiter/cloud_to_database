@@ -4,6 +4,7 @@ from platform import system
 import re
 
 from openpyxl import load_workbook
+from openpyxl import load_workbook
 from openpyxl.utils import range_boundaries
 from openpyxl.worksheet.table import Table as XLTable
 # pylint:disable=import-outside-toplevel

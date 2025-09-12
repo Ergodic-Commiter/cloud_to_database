@@ -1,16 +1,19 @@
 from operator import attrgetter as ɑ
 from pathlib import Path
-from typing import Union
+from typing import Literal
 
 # pylint:disable=no-name-in-module
 from pyodbc import connect 
 import sqlalchemy as alq
 from sqlalchemy.engine import URL
 
-from src import config as cfg, db, errors as ee
+from src import ptlf, errors as ee
+from src.config import Settings
 
 
-def get_params(user_type='sp'):
+def get_params(cfg:Settings, 
+    user_type:Literal['personal', 'project', 'entra', 'sql', 'sp']='sp'):
+    cfg = cfg or Settings()
     user_creds = cfg.get_creds(user_type)
     auths = dict(
         personal = 'ActiveDirectoryPassword', 
@@ -21,9 +24,9 @@ def get_params(user_type='sp'):
     if user_type not in auths: 
         raise ee.KeyCredentialsError(user_type, 'Usuario en base de datos')
     params = dict(
-        Driver=db.sqldriver, 
-        Server=db.sqlserver, 
-        Database=db.sqldatabase, 
+        Driver=cfg.sql_driver, 
+        Server=cfg.sql_server, 
+        Database=cfg.sql_database, 
         UID=user_creds['user'], 
         PWD=user_creds['password'], 
         Encrypt='yes', 
@@ -45,8 +48,8 @@ def get_connection(user_type='sp', conn_type='sqlalchemy'):
     raise ee.KeyCredentialsError(conn_type, 'Conexión base de datos')
         
 
-def get_engine(**kwargs): 
-    db_params = get_params()
+def get_engine(cfg:Settings, **kwargs): 
+    db_params = get_params(cfg)
     conn_str = ''.join('{}={};'.format(*k_v) 
             for k_v in db_params.items())
     conn_qry = {'odbc_connect': conn_str}
@@ -54,16 +57,16 @@ def get_engine(**kwargs):
     return alq.create_engine(conn_url, **kwargs)
 
 
-def make_query(by_col=None, to_file=Union[str,Path]): 
+def make_query(by_col=None, to_file=Path): 
     by_col = by_col or 'AliasToken'
     to_file = Path(to_file)
 
-    ptlf_specs = db.flow.read_specs(output='dataframe')
+    ptlf_specs = ptlf.typer.read_specs(output='dataframe')
     if by_col not in ptlf_specs.columns: ## Se cambió PTLF_SPECS de data_frame a diccionario.  
         raise ee.SpecsPTLF_Error(by_col)
 
     meta = alq.MetaData()
-    alq_eng = get_engine()
+    alq_eng = get_engine(cfg)
     ptlf_tbl = alq.Table('PTLF_raw', meta, schema='dbo', autoload_with=alq_eng)
     def λ_sqlcol(row): 
         name, label = ɑ('Name1', by_col)(row)

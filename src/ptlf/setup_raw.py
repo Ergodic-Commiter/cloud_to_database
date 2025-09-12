@@ -1,12 +1,12 @@
 from operator import methodcaller as σ
 import sqlalchemy as alq
 
-from src.ptlf import engine, typer, flow 
+from src.ptlf import engine, typer
 # pylint: disable=invalid-name
 
 if __name__ == '__main__':    
 
-    ptlf_df = flow.read_specs()
+    ptlf_df = typer.read_specs()
     ptlf_attrs = map(typer.Typer.from_specs, ptlf_df.itertuples())
     ptlf_cols = list(map(σ('alq_mssql'), ptlf_attrs))
     

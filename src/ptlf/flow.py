@@ -1,24 +1,26 @@
 from collections import defaultdict
 from dataclasses import dataclass
 from datetime import datetime as dt, timedelta as delta
+import logging
 from pathlib import Path
-from operator import attrgetter as ɑ, methodcaller as ρ
+from operator import methodcaller as ρ
 import re
-from typing import Optional, Union
+from typing import Optional
 import zipfile as zf
 
-from azure.storage.blob import ContainerClient
+from azure.storage.blob import ContainerClient, BlobClient
 import pandas as pd
-from toolz import curried as cz, dicttoolz as dz, functoolz as fz
+from toolz import dicttoolz as dz
 import sqlalchemy as alq 
 from sqlalchemy.engine import Engine
 from sqlalchemy.exc import IntegrityError, OperationalError
 
-from src import tools, config as cfg
-from src.ptlf import track, utils, errors as ee
-from src.ptlf.typer import Typer
+from src.config import Settings
+from src.ptlf import track, utils, errors as ee, typer
 
 # pylint: disable=anomalous-backslash-in-string
+
+cfg = Settings()
 
 @dataclass()
 class FlowConfig: 
@@ -29,10 +31,11 @@ class FlowConfig:
 
 class DayDataFlow: 
     '''Cloud -> Zip -> File -> DataFrame -> SQL'''
-    def __init__(self, config:FlowConfig): 
+    def __init__(self, config:FlowConfig, logger:Optional[logging.Logger]=None): 
         self.cfg = config
         self.dates_off = 0
         self.reports = {}
+        self.log = logger or logging.getLogger('__name__')
     
     # Pasada la inicialización, las funciones se enlistan de alto nivel a bajo nivel. 
     @classmethod
@@ -49,7 +52,7 @@ class DayDataFlow:
     def from_zipfile(cls, zip_file:Path, missing_ok=False): 
         zip_fmt = r"(.*)/zips/.*/PRD_TRXS_PTLF_([\d\-]{10}).ZIP"
         if (mm := re.match(zip_fmt, str(zip_file))) is None: 
-            raise ee.PTLF_FlowError(zip_file.name, 'ZipFileTitle')
+            raise ee.PTLF_FlowError(zip_file.name, 'ZipFileName')
             
         _workdir, _datestr = mm.groups()
         the_date = dt.strptime(_datestr, '%Y-%m-%d').date()
@@ -58,30 +61,42 @@ class DayDataFlow:
         flow.extract_zipfile(missing_ok)
         return flow
 
+    @classmethod
+    def from_blob_client(cls, blob:BlobClient, logger:logging.Logger): 
+        blob_reg = r"mediospago/fiserv/([\d/]{8,10})/PRD_TRXS_PTLF_([\d\-]{10}).ZIP"
+        if (mm := re.match(blob_reg, blob.blob_name) is None): 
+            raise ee.PTLF_FlowError(blob.blob_name, 'BlobName')
+        _, date2 = mm.groups()
+        the_date = dt.strptime(date2, '%Y-%m-%d').date()
+        the_flow = cls(FlowConfig(the_date, cfg.data_loc), logger=logger)
+        down_to = the_flow.get_path('unzip')
+        down_to.parent.mkdir(parents=True, exist_ok=True)
+        with open(down_to, 'wb') as f:
+            blob_stream = blob.download_blob()
+            f.write(blob_stream.readall())  
+        the_flow.cfg.zip_file = str(down_to)
+        return the_flow
+
 
     def run(self, engine:Engine, specs=None, debug=False):
         """Este proceso se encarga del procesamiento de carga. 
         Además es el único donde se hace error-handling."""
-        failpaths = cz.valmap(self.at_dir, dict(
-                ConvertTypes='failed/1-types',
-                PostingDates='failed/2-dates',
-                TrackStart='failed/3-start', 
-                RawUpload='failed/4-upload', 
-                TrackEnd='failed/5-end'))
         if specs is None: 
-            specs = read_specs()
-        
-        data_df = self.read_data(specs)
+            specs = typer.read_specs()
+        try:
+            data_df = self.read_data(specs)
+        except ee.PTLF_FlowError as er:
+            self.log.error("ReadData error in %s", er.event) 
+
         if self.reports.get('ReadData'):
-            print("Errors when reading data")
+            self.log.warning("Check types in ReadData:")
             report_str = str(dict(self.reports['ReadData'])) 
-            self.get_path('report').write_text(report_str)
+            self.log.info(report_str)
         try:
             self.upload_data(data_df, engine, debug)
-        except ee.PTLFUploadError as er:
-            print("Error when uploading") 
-            self.datafile.replace(failpaths[er.reason])
-        else:
+        except ee.PTLF_FlowError as er:
+            self.log.error("Upload error at %s", er.event)
+        finally:
             self.datafile.unlink()
 
 
@@ -105,7 +120,7 @@ class DayDataFlow:
 
     def read_data(self, specs=None, debug=False) -> pd.DataFrame: 
         if specs is None: 
-            specs = read_specs()
+            specs = typer.read_specs()
         fwf_args = dict(dtype=str, header=None, colspecs=[(0, None)], 
             names=['value'])
         reporter = defaultdict(list)
@@ -136,13 +151,13 @@ class DayDataFlow:
         try: 
             an_id = track.start_raw(engine, meta)
         except IntegrityError as er:
-            raise ee.PTLF_FlowError(self.datafile.name, 'TrackStart') from er
+            raise ee.PTLF_FlowError(self.datafile.name, 'TrackIntegrity') from er
         status = 'failed'
         try:
             a_df.to_sql(**sql_params)
             status = 'success'
-        except Exception as err:
-            raise ee.PTLFUploadError(self.datafile.name, 'RawUpload') from err
+        except Exception as er:
+            raise ee.PTLF_FlowError(self.datafile.name, 'RawUpload') from er
         finally: 
             track.finish_raw(engine, an_id, status)
 
@@ -204,41 +219,8 @@ class DayDataFlow:
         return f"<DayDataFlow at {self.datafile.name}>"
 
 
-#### Specs Stuff
-
-def read_specs(output='dict') -> Union[dict, pd.DataFrame]:
-    # Antes regresaba el DataFrame, pero es mejor el dccionario convertido.
-    specs_ref = tools.OpenTable(*cfg.XL_REF)
-    specs_df = specs_ref.get_dataframe()
-    if output == 'dataframe': 
-        return specs_df
-    return Typer.dataframe_to_dict(specs_df)
-
-
-def specs_plus(specs_0):
-    attrs = Typer.dataframe_to_dict(specs_0.values())
-    meta = dict(
-        Name0=ɑ('_specs.Field_Name'),  # corresponds to "Field Name"
-        Name1=ɑ('specs.Name1'), 
-        pytype=ɑ('pytype.__name__'), 
-        mssql=fz.compose_left(ρ('mssql_col'), str))
-    λ_meta = fz.juxt(*meta.values())
-    attrs_data = list(map(λ_meta, attrs))
-    return pd.DataFrame(attrs_data, columns=list(meta.keys()))
-
-
-def specs_plus_to_excel(specs_1): 
-    specs_ref = tools.OpenTable(*cfg.XL_REF)
-    _, min_row, max_col, _ = specs_ref.boundaries
-    writer_args = dict(engine='openpyxl', mode='a', if_sheet_exists='overlay')  
-    excel_args = dict(sheet_name=specs_ref.ws_name, header=True, index=False,
-        startrow=min_row-1, startcol=max_col+1)
-    with pd.ExcelWriter(specs_ref.wb_path, **writer_args) as xl:
-        specs_1.to_excel(xl, **excel_args)    
-
-
 def files_to_dataframe(data_dir=None): 
-    data_dir = data_dir or Path(cfg.DATA_LOC/'temp')
+    data_dir = data_dir or cfg.data_loc
     ptlf_gen = map(utils.file_meta, data_dir.glob("**/PTLF_[0-9\-]*"))
     dir_status = {'text' : 'incierto', 
         'failed/3-start' : 'pos.repetido',

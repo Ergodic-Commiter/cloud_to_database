@@ -2,10 +2,11 @@ from collections import defaultdict
 from decimal import Decimal
 from dataclasses import dataclass
 from datetime import datetime as dt
-from operator import attrgetter as ɑ
+from importlib.resources import files
+from operator import attrgetter as ɑ, methodcaller as ρ
 import re
 from typing import (Any, ClassVar, DefaultDict, Dict, 
-    List, NamedTuple, Optional, Tuple, Type)
+    List, NamedTuple, Optional, Tuple, Type, Union)
 from warnings import warn
 
 import pandas as pd
@@ -13,6 +14,8 @@ import sqlalchemy as alq
 from sqlalchemy.dialects import mssql
 from toolz import functoolz as fz
 
+from src import tools
+from src.config import Settings
 from src.ptlf import utils, errors as ee
 # pylint:disable=abstract-method
 # pylint:disable=invalid-name
@@ -338,5 +341,44 @@ class FracTimeConverter(Typer):
 
     def _finalize(self, prs_srs): 
         pass 
+
+
+
+#### Specs Stuff
+
+def read_specs(output='dict') -> Union[dict, pd.DataFrame]:
+    # Antes regresaba el DataFrame, pero es mejor el dccionario convertido.
+    try:
+        specs_df = pd.read_feather(files('ptlf/data')/'ptlf_cols.feather')
+    except ModuleNotFoundError:  
+        cfg = Settings() 
+        specs_ref = tools.OpenTable(*cfg.xl_ref)
+        specs_df = specs_ref.get_dataframe()
+    if output == 'dataframe': 
+        return specs_df
+    return Typer.dataframe_to_dict(specs_df)
+
+
+def specs_plus(specs_0):
+    attrs = Typer.dataframe_to_dict(specs_0.values())
+    meta = dict(
+        Name0=ɑ('_specs.Field_Name'),  # corresponds to "Field Name"
+        Name1=ɑ('specs.Name1'), 
+        pytype=ɑ('pytype.__name__'), 
+        mssql=fz.compose_left(ρ('mssql_col'), str))
+    λ_meta = fz.juxt(*meta.values())
+    attrs_data = list(map(λ_meta, attrs))
+    return pd.DataFrame(attrs_data, columns=list(meta.keys()))
+
+
+def specs_plus_to_excel(specs_1:pd.DataFrame, cfg:Optional[Settings]=None):
+    cfg = cfg or Settings() 
+    specs_ref = tools.OpenTable(*cfg.XL_REF)
+    _, min_row, max_col, _ = specs_ref.boundaries
+    writer_args = dict(engine='openpyxl', mode='a', if_sheet_exists='overlay')  
+    excel_args = dict(sheet_name=specs_ref.ws_name, header=True, index=False,
+        startrow=min_row-1, startcol=max_col+1)
+    with pd.ExcelWriter(specs_ref.wb_path, **writer_args) as xl:
+        specs_1.to_excel(xl, **excel_args)    
 
  

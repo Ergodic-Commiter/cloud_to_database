@@ -20,6 +20,12 @@ te agradeceré que me escribas por [Teams][teams].
 - `fiserv-db`:        _SQL database_    ($5.25 USD)
 - `medios-pago-data-dev`: _Service Principal_  
 - `mediospago`:       _Azure Container_ (ya existe)
+- `fiserv-blob-to-sql`: _Azure Functions_ 
+  - `cae-bh-microsrv-data-dev`: _Container Apps environment_??
+  - `fiserv-blob-to-sql`: _Container details_ 
+  - `acrcommonacrsdatadev`: _Container_ ❌ no sirve (admin credentials disabled)
+  - `dataappsregistry`: _Registry_ ✅
+
 
 El servidor SQL tiene muchas configuraciones truculentas: 
 - Se revisan permisos para el usuario que crea las tablas.  

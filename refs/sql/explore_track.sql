@@ -2,7 +2,6 @@
 SELECT top 1000 * FROM PTLF_RAW; 
 GO
 
-
 -- EL QUERY MÁS FACIL 
 SELECT file_name, date_file, n_records, data_date FROM PTLF_track
 ORDER BY file_name

@@ -24,7 +24,7 @@ from src.db.typer import Typer
 class FlowConfig: 
     date: dt.date   
     work_dir: Path
-    zip_file: Optional[Path] = None
+    zip_file: Optional[str] = None
 
 
 class DayDataFlow: 
@@ -83,7 +83,7 @@ class DayDataFlow:
         _workdir, _datestr = mm.groups()
         the_date = dt.strptime(_datestr, '%Y-%m-%d').date()
         the_dir = Path(_workdir)
-        flow = cls(FlowConfig(the_date, the_dir, zip_file))
+        flow = cls(FlowConfig(the_date, the_dir, str(zip_file)))
         flow.extract_zipfile(missing_ok)
         return flow
 
@@ -141,13 +141,14 @@ class DayDataFlow:
         self.cfg.zip_file = str(zip_to)
 
 
-    def extract_zipfile(self, missing_ok=False): 
-        if not zf.is_zipfile(self.cfg.zip_file) and missing_ok: 
-            return 
-        to_unzip = self.datafile.name
-        with zf.ZipFile(self.cfg.zip_file, 'r') as zz: 
-            zz.extract(to_unzip, path=self.cfg.work_dir/'text')
-        Path(self.cfg.zip_file).unlink()
+    def extract_zipfile(self, missing_ok=False):
+        zipfile = self.cfg.zip_file or str(self.get_path("unzip")) 
+        if not zf.is_zipfile(zipfile) and missing_ok: 
+            return
+        to_unzip = self.get_path('data') 
+        with zf.ZipFile(zipfile, 'r') as zz: 
+            zz.extract(to_unzip.name, path=to_unzip.parent)
+        Path(zipfile).unlink()
 
 
     def read_data(self, specs=None, debug=False) -> pd.DataFrame: 
@@ -188,8 +189,8 @@ class DayDataFlow:
         try:
             a_df.to_sql(**sql_params)
             status = 'success'
-        except Exception as err:
-            raise ee.PTLFUploadError(self.datafile.name, 'RawUpload') from err
+        except Exception as er:
+            raise ee.PTLFUploadError(self.datafile.name, 'RawUpload') from er
         finally: 
             track.finish_raw(engine, an_id, status)
 
@@ -233,7 +234,7 @@ def specs_plus_to_excel(specs_1):
 
 def files_to_dataframe(data_dir=None): 
     data_dir = data_dir or Path(cfg.DATA_LOC/'temp')
-    ptlf_gen = map(utils.file_meta, data_dir.glob("**/PTLF_[0-9\-]*"))
+    ptlf_gen = map(utils.file_meta, data_dir.rglob("PTLF_[0-9-]*"))
     dir_status = {'text' : 'incierto', 
         'failed/3-start' : 'pos.repetido',
         'failed/4-upload': 'err.carga'}

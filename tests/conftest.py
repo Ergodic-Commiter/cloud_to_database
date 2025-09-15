@@ -1,8 +1,11 @@
 
+from office365.sharepoint.client_context import ClientContext
 from pytest import fixture
 
-from src import db
+from src.ptlf import engine
 
+# pylint: disable=redefined-outer-name
+# pylint: disable=unused-variable
 
 # Parser options. 
 def pytest_addoption(parser):
@@ -28,7 +31,7 @@ def conn_type(request):
 
 @fixture(scope='session')
 def conn_fixture(user_type, conn_type): 
-    with db.get_connection(user_type, conn_type) as conn: 
+    with engine.get_connection(user_type, conn_type) as conn: 
         yield conn
 
 

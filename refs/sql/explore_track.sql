@@ -27,11 +27,11 @@ GO
 
 
 DELETE FROM PTLF_raw 
-WHERE [NGBBSE24-AUTH-POST-DAT] in ('250904', '250603'); 
+WHERE [NGBBSE24-AUTH-POST-DAT] in ('250904'); 
 GO
 
 DELETE FROM PTLF_track
-WHERE data_date in ('250904', '250603'); 
+WHERE data_date in ('250904'); 
 GO 
 
 -- Para encontrar las dependencias de DATE_STR. 

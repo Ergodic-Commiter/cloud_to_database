@@ -21,7 +21,7 @@ if __name__ == '__main__':
     the_flow = flow.DayDataFlow(config)    
     
     eng_args = dict(fast_executemany=False, echo='debug') if debug else {}
-    alq_eng = engine.get_engine(**eng_args)
+    alq_eng = engine.get_engine(cfg, **eng_args)
     container = stg.get_container(cfg)
     
     at_stage = the_flow.determine_stage(alq_eng, container)

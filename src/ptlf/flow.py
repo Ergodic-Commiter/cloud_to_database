@@ -20,13 +20,12 @@ from src.ptlf import track, utils, errors as ee, typer
 
 # pylint: disable=anomalous-backslash-in-string
 
-cfg = Settings()
 
 @dataclass()
 class FlowConfig: 
     date: dt.date   
     work_dir: Path
-    zip_file: Optional[Path] = None
+    zip_file: Optional[str] = None
 
 
 class DayDataFlow: 
@@ -57,12 +56,14 @@ class DayDataFlow:
         _workdir, _datestr = mm.groups()
         the_date = dt.strptime(_datestr, '%Y-%m-%d').date()
         the_dir = Path(_workdir)
-        flow = cls(FlowConfig(the_date, the_dir, zip_file))
+        flow = cls(FlowConfig(the_date, the_dir, str(zip_file)))
         flow.extract_zipfile(missing_ok)
         return flow
 
     @classmethod
-    def from_blob_client(cls, blob:BlobClient, logger:logging.Logger): 
+    def from_blob_client(cls, blob:BlobClient, logger:logging.Logger):
+        cfg = Settings()
+
         blob_reg = r"mediospago/fiserv/([\d/]{8,10})/PRD_TRXS_PTLF_([\d\-]{10}).ZIP"
         if (mm := re.match(blob_reg, blob.blob_name) is None): 
             raise ee.PTLF_FlowError(blob.blob_name, 'BlobName')
@@ -110,12 +111,13 @@ class DayDataFlow:
 
 
     def extract_zipfile(self, missing_ok=False): 
-        if not zf.is_zipfile(self.cfg.zip_file) and missing_ok: 
+        unzip_from = self.get_path('unzip')
+        data_to = self.get_path('data')
+        if not zf.is_zipfile(str(unzip_from)) and missing_ok: 
             return 
-        to_unzip = self.datafile.name
-        with zf.ZipFile(self.cfg.zip_file, 'r') as zz: 
-            zz.extract(to_unzip, path=self.cfg.work_dir/'text')
-        Path(self.cfg.zip_file).unlink()
+        with zf.ZipFile(str(unzip_from), 'r') as zz: 
+            zz.extract(data_to.name, path=data_to.parent)
+        unzip_from.unlink()
 
 
     def read_data(self, specs=None, debug=False) -> pd.DataFrame: 
@@ -167,7 +169,7 @@ class DayDataFlow:
         try: 
             track_t = alq.Table('PTLF_track', meta, autoload_with=engine)
         except OperationalError as er:
-            raise ee.PTLFConnError('AutoloadTable') from er
+            raise ee.PTLFConnError('AutoloadTable_CheckConnection') from er
         hasfile_stmt = (alq.select(track_t)
             .where(track_t.c.file_name == self.datafile.name))
         with engine.begin() as conn: 
@@ -219,9 +221,10 @@ class DayDataFlow:
         return f"<DayDataFlow at {self.datafile.name}>"
 
 
-def files_to_dataframe(data_dir=None): 
-    data_dir = data_dir or cfg.data_loc
-    ptlf_gen = map(utils.file_meta, data_dir.glob("**/PTLF_[0-9\-]*"))
+
+def files_to_dataframe(data_dir:Optional[Path]=None): 
+    data_dir = data_dir or Path('data/temp')
+    ptlf_gen = map(utils.file_meta, data_dir.rglob("PTLF_[0-9-]*"))
     dir_status = {'text' : 'incierto', 
         'failed/3-start' : 'pos.repetido',
         'failed/4-upload': 'err.carga'}

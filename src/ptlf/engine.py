@@ -7,7 +7,8 @@ from pyodbc import connect
 import sqlalchemy as alq
 from sqlalchemy.engine import URL
 
-from src import ptlf, errors as ee
+from src import ptlf
+from src.ptlf import errors as ee
 from src.config import Settings
 
 
@@ -25,7 +26,7 @@ def get_params(cfg:Settings,
         raise ee.KeyCredentialsError(user_type, 'Usuario en base de datos')
     params = dict(
         Driver=cfg.sql_driver, 
-        Server=cfg.sql_server, 
+        Server=cfg.sql_server_url, 
         Database=cfg.sql_database, 
         UID=user_creds['user'], 
         PWD=user_creds['password'], 
@@ -57,7 +58,7 @@ def get_engine(cfg:Settings, **kwargs):
     return alq.create_engine(conn_url, **kwargs)
 
 
-def make_query(by_col=None, to_file=Path): 
+def make_query(cfg:Settings, by_col=None, to_file=Path): 
     by_col = by_col or 'AliasToken'
     to_file = Path(to_file)
 

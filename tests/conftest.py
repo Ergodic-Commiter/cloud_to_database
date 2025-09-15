@@ -28,7 +28,7 @@ def conn_type(request):
 
 @fixture(scope='session')
 def conn_fixture(user_type, conn_type): 
-    with db.get_connection(user_type, conn_type) as conn: 
+    with db.engine.get_connection(user_type, conn_type) as conn: 
         yield conn
 
 

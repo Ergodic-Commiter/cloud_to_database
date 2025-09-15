@@ -1,8 +1,10 @@
-.env
+.env*
 config.cfg
+**local.settings.json
 
 .vscode
 
+**.egg-info**
 **__pycache__
 **.xlsx
 **.csv

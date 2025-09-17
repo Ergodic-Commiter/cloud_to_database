@@ -4,11 +4,11 @@ import azure.functions as func
 from azurefunctions.extensions.bindings import blob
 
 from src.config import Settings
-from src.ptlf import flow, engine, setup_logging
+from src.ptlf import flow, engine, local_logging
 
 cfg = Settings()
 alq_eng = engine.get_engine(cfg)
-setup_logging.setup_logging(cfg)
+local_logging.setup(cfg)
 
 
 class ContextAdapter(logging.LoggerAdapter):

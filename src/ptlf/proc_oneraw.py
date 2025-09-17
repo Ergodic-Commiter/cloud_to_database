@@ -2,7 +2,7 @@ from datetime import date, datetime as dt
 import logging
 from sys import argv
 
-from src.ptlf import flow, engine, storage as stg, setup_logging
+from src.ptlf import flow, engine, storage as stg, local_logging
 from src import config
 # pylint: disable=invalid-name
 
@@ -14,7 +14,7 @@ if __name__ == '__main__':
     the_date = dt.strptime(date_str, '%Y-%m-%d').date() if date_str else date.today()
 
     cfg = config.Settings()
-    setup_logging.setup_logging(cfg)
+    local_logging.setup(cfg)
     logger = logging.getLogger('ptlf.log')
     
     config = flow.FlowConfig(the_date, cfg.data_loc)    

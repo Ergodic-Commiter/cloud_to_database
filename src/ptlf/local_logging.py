@@ -3,7 +3,7 @@ from pathlib import Path
 from src.config import Settings
 
 
-def setup_logging(cfg: Settings):
+def setup(cfg: Settings):
     root = logging.getLogger()
     root.handlers.clear()   # reset (avoid duplicate handlers)
     root.setLevel(logging.INFO)

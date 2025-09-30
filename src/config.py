@@ -1,43 +1,84 @@
-import os
 from pathlib import Path
+from tempfile import gettempdir
+from typing import Literal, Optional, Tuple
 
-from azure.identity import ClientSecretCredential
-from dotenv import load_dotenv
-from toolz import dicttoolz as dz
+from azure.identity import ClientSecretCredential, DefaultAzureCredential
+from pydantic import Field
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from src.tools import partial2
+from src.ptlf import errors as ee
+# pylint: disable=too-few-public-methods
+# pylint: disable=arguments-differ
 
-ROOT = Path(__file__).parents[1]
-load_dotenv(ROOT/'.env', override=True)
+class Settings(BaseSettings): 
+    model_config = SettingsConfigDict(env_file=".env", 
+        env_file_encoding="utf-8", extra='ignore')
+    
+    env: str = Field(default='dev', validation_alias='PTLF_ENV')
+    data_loc: Optional[Path] = None  # Se configura en model_post_init
+    xl_ref: Tuple[Path, str, str] = (Path('data/PTLF-cols-1.xlsx'), 'LO', 'ptlf_cols')
+    
+    # Azure Service Principal
+    tenant_id: Optional[str] = Field(None, validation_alias='AZURE_TENANT_ID')
+    subscription_id: Optional[str] = Field(None, validation_alias='AZURE_SUBSCRIPTION_ID')
+    client_id: Optional[str] = Field(None, validation_alias='AZURE_CLIENT_ID')
+    client_secret: Optional[str] = Field(None, validation_alias='AZURE_CLIENT_SECRET')
+    
+    # Azure Resources
+    storage_account_url: Optional[str] = Field(None, validation_alias='STORAGE_ACCOUNT_URL')
+    storage_container: Optional[str] = Field(None, validation_alias='STORAGE_CONTAINER')
+    sql_driver: Optional[str] = "{ODBC Driver 18 for SQL Server}"  # Configurar el driver. 
+    sql_server_url: Optional[str] = Field(None, validation_alias='SQL_SERVER_URL')
+    sql_database: Optional[str] = Field(None, validation_alias='SQL_DATABASE')
+    registry_container: Optional[str] = Field(None, validation_alias='AZURE_CONTAINER')
+    
+    # Other credentials
+    sql_user: Optional[str] = Field(None, validation_alias='SQL_USER')
+    sql_password: Optional[str] = Field(None, validation_alias='SQL_PASSWORD')
+    
+    # Sandbox stuff
+    onedrive_path: Optional[str] = Field(None, validation_alias='ONEDRIVE_PATH')
+    my_user: Optional[str] = Field(None, validation_alias='AZURE_USER_PERSONAL')
+    my_password: Optional[str] = Field(None, validation_alias='AZURE_PASS_PERSONAL')
+    proj_user: Optional[str] = Field(None, validation_alias='AZURE_USER_PROJECT')
+    proj_password: Optional[str] = Field(None, validation_alias='AZURE_PASSWORD_PROJECT')
+    client_test: Optional[str] = Field(None, validation_alias='AZURE_CLIENT_TEST')
+    secret_test: Optional[str] = Field(None, validation_alias='AZURE_SECRET_TEST')
+    scope_test: Optional[str] = Field(None, validation_alias='AZURE_SCOP_TEST')
+    sp_name: Optional[str] = Field(None, validation_alias='AZURE_SP_NAME')
+    sp_id: Optional[str] = Field(None, validation_alias='AZURE_SP_ID')
+    dev_login: Optional[str] = Field(None, validation_alias='AZURE_SQL_LOGIN')
+    dev_password: Optional[str] = Field(None, validation_alias='AZURE_SQL_PASS2')
+    sql_string: Optional[str] = Field(None, validation_alias='STRING_SQL')
+    sql_entra: Optional[str] = Field(None, validation_alias='STRING_ENTRA')
+    sql_entra_int: Optional[str] = Field(None, validation_alias='STRING_ENTRA_INT')
 
-XL_REF = ('data/PTLF-cols.xlsx', 'LO', 'ptlf_cols')
+    def get_creds(self, user_type=None): 
+        user_type = user_type or 'personal'
+        cred_keys = ('user', 'password')
+        env_names = dict(
+            personal = (self.my_user, self.my_password),
+            project = (self.proj_user, self.proj_password),
+            entra = (self.proj_user, self.proj_password),
+            sql = (self.sql_user, self.sql_password),
+            sp = (self.client_id, self.client_secret))
+        if user_type not in env_names: 
+            raise ee.KeyCredentialsError(user_type, 'user-password')
+        return dict(zip(cred_keys, env_names[user_type]))
 
+    def azure_creds(self, user_type:Literal['default', 'sp']='default'): 
+        if user_type == 'default': 
+            return DefaultAzureCredential()
+        if user_type == 'sp': 
+            env_keys = dict(tenant_id=self.tenant_id, 
+                client_secret=self.client_secret,
+                client_id=self.client_id)
+            return ClientSecretCredential(**env_keys) 
+        raise ee.KeyCredentialsError(user_type, 'Azure')
+    
+    def model_post_init(self, __context):
+        if self.data_loc is None:
+            is_auto = self.env in {'prod', 'azure'}
+            self.data_loc = Path(gettempdir()) if is_auto else Path("data/temp")
+        return 
 
-def get_creds(user_type=None):
-    user_type = user_type or 'personal'
-    cred_keys = ('user', 'password')
-    env_names = dict(
-        personal = ('AZURE_USER_PERSONAL', 'AZURE_PASS_PERSONAL'),
-        project = ('AZURE_USER_PROJECT', 'AZURE_PASSWORD_PROJECT'),
-        entra = ('AZURE_USER_PROJECT', 'AZURE_PASSWORD_PROJECT'),
-        sql = ('AZURE_USER_SQL', 'AZURE_PASS_SQL'),
-        sp = ('AZURE_SP_CLIENT', 'AZURE_SP_SECRET'))
-    if user_type not in env_names: 
-        err_msg = (f"User type '{user_type}' must be one of {list(env_names.keys())}")
-        raise ValueError(err_msg)
-    env_vals = [os.environ[nm] for nm in env_names[user_type]]
-    return dict(zip(cred_keys, env_vals))
-
-
-def azure_creds(user_type=None): 
-    user_type = user_type or 'sp'
-    valid_types = {'sp'}
-    if user_type not in valid_types: 
-        raise ValueError(f"User type '{user_type}' not from {valid_types}")
-    if user_type == 'sp': 
-        env_keys = dict(tenant_id='AZURE_TENANT', 
-            subscription_id='AZURE_SUBSCRIPTION_TEST', 
-            client_secret='AZURE_SP_SECRET',
-            client_id='AZURE_SP_CLIENT')
-        creds = dz.valmap(lambda vv: os.environ[vv], env_keys)
-        return ClientSecretCredential(**creds) 

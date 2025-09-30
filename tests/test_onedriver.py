@@ -10,7 +10,7 @@ def test_print_title(a_context):
 
 
 def test_download_file(a_context, a_fileurl, local_path): 
-    onedriver.download_file(a_context, a_fileurl, local_path)
+    onedriver.download_from_sharepoint(a_context, a_fileurl, local_path)
     assert local_path.is_file, f"Couldn't download file from {a_fileurl}"
 
 

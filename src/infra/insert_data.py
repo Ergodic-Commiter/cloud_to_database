@@ -1,6 +1,10 @@
 import pyodbc
 import pandas as pd
-
+# pylint:disable=invalid-name
+# pylint:disable=c-extension-no-member
+# pylint:disable=unreachable
+# pylint:disable=consider-using-sys-exit
+# pylint:disable=broad-exception-caught
 from config import (
     AZURE_CLIENT_ID,
     AZURE_CLIENT_SECRET,
@@ -58,7 +62,7 @@ placeholders = ", ".join(["?"] * len(column_names))
 column_list = ", ".join(f"[{col}]" for col in column_names)
 sql = f"INSERT INTO ptlf_lo ({column_list}) VALUES ({placeholders})"
 
-print(f"⚙️ Ejecutando inserciones sobre la tabla: ptlf_lo...")
+print("⚙️ Ejecutando inserciones sobre la tabla: ptlf_lo...")
 for index, row in df.iterrows():
     values = [str(x) if pd.notnull(x) else None for x in row]
     try:

@@ -1,0 +1,7 @@
+
+/Users/.../src/db/typer.py:116: UserWarning: Errors at: PD_SERIES:
+Column,                     Type
+'NZBBSE24-CE-CRNCY-CDE_1'   'int'
+'NGBBSE24-AUTH-AMT-1'       'int'
+'NZBBSE24-CE-CRNCY-CDE_2'   'int'
+'NZBBSE24-CE-AMT-AUTH_2'    'int'

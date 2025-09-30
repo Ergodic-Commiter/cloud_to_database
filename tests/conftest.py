@@ -1,15 +1,11 @@
-from itertools import starmap
-from logging import getLogger
-from operator import itemgetter as ɣ, methodcaller as σ, contains
-from os import environ
-from pathlib import Path
-import sys
 
+from office365.sharepoint.client_context import ClientContext
 from pytest import fixture
 
-from src.tools import partial2, thread
-from src import config as cfg, db
+from src.ptlf import engine
 
+# pylint: disable=redefined-outer-name
+# pylint: disable=unused-variable
 
 # Parser options. 
 def pytest_addoption(parser):
@@ -35,7 +31,7 @@ def conn_type(request):
 
 @fixture(scope='session')
 def conn_fixture(user_type, conn_type): 
-    with db.get_connection(user_type, conn_type) as conn: 
+    with engine.get_connection(user_type, conn_type) as conn: 
         yield conn
 
 

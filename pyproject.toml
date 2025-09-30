@@ -1,5 +1,10 @@
 [tool.pytest.ini_options]
     addopts = "--tb=line"
+    pythonpath = ["src"]
 
 [tool.pylint."MESSAGES CONTROL"]
-disable=["missing-class-docstring", "missing-final-newline", "missing-function-docstring", "missing-module-docstring", "non-ascii-module-import", "non-ascii-name", "superfluous-parens", "trailing-whitespace", "trailing-newlines", "unnecessary-lambda-assignment", "use-dict-literal", "consider-using-f-string"]
+disable=["missing-class-docstring", "missing-final-newline", "missing-function-docstring",      
+    "missing-module-docstring", "multiple-imports", "non-ascii-module-import", "non-ascii-name", 
+    "superfluous-parens", "trailing-whitespace", "trailing-newlines",
+    "unnecessary-lambda-assignment", "use-dict-literal", "useless-return", 
+    "consider-using-f-string"]

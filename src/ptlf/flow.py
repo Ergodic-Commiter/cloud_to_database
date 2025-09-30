@@ -4,6 +4,7 @@ from datetime import datetime as dt, timedelta as delta
 import logging
 from pathlib import Path
 from operator import methodcaller as ρ
+import os
 import re
 from typing import Optional
 import zipfile as zf
@@ -18,6 +19,8 @@ from sqlalchemy.exc import IntegrityError, OperationalError
 from src.config import Settings
 from src.ptlf import track, utils, errors as ee, typer
 
+fspath = utils.noner(os.fspath)
+
 # pylint: disable=anomalous-backslash-in-string
 
 
@@ -25,7 +28,8 @@ from src.ptlf import track, utils, errors as ee, typer
 class FlowConfig: 
     date: dt.date   
     work_dir: Path
-    zip_file: Optional[str] = None
+    zip_path: Optional[Path] = None
+    debug: bool = False
 
 
 class DayDataFlow: 
@@ -38,48 +42,50 @@ class DayDataFlow:
     
     # Pasada la inicialización, las funciones se enlistan de alto nivel a bajo nivel. 
     @classmethod
-    def from_data(cls, data_file:Path): 
+    def from_data(cls, data_file:Path, debug=False): 
         txt_fmt = r"^(.*)/text/PTLF_([\d\-]{10}$)"
-        if (mm := re.match(txt_fmt, str(data_file))) is None: 
+        if (mm := re.match(txt_fmt, fspath(data_file))) is None: 
             raise ee.PTLF_FlowError(data_file.name, 'DataFileTitle') 
         _workdir, _datestr = mm.groups()
         the_date = dt.strptime(_datestr, '%Y-%m-%d').date()
         the_dir = Path(_workdir)
-        return cls(FlowConfig(the_date, the_dir))
+        return cls(FlowConfig(the_date, the_dir, None, debug))
 
     @classmethod
-    def from_zipfile(cls, zip_file:Path, missing_ok=False): 
+    def from_zipfile(cls, zip_file:Path, missing_ok=False, debug=False): 
         zip_fmt = r"(.*)/zips/.*/PRD_TRXS_PTLF_([\d\-]{10}).ZIP"
-        if (mm := re.match(zip_fmt, str(zip_file))) is None: 
+        if (mm := re.match(zip_fmt, fspath(zip_file))) is None: 
             raise ee.PTLF_FlowError(zip_file.name, 'ZipFileName')
             
         _workdir, _datestr = mm.groups()
         the_date = dt.strptime(_datestr, '%Y-%m-%d').date()
         the_dir = Path(_workdir)
-        flow = cls(FlowConfig(the_date, the_dir, str(zip_file)))
+        flow = cls(FlowConfig(the_date, the_dir, zip_file, debug))
         flow.extract_zipfile(missing_ok)
         return flow
 
     @classmethod
-    def from_blob_client(cls, blob:BlobClient, logger:logging.Logger):
+    def from_blob_client(cls, blob:BlobClient, logger:logging.Logger, debug=False):
         cfg = Settings()
+        at_data = cfg.data_loc
 
         blob_reg = r"mediospago/fiserv/([\d/]{8,10})/PRD_TRXS_PTLF_([\d\-]{10}).ZIP"
         if (mm := re.match(blob_reg, blob.blob_name) is None): 
             raise ee.PTLF_FlowError(blob.blob_name, 'BlobName')
         _, date2 = mm.groups()
         the_date = dt.strptime(date2, '%Y-%m-%d').date()
-        the_flow = cls(FlowConfig(the_date, cfg.data_loc), logger=logger)
+
+        the_flow = cls(FlowConfig(the_date, at_data, None, debug), logger=logger)
         down_to = the_flow.get_path('unzip')
         down_to.parent.mkdir(parents=True, exist_ok=True)
         with open(down_to, 'wb') as f:
             blob_stream = blob.download_blob()
             f.write(blob_stream.readall())  
-        the_flow.cfg.zip_file = str(down_to)
+        the_flow.cfg.zip_path = down_to
         return the_flow
 
 
-    def run(self, engine:Engine, specs=None, debug=False):
+    def run(self, engine:Engine, specs=None):
         """Este proceso se encarga del procesamiento de carga. 
         Además es el único donde se hace error-handling."""
         if specs is None: 
@@ -94,30 +100,32 @@ class DayDataFlow:
             report_str = str(dict(self.reports['ReadData'])) 
             self.log.info(report_str)
         try:
-            self.upload_data(data_df, engine, debug)
+            self.upload_data(data_df, engine)
         except ee.PTLF_FlowError as er:
             self.log.error("Upload error at %s", er.event)
         finally:
-            self.datafile.unlink()
+            if not self.cfg.debug: 
+                self.datafile.unlink()
 
 
     def download_cloud(self, container:ContainerClient): 
-        blob_from = str(self.get_path('cloud'))
+        blob_from = fspath(self.get_path('cloud'))
         zip_to = self.get_path('unzip')
-        with open(zip_to, 'wb') as f:
+        with open(fspath(zip_to), 'wb') as f:
             blob_stream = container.download_blob(blob_from)
             f.write(blob_stream.readall())  
-        self.cfg.zip_file = str(zip_to)
+        self.cfg.zip_file = zip_to
 
 
     def extract_zipfile(self, missing_ok=False): 
-        unzip_from = self.get_path('unzip')
+        unzip_from = self.cfg.zip_path or self.get_path('unzip')
         data_to = self.get_path('data')
-        if not zf.is_zipfile(str(unzip_from)) and missing_ok: 
+        if not zf.is_zipfile(fspath(unzip_from)) and missing_ok: 
             return 
-        with zf.ZipFile(str(unzip_from), 'r') as zz: 
+        with zf.ZipFile(fspath(unzip_from), 'r') as zz: 
             zz.extract(data_to.name, path=data_to.parent)
-        unzip_from.unlink()
+        if not self.cfg.debug: 
+            unzip_from.unlink()
 
 
     def read_data(self, specs=None, debug=False) -> pd.DataFrame: 
@@ -135,16 +143,16 @@ class DayDataFlow:
         self.reports['ReadData'] = reporter
         df_key = df_1['NGBBSE24-AUTH-POST-DAT']
         if (df_key != df_key[0]).all(): 
-            raise ee.PTLF_FlowError(self.datafile.name, 'PostingDates') 
+            raise ee.PTLF_FlowError(self.datafile.name, 'PostingDatesNotEqual') 
         data_date = dt.strptime(df_key[0], '%y%m%d').date()
         self.dates_off = (data_date - self.cfg.date).days
         return df_1
 
     
-    def upload_data(self, a_df:pd.DataFrame, engine:Engine, debug=False): 
+    def upload_data(self, a_df:pd.DataFrame, engine:Engine): 
         sql_params = dict(con=engine, schema='dbo', 
             if_exists='append', name='PTLF_raw', index=False)
-        sql_params |= dict(method=None, chunksize=1) if debug else {}
+        sql_params |= dict(method=None, chunksize=1) if self.cfg.debug else {}
 
         meta = utils.file_meta(self.datafile)
         if self.dates_off: 
@@ -152,14 +160,14 @@ class DayDataFlow:
             meta['data_date'] = data_date.strftime('%y%m%d')
         try: 
             an_id = track.start_raw(engine, meta)
-        except IntegrityError as er:
-            raise ee.PTLF_FlowError(self.datafile.name, 'TrackIntegrity') from er
+        except IntegrityError as e1:
+            raise ee.PTLF_FlowError(self.datafile.name, 'TrackIntegrity') from e1
         status = 'failed'
         try:
             a_df.to_sql(**sql_params)
             status = 'success'
-        except Exception as er:
-            raise ee.PTLF_FlowError(self.datafile.name, 'RawUpload') from er
+        except Exception as e1:
+            raise ee.PTLF_FlowError(self.datafile.name, 'RawUpload') from e1
         finally: 
             track.finish_raw(engine, an_id, status)
 
@@ -182,7 +190,7 @@ class DayDataFlow:
             return 2
         if container is None: 
             return -1 
-        the_blob = container.get_blob_client(str(self.get_path('cloud')))
+        the_blob = container.get_blob_client(fspath(self.get_path('cloud')))
         return 3 if the_blob.exists() else -1 
          
 

@@ -3,7 +3,8 @@ SELECT top 1000 * FROM PTLF_RAW;
 GO
 
 -- EL QUERY MÁS FACIL 
-SELECT file_name, date_file, n_records, data_date FROM PTLF_track
+SELECT file_name, date_file, n_records, data_date 
+FROM PTLF_track
 ORDER BY file_name
 GO
 
@@ -47,7 +48,7 @@ GO
 -- Para encontrar archivos en cuyas fechas en la data y en el título se corresponden:
 SELECT * 
 FROM dbo.PTLF_track
-WHERE CONVERT(char(6), date_file, 12) = data_date; 
+WHERE CONVERT(char(6), date_file, 12) = data_date;  
 
 SELECT * 
 FROM dbo.PTLF_track

@@ -1,16 +1,19 @@
+import os
 from pathlib import Path
 import re
 from sys import argv
 from time import time
 import zipfile
 
-from src.ptlf import flow, engine, errors as ee, typer
+from src import config
+from src.ptlf import flow, engine, errors as ee, typer, utils
 # pylint:disable=invalid-name
 
-is_ptlf_zip = lambda pp: re.compile(r"(PTLF_[\d-]{10}).ZIP").search(str(pp))
+fspath = utils.noner(os.fspath)
+is_ptlf_zip = lambda pp: re.search(r"(PTLF_[\d-]{10}).ZIP", fspath(pp))
 
 
-def to_zip_or_dir(pathish:Path|str) -> Path: 
+def to_zip_or_dir(pathish:Path) -> Path: 
     pathish = Path(pathish)    
     if pathish.is_dir():
         assert next(filter(is_ptlf_zip, pathish.iterdir())),\
@@ -30,21 +33,22 @@ def to_zip_or_dir(pathish:Path|str) -> Path:
 
 if __name__ == '__main__': 
     zip_or_dir = argv[1] if len(argv) > 1 else None
+    debug = (len(argv) > 2) and (argv[2] == 'debug')
     if zip_or_dir is None: 
         raise ValueError("Please include folder or zipfile argument.")
     a_dir = to_zip_or_dir(zip_or_dir)
-    
-    debug = (len(argv) > 2) and (argv[2] == 'debug')
+
+    cfg = config.Settings()
     eng_args = dict(fast_executemany=False, echo='debug') if debug else {}
-    alq_eng = engine.get_engine(**eng_args)
+    alq_eng = engine.get_engine(cfg, **eng_args)
 
     specs_dict = typer.read_specs()
     zips = list(filter(is_ptlf_zip, Path(a_dir).iterdir()))
     time0 = time()
     for ll, lilzip in enumerate(zips):
         try: 
-            lilflow = flow.DayDataFlow.from_zipfile(lilzip)
-            lilflow.run(alq_eng, specs_dict, debug)
+            lilflow = flow.DayDataFlow.from_zipfile(lilzip, debug=debug)
+            lilflow.run(alq_eng, specs_dict)
         except ee.ErrorControversias as err: 
             ... 
         print(f"Process file {ll} of {len(zips)}: {lilzip.stem}")

@@ -16,8 +16,8 @@ import sqlalchemy as alq
 from sqlalchemy.engine import Engine
 from sqlalchemy.exc import IntegrityError, OperationalError
 
-from src.config import Settings
-from src.ptlf import track, utils, errors as ee, typer
+from ptlf.config import Settings
+from ptlf import track, utils, errors as ee, typer
 
 fspath = utils.noner(os.fspath)
 

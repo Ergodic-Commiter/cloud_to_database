@@ -1,7 +1,7 @@
 from typing import Optional
 from azure.storage.blob import ContainerClient
 
-from src.config import Settings
+from ptlf.config import Settings
 
 
 

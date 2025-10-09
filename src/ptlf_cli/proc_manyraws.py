@@ -5,8 +5,8 @@ from sys import argv
 from time import time
 import zipfile
 
-from src import config
-from src.ptlf import flow, engine, errors as ee, typer, utils
+from ptlf import config
+from ptlf import flow, engine, errors as ee, typer, utils
 # pylint:disable=invalid-name
 
 fspath = utils.noner(os.fspath)

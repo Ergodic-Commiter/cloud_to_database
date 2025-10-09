@@ -12,7 +12,6 @@
 # EXPOSE 80
 # CMD ["python", "-m", "src.app.main"]
 
-
 FROM mcr.microsoft.com/azure-functions/python:4-python3.12
 WORKDIR /home/site/wwwroot
 
@@ -30,3 +29,4 @@ RUN python -m pip install --upgrade pip && \
     pip install -r ./requirements.txt
 
 COPY src/ ./
+

@@ -1,10 +1,52 @@
+[build-system]
+requires = [ "poetry-core>=2.0.0" ]
+build-backend = "poetry.core.masonry.api"
+
+[project]
+name = "ptlf"
+version = "0.1.0"
+requires-python = "~=3.12.2"
+description = "PTLF pipeline and Azure Function"
+readme = "readme.md"
+dependencies = [
+    "azure-functions>=1.23,<2.0", 
+    "azurefunctions-extensions-bindings-blob>=1.1,<2.0", 
+    "azure-identity>=1.23,<2.0",
+    "azure-storage-blob>=12.26,<13.0",
+    "joblib>=1.5,<2.0",
+    "openpyxl>=3.1,<4.0",
+    "pandas>=2.2,<3.0",
+    "pyarrow>=21.0,<22.0",
+    "pydantic>=2.11,<3.0",
+    "pydantic-settings>=2.10,<3.0",
+    "pyodbc>=5.2,<6.0",
+    "sqlalchemy>=2.0,<3.0",
+    "toolz>=1.0,<2.0" ]
+
+[tool.poetry.scripts]
+ptlf-run = "ptlf_cli.run:main"
+
+
+[tool.poetry]
+packages = [ 
+    {from = "src", include = "ptlf" }, 
+    {from = "src", include = "ptlf_cli" } ]  
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3"   # 6.2.5
+pylint = "^3.3"
+ipython = "^9.3"
+mac-alias = "^2.2"
+msgraph-sdk = "^1.31"
+python-dotenv = "^1.1"
+office365-rest-python-client = "^2.6"
+
 [tool.pytest.ini_options]
     addopts = "--tb=line"
-    pythonpath = ["src"]
 
 [tool.pylint."MESSAGES CONTROL"]
-disable=["missing-class-docstring", "missing-final-newline", "missing-function-docstring",      
-    "missing-module-docstring", "multiple-imports", "non-ascii-module-import", "non-ascii-name", 
-    "superfluous-parens", "trailing-whitespace", "trailing-newlines",
-    "unnecessary-lambda-assignment", "use-dict-literal", "useless-return", 
-    "consider-using-f-string"]
+disable = ["missing-class-docstring", "missing-final-newline", 
+    "missing-function-docstring", "missing-module-docstring", "multiple-imports", 
+    "non-ascii-module-import", "non-ascii-name", "superfluous-parens", 
+    "trailing-whitespace", "trailing-newlines", "unnecessary-lambda-assignment", 
+    "use-dict-literal", "useless-return", "consider-using-f-string"]

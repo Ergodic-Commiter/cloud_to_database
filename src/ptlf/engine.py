@@ -7,9 +7,9 @@ from pyodbc import connect
 import sqlalchemy as alq
 from sqlalchemy.engine import URL
 
-from src import ptlf
-from src.ptlf import errors as ee
-from src.config import Settings
+import ptlf
+from ptlf import errors as ee
+from ptlf.config import Settings
 
 
 def get_params(cfg:Settings, 

@@ -2,7 +2,7 @@
 ALTER VIEW dbo.v_PTLF_Token AS
 SELECT dbo.[PTLF_raw].[NGBBSE24-HEAD-CRD-CARD-NUM] AS [num_tarjeta],
 	CAST(dbo.[PTLF_raw].[NGBBSE24-AUTH-POST-DAT] AS DATE) AS [f_posteo], 
-	dbo.[PTLF_raw].[NGBBSE24-AUTH-SEQ-NUM] AS [num_autorizacion],
+	dbo.[PTLF_raw].[NGBBSE24-AUTH-APPRV-CDE] AS [num_autorizacion],
 	dbo.[PTLF_raw].[NGBBSE24-AUTH-AMT-1] AS [monto_txn],
 	dbo.[PTLF_raw].[NGBBSE24-AUTH-TYP] AS [tipo_auth],
 	dbo.[PTLF_raw].[NGBBSE24-C0-E-COM-FLG] AS [etiq_e-commerce],

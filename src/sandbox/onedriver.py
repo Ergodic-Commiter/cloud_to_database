@@ -7,7 +7,7 @@ from office365.sharepoint.files.file import File
 from openpyxl import load_workbook
 import pandas as pd
 
-from src import config as cfg
+from ptlf import config as cfg
 # pylint: disable=inconsistent-return-statements
 # pylint: disable=invalid-name
 

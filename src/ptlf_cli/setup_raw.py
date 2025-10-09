@@ -1,7 +1,7 @@
 from operator import methodcaller as σ
 import sqlalchemy as alq
 
-from src.ptlf import engine, typer
+from ptlf import engine, typer
 # pylint: disable=invalid-name
 
 if __name__ == '__main__':    

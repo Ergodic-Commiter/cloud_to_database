@@ -6,13 +6,15 @@ from azure.identity import ClientSecretCredential, DefaultAzureCredential
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from src.ptlf import errors as ee
+from ptlf import errors as ee
 # pylint: disable=too-few-public-methods
 # pylint: disable=arguments-differ
 
 class Settings(BaseSettings): 
-    model_config = SettingsConfigDict(env_file=".env", 
-        env_file_encoding="utf-8", extra='ignore')
+    model_config = SettingsConfigDict(
+        env_file=".env", 
+        env_file_encoding="utf-8", 
+        extra='ignore')
     
     env: str = Field(default='dev', validation_alias='PTLF_ENV')
     data_loc: Optional[Path] = None  # Se configura en model_post_init

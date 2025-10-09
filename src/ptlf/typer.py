@@ -14,9 +14,9 @@ import sqlalchemy as alq
 from sqlalchemy.dialects import mssql
 from toolz import functoolz as fz
 
-from src import tools
-from src.config import Settings
-from src.ptlf import utils, errors as ee
+from ptlf import tools
+from ptlf.config import Settings
+from ptlf import utils, errors as ee
 # pylint:disable=abstract-method
 # pylint:disable=invalid-name
 # pylint:disable=no-member

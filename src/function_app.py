@@ -3,8 +3,8 @@ import logging
 import azure.functions as func
 from azurefunctions.extensions.bindings import blob
 
-from src.config import Settings
-from src.ptlf import flow, engine, local_logging
+from ptlf.config import Settings
+from ptlf import flow, engine, local_logging
 
 cfg = Settings()
 alq_eng = engine.get_engine(cfg)

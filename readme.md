@@ -58,9 +58,9 @@ El servidor SQL tiene muchas configuraciones truculentas:
   $ brew update
   ```
 
-- El repositorio se clonar con `git`: 
+- El repositorio se puede con `git`: 
   ```
-  $ git clone https://github.com/diego-v_bineo/data-fiserv-ptlf.git <NOMBRE-LOCAL>
+  $ git clone https://github.com/Bineo2/data-fiserv-controversias.git <NOMBRE-LOCAL>
   $ pyenv activate fiserv312
   $ pyenv local
   $ pip install -r requirements.txt

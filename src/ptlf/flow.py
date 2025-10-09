@@ -182,16 +182,26 @@ class DayDataFlow:
             .where(track_t.c.file_name == self.datafile.name))
         with engine.begin() as conn: 
             has_file = conn.execute(hasfile_stmt).first() is not None
-        if has_file: 
+        if has_file:
+            self.log.info("Track table contains %s."%self.datafile.name) 
             return 0
         if self.datafile.is_file():
+            self.log.info("Datafile %s exists."%self.datafaile.name)
             return 1
         if self.get_path('unzip').is_file(): 
+            self.log.info("Logfile %s exists."%self.get.path('unzip').name)
             return 2
         if container is None: 
+            self.log.info("Cannot connect to container.")
             return -1 
         the_blob = container.get_blob_client(fspath(self.get_path('cloud')))
-        return 3 if the_blob.exists() else -1 
+        if the_blob.exists():
+            self.log.info("Found Blob at: %s"%self.get_path('cloud').name)
+            return 3
+        else: 
+            self.log.info("No blob found at %s"%self.get_path('cloud').name)
+            return -1
+        raise ee.PTLF_FlowError(self.datafile, "Find Stage") 
          
 
     # Funciones y propiedades utilitarias.

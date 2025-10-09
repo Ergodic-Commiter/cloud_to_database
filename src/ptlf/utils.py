@@ -85,7 +85,7 @@ def file_meta(path:Path|str) -> dict:
     data_date = date_file.strftime('%y%m%d')
     meta = dict(
         file_name = path.name,
-        file_path = noner(os.fspath(path)),
+        file_path = noner(os.fspath)(path),
         file_size = path.stat().st_size,
         file_hash = sha256_file(path),
         n_records = n_records, 

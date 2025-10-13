@@ -3,8 +3,8 @@
 Este repositorio es el componente de programación correspondiente al proyecto de Controversias.  
 La documentación se encuentra en el [_sharepoint_ de Medios de Pago II][medios].  
 El _sharepoint_ anterior contiene vinculación a documentos de _OneDrive_, pero aún
-se pudiera beneficiar de una presentación en el portal.  Para conocer tus comentarios, 
-te agradeceré que me escribas por [Teams][teams]. 
+se pudiera beneficiar de una presentación en el portal.  
+Para comentarios escríbenos por [Teams][teams]. 
 
 - [Fiserv FPSL, Controversias](#fiserv-fpsl-controversias)
   - [Runbook de Azure](#runbook-de-azure)
@@ -58,7 +58,7 @@ El servidor SQL tiene muchas configuraciones truculentas:
   $ brew update
   ```
 
-- El repositorio se clonar con `git`: 
+- El repositorio se clona con `git`: 
   ```
   $ git clone https://github.com/diego-v_bineo/data-fiserv-ptlf.git <NOMBRE-LOCAL>
   $ pyenv activate fiserv312

@@ -14,9 +14,8 @@ import sqlalchemy as alq
 from sqlalchemy.dialects import mssql
 from toolz import functoolz as fz
 
-from ptlf import tools
+from ptlf import tools, errors as ee
 from ptlf.config import Settings
-from ptlf import utils, errors as ee
 # pylint:disable=abstract-method
 # pylint:disable=invalid-name
 # pylint:disable=no-member
@@ -40,7 +39,7 @@ class Typer:
     """A factory and mixin class of converters for different types. 
     Each converter reads a Pandas (specs) tuple representing a column of a wider table. 
     """
-    # Atributos para el "usuario"
+    # Atributos para las subclases.
     pytype: ClassVar[Optional[Type[Any]]] = None
     _pandas_dtype: ClassVar[Optional[object]] = None
     
@@ -81,14 +80,14 @@ class Typer:
     def dataframe_to_dict(cls, types_df: pd.DataFrame) -> Dict[str, 'Typer']: 
         λ_prepare = dict(
             Name0 = lambda df: df['Field_Name'].str.replace(' ', ''), 
-            Name1 = lambda df: utils.index_duplicates(df['Name0']), 
+            Name1 = lambda df: tools.index_duplicates(df['Name0']), 
             Format = lambda df: df['Format'].str.replace(' ', ''))
         λ_dicter = fz.juxt(ɑ('Name1'), cls.from_specs)
         iter_df = types_df.assign(**λ_prepare)
         return dict(map(λ_dicter, iter_df.itertuples()))    
     
     # Propiedades ayudadoras. 
-    @utils.classproperty
+    @tools.classproperty
     def pandas_dtype(cls):  
         return cls._pandas_dtype or cls.pytype
 
@@ -112,7 +111,7 @@ class Typer:
         if not (reg_match := re.match(reg_fmt, fmt_str.strip().upper())):
             raise ee.COBOL_FormatError(fmt_str)
         base, len_, v9 = reg_match.groups()
-        return base, int(len_ or 1), utils.noner(int)(v9)
+        return base, int(len_ or 1), tools.noner(int)(v9)
 
     # Usos y procesamiento de cada convertidor
     # (NotImplemented) se implementan a nivel subclase Converter. 
@@ -241,7 +240,7 @@ class DecimalConverter(Typer):
             if this_fmt not in cls.warn_v9: 
                 warn(f"Unusual V9 spec in ({this_fmt}) in {cls.__name__}; defaulting to 2")
                 cls.warn_v9[this_fmt] += 1
-        return utils.noner(int)(v9)
+        return tools.noner(int)(v9)
     
     def validate(self, stage):
         base, _l, v9 = self.format_groups

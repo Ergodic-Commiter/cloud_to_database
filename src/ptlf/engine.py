@@ -49,7 +49,7 @@ def get_connection(user_type='sp', conn_type='sqlalchemy'):
     raise ee.KeyCredentialsError(conn_type, 'Conexión base de datos')
         
 
-def get_engine(cfg:Settings, **kwargs): 
+def get_engine(cfg:Settings, **kwargs) -> alq.Engine: 
     db_params = get_params(cfg)
     conn_str = ''.join('{}={};'.format(*k_v) 
             for k_v in db_params.items())

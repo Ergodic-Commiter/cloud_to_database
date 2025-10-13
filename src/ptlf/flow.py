@@ -17,9 +17,9 @@ from sqlalchemy.engine import Engine
 from sqlalchemy.exc import IntegrityError, OperationalError
 
 from ptlf.config import Settings
-from ptlf import track, utils, errors as ee, typer
+from ptlf import track, tools, errors as ee, typer
 
-fspath = utils.noner(os.fspath)
+fspath = tools.noner(os.fspath)
 
 # pylint: disable=anomalous-backslash-in-string
 
@@ -53,11 +53,10 @@ class DayDataFlow:
 
     @classmethod
     def from_zipfile(cls, zip_file:Path, missing_ok=False, debug=False): 
-        zip_fmt = r"(.*)/zips/.*/PRD_TRXS_PTLF_([\d\-]{10}).ZIP"
+        zip_fmt = r"(.*)/zips/(.*/)?PRD_TRXS_PTLF_([\d\-]{10}).ZIP"
         if (mm := re.match(zip_fmt, fspath(zip_file))) is None: 
             raise ee.PTLF_FlowError(zip_file.name, 'ZipFileName')
-            
-        _workdir, _datestr = mm.groups()
+        _workdir, _, _datestr = mm.groups()
         the_date = dt.strptime(_datestr, '%Y-%m-%d').date()
         the_dir = Path(_workdir)
         flow = cls(FlowConfig(the_date, the_dir, zip_file, debug))
@@ -66,16 +65,17 @@ class DayDataFlow:
 
     @classmethod
     def from_blob_client(cls, blob:BlobClient, logger:logging.Logger, debug=False):
-        cfg = Settings()
-        at_data = cfg.data_loc
+        out_cfg = Settings()
+        at_data = out_cfg.data_loc
 
         blob_reg = r"mediospago/fiserv/([\d/]{8,10})/PRD_TRXS_PTLF_([\d\-]{10}).ZIP"
         if (mm := re.match(blob_reg, blob.blob_name) is None): 
             raise ee.PTLF_FlowError(blob.blob_name, 'BlobName')
         _, date2 = mm.groups()
         the_date = dt.strptime(date2, '%Y-%m-%d').date()
-
-        the_flow = cls(FlowConfig(the_date, at_data, None, debug), logger=logger)
+        in_cfg = FlowConfig(the_date, at_data, None, debug)
+        
+        the_flow = cls(in_cfg, logger=logger)
         down_to = the_flow.get_path('unzip')
         down_to.parent.mkdir(parents=True, exist_ok=True)
         with open(down_to, 'wb') as f:
@@ -103,9 +103,10 @@ class DayDataFlow:
             self.upload_data(data_df, engine)
         except ee.PTLF_FlowError as er:
             self.log.error("Upload error at %s", er.event)
-        finally:
-            if not self.cfg.debug: 
-                self.datafile.unlink()
+
+
+    def clean_up(self, status): 
+        pass 
 
 
     def download_cloud(self, container:ContainerClient): 
@@ -124,11 +125,9 @@ class DayDataFlow:
             return 
         with zf.ZipFile(fspath(unzip_from), 'r') as zz: 
             zz.extract(data_to.name, path=data_to.parent)
-        if not self.cfg.debug: 
-            unzip_from.unlink()
+        
 
-
-    def read_data(self, specs=None, debug=False) -> pd.DataFrame: 
+    def read_data(self, specs=None) -> pd.DataFrame: 
         if specs is None: 
             specs = typer.read_specs()
         fwf_args = dict(dtype=str, header=None, colspecs=[(0, None)], 
@@ -137,8 +136,6 @@ class DayDataFlow:
         λ_fromrow = ρ('pd_fromrow', row_name='value', report=reporter)
         mutates = dz.valmap(λ_fromrow, specs)
         df_0 = pd.read_fwf(self.datafile, encoding='latin1', **fwf_args)
-        if debug: 
-            return df_0
         df_1 = pd.DataFrame({nm: λλ(df_0) for nm, λλ in mutates.items()})
         self.reports['ReadData'] = reporter
         df_key = df_1['NGBBSE24-AUTH-POST-DAT']
@@ -154,7 +151,7 @@ class DayDataFlow:
             if_exists='append', name='PTLF_raw', index=False)
         sql_params |= dict(method=None, chunksize=1) if self.cfg.debug else {}
 
-        meta = utils.file_meta(self.datafile)
+        meta = tools.file_meta(self.datafile)
         if self.dates_off: 
             data_date = self.cfg.date + delta(days=self.dates_off)
             meta['data_date'] = data_date.strftime('%y%m%d')
@@ -170,6 +167,7 @@ class DayDataFlow:
             raise ee.PTLF_FlowError(self.datafile.name, 'RawUpload') from e1
         finally: 
             track.finish_raw(engine, an_id, status)
+
 
     def determine_stage(self, engine:Engine, 
             container:Optional[ContainerClient]=None):
@@ -232,7 +230,7 @@ class DayDataFlow:
 
 def files_to_dataframe(data_dir:Optional[Path]=None): 
     data_dir = data_dir or Path('data/temp')
-    ptlf_gen = map(utils.file_meta, data_dir.rglob("PTLF_[0-9-]*"))
+    ptlf_gen = map(tools.file_meta, data_dir.rglob("PTLF_[0-9-]*"))
     dir_status = {'text' : 'incierto', 
         'failed/3-start' : 'pos.repetido',
         'failed/4-upload': 'err.carga'}

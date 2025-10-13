@@ -1,7 +1,3 @@
-[build-system]
-requires = [ "poetry-core>=2.0.0" ]
-build-backend = "poetry.core.masonry.api"
-
 [project]
 name = "ptlf"
 version = "0.1.0"
@@ -21,16 +17,15 @@ dependencies = [
     "pydantic-settings>=2.10,<3.0",
     "pyodbc>=5.2,<6.0",
     "sqlalchemy>=2.0,<3.0",
-    "toolz>=1.0,<2.0" ]
+    "toolz>=1.0,<2.0", 
+    "typer>=0.19,<1.0" ]
 
-[tool.poetry.scripts]
-ptlf-run = "ptlf_cli.run:main"
-
+[project.scripts]
+ptlf = "ptlf.cli.main:app"
 
 [tool.poetry]
 packages = [ 
-    {from = "src", include = "ptlf" }, 
-    {from = "src", include = "ptlf_cli" } ]  
+    { from = "src", include = "ptlf" } ]  
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3"   # 6.2.5
@@ -50,3 +45,7 @@ disable = ["missing-class-docstring", "missing-final-newline",
     "non-ascii-module-import", "non-ascii-name", "superfluous-parens", 
     "trailing-whitespace", "trailing-newlines", "unnecessary-lambda-assignment", 
     "use-dict-literal", "useless-return", "consider-using-f-string"]
+
+[build-system]
+requires = [ "poetry-core>=2.0.0" ]
+build-backend = "poetry.core.masonry.api"

@@ -17,7 +17,7 @@ if __name__ == '__main__':
     local_logging.setup(cfg)
     logger = logging.getLogger('ptlf.log')
     
-    config = flow.FlowConfig(the_date, cfg.data_loc)    
+    config = flow.FlowConfig(the_date, cfg.data_loc, debug=debug)    
     the_flow = flow.DayDataFlow(config)    
     
     eng_args = dict(fast_executemany=False, echo='debug') if debug else {}
@@ -33,7 +33,7 @@ if __name__ == '__main__':
         the_flow.extract_zipfile()
     if at_stage >= 1: 
         print("Reading data and uploading ...")
-        the_flow.run(alq_eng, debug=debug)
+        the_flow.run(alq_eng)
     
     
         

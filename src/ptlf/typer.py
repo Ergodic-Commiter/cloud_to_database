@@ -2,7 +2,8 @@ from collections import defaultdict
 from decimal import Decimal
 from dataclasses import dataclass
 from datetime import datetime as dt
-from importlib.resources import files
+from importlib.resources import as_file, files
+from io import BytesIO
 from operator import attrgetter as ɑ, methodcaller as ρ
 import re
 from typing import (Any, ClassVar, DefaultDict, Dict, 
@@ -14,7 +15,7 @@ import sqlalchemy as alq
 from sqlalchemy.dialects import mssql
 from toolz import functoolz as fz
 
-from ptlf import tools, errors as ee
+from ptlf import errors as ee, tools
 from ptlf.config import Settings
 # pylint:disable=abstract-method
 # pylint:disable=invalid-name
@@ -348,7 +349,8 @@ class FracTimeConverter(Typer):
 def read_specs(output='dict') -> Union[dict, pd.DataFrame]:
     # Antes regresaba el DataFrame, pero es mejor el dccionario convertido.
     try:
-        specs_df = pd.read_feather(files('ptlf/data')/'ptlf_cols.feather')
+        with as_file(files('ptlf.data')/'ptlf_cols.feather') as ff:
+            specs_df = pd.read_feather(ff)
     except ModuleNotFoundError:  
         cfg = Settings() 
         specs_ref = tools.OpenTable(*cfg.xl_ref)

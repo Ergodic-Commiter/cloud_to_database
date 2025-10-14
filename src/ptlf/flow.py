@@ -68,8 +68,10 @@ class DayDataFlow:
         out_cfg = Settings()
         at_data = out_cfg.data_loc
 
-        blob_reg = r"mediospago/fiserv/([\d/]{8,10})/PRD_TRXS_PTLF_([\d\-]{10}).ZIP"
-        if (mm := re.match(blob_reg, blob.blob_name) is None): 
+        blob_reg = r"^fiserv/([\d/]{8,10})/PRD_TRXS_PTLF_([\d\-]{10}).ZIP$"
+        if (mm := re.match(blob_reg, blob.blob_name)) is None:
+            logger.info("ACC=%s, CONT=%s, NAME=%s", 
+                blob.account_name, blob.container_name, blob.blob_name) 
             raise ee.PTLF_FlowError(blob.blob_name, 'BlobName')
         _, date2 = mm.groups()
         the_date = dt.strptime(date2, '%Y-%m-%d').date()

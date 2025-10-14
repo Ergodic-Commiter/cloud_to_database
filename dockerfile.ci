@@ -16,8 +16,10 @@ ENV POETRY_VERSION=2.0.1 POETRY_VIRTUALENVS_CREATE=false
 COPY pyproject.toml poetry.lock ./
 RUN python -m pip install --upgrade pip && \
     pip install "poetry==${POETRY_VERSION}" && \
-    poetry install --only main --no-root && \
-    poetry export -f requirements.txt --without-hashes -o requirements.txt
+    poetry install --only main && \
+    poetry self add poetry-plugin-export && \
+    poetry export -f requirements.txt --without-hashes -o azurefunc/requirements.txt
+    poetry run func start --script-root azurefunc
 
-COPY . .
+COPY . . 
 ENV PYTHONPATH="/home/site/wwwroot/src"

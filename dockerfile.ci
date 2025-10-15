@@ -11,15 +11,30 @@ RUN apt-get update && \
         msodbcsql18 unixodbc-dev && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Poetry and app
-ENV POETRY_VERSION=2.0.1 POETRY_VIRTUALENVS_CREATE=false
-COPY pyproject.toml poetry.lock ./
-RUN python -m pip install --upgrade pip && \
-    pip install "poetry==${POETRY_VERSION}" && \
-    poetry install --only main && \
-    poetry self add poetry-plugin-export && \
-    poetry export -f requirements.txt --without-hashes -o azurefunc/requirements.txt
-    poetry run func start --script-root azurefunc
+ENV PATH="root/.local/bin:${PATH}" \
+    POETRY_VERSION="2.0.1" \
+    POETRY_NO_INTERACTION=1 \
+    POETRY_VIRTUALENVS_IN_PROJECT=1 \
+    POETRY_VIRTUALENVS_CREATE=false \
+    POETRY_CACHE_DIR=/tmp/poetry_cache
+    
+# RUN curl -sSL https://install.python-poetry.org | python3 - --version ${POETRY_VERSION} && \
+RUN /opt/python/3/bin/python3 -m pip install --upgrade pip && \
+    /opt/python/3/bin/python3 -m pip install "poetry==${POETRY_VERSION}" 
+#     && \
+#     /opt/python/3/bin/python3 - <<'PY'
+# import sys, sysconfig, shutil, subprocess
+# print("Python:", sys.executable)
+# print("Scripts dir:", sysconfig.get_paths()['scripts'])
+# print("PATH:", __import__('os').environ.get('PATH'))
+# print("poetry:", shutil.which("poetry"))
+# subprocess.run(["python","-m","poetry","--version"], check=True)
+# PY
 
-COPY . . 
+COPY poetry.lock pyproject.toml ./
+RUN /opt/python/3/bin/python3 -m poetry install --only main --no-root
+
+COPY azurefunc/ ./
+COPY src/ ./src
+
 ENV PYTHONPATH="/home/site/wwwroot/src"

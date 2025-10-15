@@ -25,6 +25,7 @@ Para comentarios escríbenos por [Teams][teams].
   - `fiserv-blob-to-sql`: _Container details_ 
   - `acrcommonacrsdatadev`: _Container_ ❌ no sirve (admin credentials disabled)
   - `dataappsregistry`: _Registry_ ✅
+  - `funcs/ptlf`: _Registry Repository_ 
 
 
 El servidor SQL tiene muchas configuraciones truculentas: 

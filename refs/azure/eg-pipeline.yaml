@@ -1,0 +1,34 @@
+trigger:
+  - main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '3.11'
+      addToPath: true
+
+  - script: |
+      curl -sSL https://install.python-poetry.org | python3 -
+      export PATH="$HOME/.local/bin:$PATH"  
+      poetry config virtualenvs.in-project true # Set Poetry to create virtualenvs in project, creates .venv folder
+    displayName: 'Install Poetry'
+
+  - script: |
+      poetry install
+    displayName: 'Install dependencies'
+
+  - script: |
+      zip -r $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip azure_function .python_packages function_app.py host.json # Don't forget all the files that are needed to run your app!
+    displayName: "Building ZIP-file for deployment"
+
+  - task: AzureFunctionApp@2
+    inputs:
+      azureSubscription: 'Your Azure Service Connection'
+      resourceGroupName: 'rg-name'
+      appType: 'functionAppLinux'
+      appName: 'azure_function'
+      package: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+      deploymentMethod: 'zipDeploy'

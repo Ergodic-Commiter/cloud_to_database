@@ -3,8 +3,8 @@
 Este repositorio es el componente de programación correspondiente al proyecto de Controversias.  
 La documentación se encuentra en el [_sharepoint_ de Medios de Pago II][medios].  
 El _sharepoint_ anterior contiene vinculación a documentos de _OneDrive_, pero aún
-se pudiera beneficiar de una presentación en el portal.  Para conocer tus comentarios, 
-te agradeceré que me escribas por [Teams][teams]. 
+se pudiera beneficiar de una presentación en el portal.  
+Para comentarios escríbenos por [Teams][teams]. 
 
 - [Fiserv FPSL, Controversias](#fiserv-fpsl-controversias)
   - [Runbook de Azure](#runbook-de-azure)
@@ -25,6 +25,7 @@ te agradeceré que me escribas por [Teams][teams].
   - `fiserv-blob-to-sql`: _Container details_ 
   - `acrcommonacrsdatadev`: _Container_ ❌ no sirve (admin credentials disabled)
   - `dataappsregistry`: _Registry_ ✅
+  - `funcs/ptlf`: _Registry Repository_ 
 
 
 El servidor SQL tiene muchas configuraciones truculentas: 
@@ -58,7 +59,11 @@ El servidor SQL tiene muchas configuraciones truculentas:
   $ brew update
   ```
 
+<<<<<<< HEAD
 - El repositorio se puede con `git`: 
+=======
+- El repositorio se clona con `git`: 
+>>>>>>> from-func-tag
   ```
   $ git clone https://github.com/Bineo2/data-fiserv-controversias.git <NOMBRE-LOCAL>
   $ pyenv activate fiserv312

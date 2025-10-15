@@ -2,8 +2,8 @@ from datetime import date, datetime as dt
 import logging
 from sys import argv
 
-from src.ptlf import flow, engine, storage as stg, local_logging
-from src import config
+from ptlf import flow, engine, storage as stg, local_logging
+from ptlf import config
 # pylint: disable=invalid-name
 
 

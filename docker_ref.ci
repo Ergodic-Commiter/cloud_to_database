@@ -1,0 +1,36 @@
+# Three Docker Patterns
+
+## Poetry install (simple dev)
+FROM python:3.11-slim
+ENV POETRY_VIRTUALENVS_CREATE=false
+WORKDIR /app
+COPY pyproject.toml poetry.lock ./
+RUN pip install --no-cache-dir poetry \
+ && poetry install --no-root --only main
+COPY src/ src/
+RUN poetry install --only main   # installs your package itself
+CMD ["ptlf-run"]
+
+## Wheel build + install (repeatable prod)
+# --- builder stage
+FROM python:3.11-slim AS builder
+WORKDIR /w
+COPY pyproject.toml poetry.lock ./
+RUN pip install --no-cache-dir poetry build
+COPY src/ src/
+RUN poetry build -f wheel
+# --- runtime stage
+FROM python:3.11-slim
+WORKDIR /app
+COPY --from=builder /w/dist/*.whl /tmp/
+RUN pip install --no-cache-dir /tmp/*.whl
+CMD ["ptlf-run"]
+
+## Auzre Function container
+FROM mcr.microsoft.com/azure-functions/python:4-python3.11
+WORKDIR /home/site/wwwroot
+# install your wheel
+COPY dist/*.whl /tmp/
+RUN pip install --no-cache-dir /tmp/*.whl
+# copy the Function host files (host.json + tiny shim function_app.py)
+COPY azurefunc/ . 

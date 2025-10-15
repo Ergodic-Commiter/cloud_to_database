@@ -1,6 +1,6 @@
 import logging
 from pathlib import Path
-from src.config import Settings
+from ptlf.config import Settings
 
 
 def setup(cfg: Settings):

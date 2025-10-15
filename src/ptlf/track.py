@@ -3,7 +3,7 @@ from __future__ import annotations
 import sqlalchemy as alq
 from sqlalchemy import engine as eng, exc
 
-from src.ptlf import errors as ee
+from ptlf import errors as ee
 
 
 def get_table(engine): 

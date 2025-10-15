@@ -5,11 +5,11 @@ from sys import argv
 from time import time
 import zipfile
 
-from src import config
-from src.ptlf import flow, engine, errors as ee, typer, utils
+from ptlf import config
+from ptlf import flow, engine, errors as ee, typer, tools
 # pylint:disable=invalid-name
 
-fspath = utils.noner(os.fspath)
+fspath = tools.noner(os.fspath)
 is_ptlf_zip = lambda pp: re.search(r"(PTLF_[\d-]{10}).ZIP", fspath(pp))
 
 

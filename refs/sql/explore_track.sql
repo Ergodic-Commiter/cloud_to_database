@@ -13,7 +13,10 @@ GO
 SELECT t.file_name, 
   CONVERT(DATE, t.data_date, 12) as data_date, 
   t.n_records as n_meta, r.n_data, 
-  'cargado' as estatus
+  case when r.n_data = t.n_records then 'cargado' 
+      when r.n_data is NULL then 'en ejecucion'
+      when r.n_data < t.n_records then 'incompleto'
+  end as estatus
 FROM PTLF_track t
 LEFT JOIN (SELECT
     [NGBBSE24-AUTH-POST-DAT] as date_str, 

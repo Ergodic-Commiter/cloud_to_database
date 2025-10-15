@@ -4,7 +4,6 @@ from platform import system
 import re
 
 from openpyxl import load_workbook
-from openpyxl import load_workbook
 from openpyxl.utils import range_boundaries
 from openpyxl.worksheet.table import Table as XLTable
 # pylint:disable=import-outside-toplevel
@@ -99,6 +98,7 @@ class ShortcutPath(Path):
         from pylnk3 import parse
         with self.obj.open('rb') as _f: 
             return Path(parse(_f).path)
+
 
 def str_camel_to_snake(a_str:str): 
     raise NotImplementedError("Function 'str_camel_to_snake' is not implemented.")

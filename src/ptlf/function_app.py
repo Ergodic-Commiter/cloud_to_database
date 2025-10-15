@@ -3,8 +3,8 @@ import logging
 import azure.functions as func
 from azurefunctions.extensions.bindings import blob
 
-from src.config import Settings
-from src.ptlf import flow, engine, local_logging
+from ptlf.config import Settings
+from ptlf import flow, engine, errors as ee, local_logging
 
 cfg = Settings()
 alq_eng = engine.get_engine(cfg)
@@ -25,7 +25,11 @@ def blob_trigger(a_blob: blob.BlobClient):
     logbase = logging.getLogger("ptlf-blob-to-sql")
     logger = ContextAdapter(logbase, {"blob": a_blob.blob_name})
     logger.info("Downloading Blob %s", a_blob.blob_name)
-    
+    try:
+        the_flow = flow.DayDataFlow.from_blob_client(a_blob, logger=logger)
+    except ee.PTLF_FlowError as er:
+        logger.exception("Bad blob name or format; skipping: %s", a_blob.blob_name)
+        raise er
     the_flow = flow.DayDataFlow.from_blob_client(a_blob, logger=logger)
     the_flow.extract_zipfile()
     the_flow.run(alq_eng)

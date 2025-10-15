@@ -1,21 +1,7 @@
-# FROM python:3.12-slim
-# WORKDIR /app
-# COPY ./reqs_base.txt .  
-# RUN pip install --trusted-host pypi.python.org -r /app/reqs_base.txt
-# COPY . .
-
-# ARG ENV_TYPE
-# ARG SERVER_TYPE
-# ENV ENV_TYPE ${ENV_TYPE}
-# ENV SERVER_TYPE ${SERVER_TYPE}
-
-# EXPOSE 80
-# CMD ["python", "-m", "src.app.main"]
-
-
 FROM mcr.microsoft.com/azure-functions/python:4-python3.12
 WORKDIR /home/site/wwwroot
 
+# ODBC drivers
 RUN apt-get update && \
     apt-get install -y curl gnupg && \
     curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - && \
@@ -25,8 +11,30 @@ RUN apt-get update && \
         msodbcsql18 unixodbc-dev && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
-COPY src/requirements.txt ./requirements.txt
-RUN python -m pip install --upgrade pip && \
-    pip install -r ./requirements.txt
+ENV PATH="root/.local/bin:${PATH}" \
+    POETRY_VERSION="2.0.1" \
+    POETRY_NO_INTERACTION=1 \
+    POETRY_VIRTUALENVS_IN_PROJECT=1 \
+    POETRY_VIRTUALENVS_CREATE=false \
+    POETRY_CACHE_DIR=/tmp/poetry_cache
+    
+# RUN curl -sSL https://install.python-poetry.org | python3 - --version ${POETRY_VERSION} && \
+RUN /opt/python/3/bin/python3 -m pip install --upgrade pip && \
+    /opt/python/3/bin/python3 -m pip install "poetry==${POETRY_VERSION}" 
+#     && \
+#     /opt/python/3/bin/python3 - <<'PY'
+# import sys, sysconfig, shutil, subprocess
+# print("Python:", sys.executable)
+# print("Scripts dir:", sysconfig.get_paths()['scripts'])
+# print("PATH:", __import__('os').environ.get('PATH'))
+# print("poetry:", shutil.which("poetry"))
+# subprocess.run(["python","-m","poetry","--version"], check=True)
+# PY
 
-COPY src/ ./
+COPY poetry.lock pyproject.toml ./
+RUN /opt/python/3/bin/python3 -m poetry install --only main --no-root
+
+COPY azurefunc/ ./
+COPY src/ ./src
+
+ENV PYTHONPATH="/home/site/wwwroot/src"

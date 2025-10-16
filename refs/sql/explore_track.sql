@@ -25,8 +25,7 @@ LEFT JOIN (SELECT
     GROUP BY [NGBBSE24-AUTH-POST-DAT]
     ) r
 ON t.data_date = r.date_str
---WHERE n_records <> n_rows
-ORDER BY file_name DESC
+ORDER BY file_name 
 GO
 
 

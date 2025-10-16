@@ -20,7 +20,7 @@ app = func.FunctionApp(http_auth_level=func.AuthLevel.FUNCTION)
 @app.function_name(name="PTLF-Blob-To-SQL")
 @app.blob_trigger(arg_name="a_blob", 
     path="%STORAGE_CONTAINER%/fiserv/{date1}/PRD_TRXS_PTLF_{date2}.ZIP", 
-    connection="AzureWebJobsStorage")
+    connection="BlobConn")
 def blob_trigger(a_blob: blob.BlobClient):
     logbase = logging.getLogger("ptlf-blob-to-sql")
     logger = ContextAdapter(logbase, {"blob": a_blob.blob_name})

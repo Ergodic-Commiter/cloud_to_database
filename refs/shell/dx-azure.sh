@@ -28,3 +28,5 @@ PRINCIPAL_ID=$(az functionapp identity show -g "$RG" -n "$APP" --query principal
 ACR_ID=$(az acr show -g "$RG" -n "$ACR" --query id -o tsv)
 az role assignment create --assignee "$PRINCIPAL_ID" --role AcrPull --scope "$ACR_ID"
 
+jq -r '.Values | to_entries[] | select(.key!="IsEncrypted") | "\(.key)=\(.value)"' local.settings.json \
+| xargs -I{} az functionapp config appsettings set -g <rg> -n "$APP" --settings {}

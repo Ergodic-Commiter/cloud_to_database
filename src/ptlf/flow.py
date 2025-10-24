@@ -68,7 +68,7 @@ class DayDataFlow:
         out_cfg = Settings()
         at_data = out_cfg.data_loc
 
-        blob_reg = r"^fiserv/([\d/]{8,10})/PRD_TRXS_PTLF_([\d\-]{10}).ZIP$"
+        blob_reg = r"^fiserv/([\d/]{5,10})/PRD_TRXS_PTLF_([\d\-]{10}).ZIP$"
         if (mm := re.match(blob_reg, blob.blob_name)) is None:
             logger.info("ACC=%s, CONT=%s, NAME=%s", 
                 blob.account_name, blob.container_name, blob.blob_name) 
@@ -171,7 +171,7 @@ class DayDataFlow:
             track.finish_raw(engine, an_id, status)
 
 
-    def determine_stage(self, engine:Engine, 
+    def determine_stage(self, engine:Engine,    
             container:Optional[ContainerClient]=None):
         meta = alq.MetaData()
         try: 
@@ -183,23 +183,27 @@ class DayDataFlow:
         with engine.begin() as conn: 
             has_file = conn.execute(hasfile_stmt).first() is not None
         if has_file:
-            self.log.info("Track table contains %s."%self.datafile.name) 
+            self.log.info("Track table contains %s."%self.datafile.name)3 
             return 0
         if self.datafile.is_file():
-            self.log.info("Datafile %s exists."%self.datafaile.name)
+            filename = self.datafile.name
+            self.log.info("Datafile %s exists."%filename)
             return 1
         if self.get_path('unzip').is_file(): 
-            self.log.info("Logfile %s exists."%self.get.path('unzip').name)
+            zip_name = self.get_path('unzip').name
+            self.log.info("Logfile %s exists."%zip_name)
             return 2
         if container is None: 
             self.log.info("Cannot connect to container.")
             return -1 
         the_blob = container.get_blob_client(fspath(self.get_path('cloud')))
         if the_blob.exists():
-            self.log.info("Found Blob at: %s"%self.get_path('cloud').name)
+            cloud_name = self.get_path('cloud').name
+            self.log.info("Found Blob at: %s"%cloud_name)
             return 3
         else: 
-            self.log.info("No blob found at %s"%self.get_path('cloud').name)
+            cloud_name = self.get_path('cloud').name
+            self.log.info("No blob found at %s"%cloud_name)
             return -1
         raise ee.PTLF_FlowError(self.datafile, "Find Stage") 
          

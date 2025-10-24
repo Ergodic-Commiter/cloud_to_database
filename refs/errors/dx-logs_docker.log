@@ -1,0 +1,640 @@
+[2025-10-17T00:37:04.024Z]     'Content-Type': 'application/octet-stream'
+[2025-10-17T00:37:04.024Z]     'Content-Range': 'REDACTED'
+[2025-10-17T00:37:04.024Z]     'Last-Modified': 'Mon, 30 Jun 2025 15:17:03 GMT'
+[2025-10-17T00:37:04.024Z]     'Accept-Ranges': 'REDACTED'
+[2025-10-17T00:37:04.024Z]     'ETag': '"0x8DDB7E92B4DC901"'
+[2025-10-17T00:37:04.024Z]     'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+[2025-10-17T00:37:04.024Z]     'x-ms-request-id': '7711c6c7-301e-004a-60fe-3e8f4f000000'
+[2025-10-17T00:37:04.024Z]     'x-ms-client-request-id': '66f2b65c-aaf1-11f0-ab2a-a268264b95d0'
+[2025-10-17T00:37:04.024Z]     'x-ms-version': 'REDACTED'
+[2025-10-17T00:37:04.024Z]     'x-ms-tag-count': 'REDACTED'
+[2025-10-17T00:37:04.024Z]     'x-ms-version-id': 'REDACTED'
+[2025-10-17T00:37:04.024Z]     'x-ms-is-current-version': 'REDACTED'
+[2025-10-17T00:37:04.024Z]     'x-ms-creation-time': 'REDACTED'
+[2025-10-17T00:37:04.024Z]     'x-ms-blob-content-md5': 'REDACTED'
+[2025-10-17T00:37:04.024Z]     'x-ms-lease-status': 'REDACTED'
+[2025-10-17T00:37:04.024Z]     'x-ms-lease-state': 'REDACTED'
+[2025-10-17T00:37:04.024Z]     'x-ms-blob-type': 'REDACTED'
+[2025-10-17T00:37:04.024Z]     'x-ms-server-encrypted': 'REDACTED'
+[2025-10-17T00:37:04.024Z]     'Date': 'Fri, 17 Oct 2025 00:37:03 GMT'
+[2025-10-17T00:37:04.032Z] 2025-10-16 18:37:04,032 [INFO] azure.core.pipeline.policies.http_logging_policy: Request URL: 'https://sttexcocoadmdev.blob.core.windows.net/mediospago/fiserv/2025/7/9/PRD_TRXS_PTLF_2024-07-09.ZIP'
+[2025-10-17T00:37:04.032Z] Request method: 'GET'
+[2025-10-17T00:37:04.032Z] Request headers:
+[2025-10-17T00:37:04.032Z]     'x-ms-range': 'REDACTED'
+[2025-10-17T00:37:04.032Z]     'x-ms-version': 'REDACTED'
+[2025-10-17T00:37:04.032Z]     'Accept': 'application/xml'
+[2025-10-17T00:37:04.032Z]     'User-Agent': 'azsdk-python-storage-blob/12.26.0 Python/3.12.2 (macOS-15.7.1-arm64-arm-64bit)'
+[2025-10-17T00:37:04.032Z]     'x-ms-date': 'REDACTED'
+[2025-10-17T00:37:04.032Z]     'x-ms-client-request-id': '66ff2860-aaf1-11f0-ab2a-a268264b95d0'
+[2025-10-17T00:37:04.032Z]     'Authorization': 'REDACTED'
+[2025-10-17T00:37:04.032Z] No body was attached to the request
+[2025-10-17T00:37:04.047Z] 2025-10-16 18:37:04,047 [INFO] azure.core.pipeline.policies.http_logging_policy: Response status: 206
+[2025-10-17T00:37:04.047Z] Response headers:
+[2025-10-17T00:37:04.047Z]     'Content-Length': '144'
+[2025-10-17T00:37:04.047Z]     'Content-Type': 'application/octet-stream'
+[2025-10-17T00:37:04.047Z]     'Content-Range': 'REDACTED'
+[2025-10-17T00:37:04.047Z]     'Last-Modified': 'Mon, 30 Jun 2025 15:16:57 GMT'
+[2025-10-17T00:37:04.047Z]     'Accept-Ranges': 'REDACTED'
+[2025-10-17T00:37:04.047Z]     'ETag': '"0x8DDB7E9279608DF"'
+[2025-10-17T00:37:04.047Z]     'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+[2025-10-17T00:37:04.047Z]     'x-ms-request-id': '725355a5-701e-005b-5efe-3e15fb000000'
+[2025-10-17T00:37:04.047Z]     'x-ms-client-request-id': '66f5b690-aaf1-11f0-ab2a-a268264b95d0'
+[2025-10-17T00:37:04.047Z]     'x-ms-version': 'REDACTED'
+[2025-10-17T00:37:04.047Z]     'x-ms-tag-count': 'REDACTED'
+[2025-10-17T00:37:04.047Z]     'x-ms-version-id': 'REDACTED'
+[2025-10-17T00:37:04.047Z]     'x-ms-is-current-version': 'REDACTED'
+[2025-10-17T00:37:04.047Z]     'x-ms-creation-time': 'REDACTED'
+[2025-10-17T00:37:04.047Z]     'x-ms-blob-content-md5': 'REDACTED'
+[2025-10-17T00:37:04.048Z]     'x-ms-lease-status': 'REDACTED'
+[2025-10-17T00:37:04.048Z]     'x-ms-lease-state': 'REDACTED'
+[2025-10-17T00:37:04.048Z]     'x-ms-blob-type': 'REDACTED'
+[2025-10-17T00:37:04.048Z]     'x-ms-server-encrypted': 'REDACTED'
+[2025-10-17T00:37:04.048Z]     'Date': 'Fri, 17 Oct 2025 00:37:03 GMT'
+[2025-10-17T00:37:04.173Z] Executed 'Functions.PTLF-Blob-To-SQL' (Failed, Id=5d6fb9b5-bba3-4c0b-9520-04f8be9e5c0d, Duration=869ms)
+[2025-10-17T00:37:04.173Z] System.Private.CoreLib: Exception while executing function: Functions.PTLF-Blob-To-SQL. System.Private.CoreLib: Result: Failure
+[2025-10-17T00:37:04.173Z] Exception: KeyError: 0
+[2025-10-17T00:37:04.173Z] Stack:   File "/opt/homebrew/Cellar/azure-functions-core-tools@4/4.2.2/workers/python/3.12/OSX/Arm64/azure_functions_worker/dispatcher.py", line 676, in _handle__invocation_request
+[2025-10-17T00:37:04.173Z]     call_result = await self._loop.run_in_executor(
+[2025-10-17T00:37:04.173Z]   File "/Users/diego.vbineo.com/.pyenv/versions/3.12.2/lib/python3.12/concurrent/futures/thread.py", line 58, in run
+[2025-10-17T00:37:04.173Z]     result = self.fn(*self.args, **self.kwargs)
+[2025-10-17T00:37:04.173Z]   File "/opt/homebrew/Cellar/azure-functions-core-tools@4/4.2.2/workers/python/3.12/OSX/Arm64/azure_functions_worker/dispatcher.py", line 1006, in _run_sync_func
+[2025-10-17T00:37:04.173Z]     return ExtensionManager.get_sync_invocation_wrapper(context,
+[2025-10-17T00:37:04.173Z]   File "/opt/homebrew/Cellar/azure-functions-core-tools@4/4.2.2/workers/python/3.12/OSX/Arm64/azure_functions_worker/extension.py", line 211, in _raw_invocation_wrapper
+[2025-10-17T00:37:04.173Z]     result = function(**args)
+[2025-10-17T00:37:04.173Z]   File "/Users/diego.vbineo.com/Developer/Repos/3-ops/fiserv-ptlf/src/ptlf/function_app.py", line 35, in blob_trigger
+[2025-10-17T00:37:04.173Z]     the_flow.run(alq_eng)
+[2025-10-17T00:37:04.173Z]   File "/Users/diego.vbineo.com/Developer/Repos/3-ops/fiserv-ptlf/src/ptlf/flow.py", line 96, in run
+[2025-10-17T00:37:04.173Z]     data_df = self.read_data(specs)
+[2025-10-17T00:37:04.173Z]   File "/Users/diego.vbineo.com/Developer/Repos/3-ops/fiserv-ptlf/src/ptlf/flow.py", line 144, in read_data
+[2025-10-17T00:37:04.173Z]     if (df_key != df_key[0]).all():
+[2025-10-17T00:37:04.173Z]   File "/Users/diego.vbineo.com/.pyenv/versions/fiserv312/lib/python3.12/site-packages/pandas/core/series.py", line 1133, in __getitem__
+[2025-10-17T00:37:04.173Z]     return self._get_value(key)
+[2025-10-17T00:37:04.173Z]   File "/Users/diego.vbineo.com/.pyenv/versions/fiserv312/lib/python3.12/site-packages/pandas/core/series.py", line 1249, in _get_value
+[2025-10-17T00:37:04.173Z]     loc = self.index.get_loc(label)
+[2025-10-17T00:37:04.173Z]   File "/Users/diego.vbineo.com/.pyenv/versions/fiserv312/lib/python3.12/site-packages/pandas/core/indexes/range.py", line 415, in get_loc
+[2025-10-17T00:37:04.173Z]     raise KeyError(key) from err
+[2025-10-17T00:37:04.174Z] .
+[2025-10-17T00:37:04.291Z] Executed 'Functions.PTLF-Blob-To-SQL' (Failed, Id=f7d2b9e7-a676-471f-9cf7-20eb67046ca3, Duration=999ms)
+[2025-10-17T00:37:04.291Z] System.Private.CoreLib: Exception while executing function: Functions.PTLF-Blob-To-SQL. System.Private.CoreLib: Result: Failure
+[2025-10-17T00:37:04.291Z] Exception: KeyError: 0
+[2025-10-17T00:37:04.291Z] Stack:   File "/opt/homebrew/Cellar/azure-functions-core-tools@4/4.2.2/workers/python/3.12/OSX/Arm64/azure_functions_worker/dispatcher.py", line 676, in _handle__invocation_request
+[2025-10-17T00:37:04.291Z]     call_result = await self._loop.run_in_executor(
+[2025-10-17T00:37:04.291Z]   File "/Users/diego.vbineo.com/.pyenv/versions/3.12.2/lib/python3.12/concurrent/futures/thread.py", line 58, in run
+[2025-10-17T00:37:04.291Z]     result = self.fn(*self.args, **self.kwargs)
+[2025-10-17T00:37:04.291Z]   File "/opt/homebrew/Cellar/azure-functions-core-tools@4/4.2.2/workers/python/3.12/OSX/Arm64/azure_functions_worker/dispatcher.py", line 1006, in _run_sync_func
+[2025-10-17T00:37:04.291Z]     return ExtensionManager.get_sync_invocation_wrapper(context,
+[2025-10-17T00:37:04.291Z]   File "/opt/homebrew/Cellar/azure-functions-core-tools@4/4.2.2/workers/python/3.12/OSX/Arm64/azure_functions_worker/extension.py", line 211, in _raw_invocation_wrapper
+[2025-10-17T00:37:04.291Z]     result = function(**args)
+[2025-10-17T00:37:04.291Z]   File "/Users/diego.vbineo.com/Developer/Repos/3-ops/fiserv-ptlf/src/ptlf/function_app.py", line 35, in blob_trigger
+[2025-10-17T00:37:04.291Z]     the_flow.run(alq_eng)
+[2025-10-17T00:37:04.291Z]   File "/Users/diego.vbineo.com/Developer/Repos/3-ops/fiserv-ptlf/src/ptlf/flow.py", line 96, in run
+[2025-10-17T00:37:04.291Z]     data_df = self.read_data(specs)
+[2025-10-17T00:37:04.291Z]   File "/Users/diego.vbineo.com/Developer/Repos/3-ops/fiserv-ptlf/src/ptlf/flow.py", line 144, in read_data
+[2025-10-17T00:37:04.291Z]     if (df_key != df_key[0]).all():
+[2025-10-17T00:37:04.291Z]   File "/Users/diego.vbineo.com/.pyenv/versions/fiserv312/lib/python3.12/site-packages/pandas/core/series.py", line 1133, in __getitem__
+[2025-10-17T00:37:04.291Z]     return self._get_value(key)
+[2025-10-17T00:37:04.291Z]   File "/Users/diego.vbineo.com/.pyenv/versions/fiserv312/lib/python3.12/site-packages/pandas/core/series.py", line 1249, in _get_value
+[2025-10-17T00:37:04.291Z]     loc = self.index.get_loc(label)
+[2025-10-17T00:37:04.291Z]   File "/Users/diego.vbineo.com/.pyenv/versions/fiserv312/lib/python3.12/site-packages/pandas/core/indexes/range.py", line 415, in get_loc
+[2025-10-17T00:37:04.291Z]     raise KeyError(key) from err
+[2025-10-17T00:37:04.291Z] .
+[2025-10-17T00:37:04.293Z] Message has reached MaxDequeueCount of 5. Moving message to queue 'webjobs-blobtrigger-poison'.
+[2025-10-17T00:37:04.387Z] 2025-10-16 18:37:04,387 [WARNING] ptlf-blob-to-sql: Check types in ReadData: | blob=fiserv/2025/8/29/PRD_TRXS_PTLF_2025-08-29.ZIP
+[2025-10-17T00:37:04.387Z] 2025-10-16 18:37:04,387 [INFO] ptlf-blob-to-sql: {'int': [('NZBBSE24-CE-CRNCY-CDE_1', 87), ('NZBBSE24-CE-CRNCY-CDE_2', 87)]} | blob=fiserv/2025/8/29/PRD_TRXS_PTLF_2025-08-29.ZIP
+[2025-10-17T00:37:04.424Z] Executing 'Functions.PTLF-Blob-To-SQL' (Reason='New blob detected(LogsAndContainerScan): mediospago/fiserv/2025/9/11/PRD_TRXS_PTLF_2025-09-11.ZIP', Id=57b68786-103c-469a-9d85-1ce1ff8322e2)
+[2025-10-17T00:37:04.424Z] Trigger Details: MessageId: 0c2a21ac-0b6a-46b7-a7cd-188a45e74420, DequeueCount: 1, InsertedOn: 2025-10-17T00:37:04.000+00:00, BlobCreated: 2025-09-12T16:53:16.000+00:00, BlobLastModified: 2025-09-12T16:53:16.000+00:00
+[2025-10-17T00:37:04.425Z] 2025-10-16 18:37:04,425 [INFO] azure.core.pipeline.policies.http_logging_policy: Response status: 206
+[2025-10-17T00:37:04.425Z] Response headers:
+[2025-10-17T00:37:04.425Z]     'Content-Length': '144'
+[2025-10-17T00:37:04.425Z]     'Content-Type': 'application/octet-stream'
+[2025-10-17T00:37:04.425Z]     'Content-Range': 'REDACTED'
+[2025-10-17T00:37:04.425Z]     'Last-Modified': 'Mon, 30 Jun 2025 15:17:05 GMT'
+[2025-10-17T00:37:04.425Z]     'Accept-Ranges': 'REDACTED'
+[2025-10-17T00:37:04.425Z]     'ETag': '"0x8DDB7E92C77EC04"'
+[2025-10-17T00:37:04.425Z]     'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+[2025-10-17T00:37:04.425Z]     'x-ms-request-id': 'a197d2a3-901e-006c-49fe-3ec757000000'
+[2025-10-17T00:37:04.425Z]     'x-ms-client-request-id': '66ff2860-aaf1-11f0-ab2a-a268264b95d0'
+[2025-10-17T00:37:04.425Z]     'x-ms-version': 'REDACTED'
+[2025-10-17T00:37:04.425Z]     'x-ms-tag-count': 'REDACTED'
+[2025-10-17T00:37:04.425Z]     'x-ms-version-id': 'REDACTED'
+[2025-10-17T00:37:04.425Z]     'x-ms-is-current-version': 'REDACTED'
+[2025-10-17T00:37:04.425Z]     'x-ms-creation-time': 'REDACTED'
+[2025-10-17T00:37:04.425Z]     'x-ms-blob-content-md5': 'REDACTED'
+[2025-10-17T00:37:04.425Z]     'x-ms-lease-status': 'REDACTED'
+[2025-10-17T00:37:04.425Z]     'x-ms-lease-state': 'REDACTED'
+[2025-10-17T00:37:04.425Z]     'x-ms-blob-type': 'REDACTED'
+[2025-10-17T00:37:04.425Z]     'x-ms-server-encrypted': 'REDACTED'
+[2025-10-17T00:37:04.425Z]     'Date': 'Fri, 17 Oct 2025 00:37:04 GMT'
+[2025-10-17T00:37:04.426Z] 2025-10-16 18:37:04,426 [INFO] azure_functions_worker: Received FunctionInvocationRequest, request ID: ed76d6aa-6940-4cd4-8db4-94a39522e31a, function ID: efc8b33c-e71f-5be7-9cf2-dcf37cc2904a, function name: PTLF-Blob-To-SQL, invocation ID: 57b68786-103c-469a-9d85-1ce1ff8322e2, function type: sync, timestamp (UTC): 2025-10-17 00:37:04.426844, sync threadpool max workers: 1000
+[2025-10-17T00:37:04.427Z] 2025-10-16 18:37:04,427 [INFO] ptlf-blob-to-sql: Downloading Blob fiserv/2025/9/11/PRD_TRXS_PTLF_2025-09-11.ZIP | blob=fiserv/2025/9/11/PRD_TRXS_PTLF_2025-09-11.ZIP
+[2025-10-17T00:37:04.428Z] 2025-10-16 18:37:04,428 [INFO] azure.core.pipeline.policies.http_logging_policy: Request URL: 'https://sttexcocoadmdev.blob.core.windows.net/mediospago/fiserv/2025/7/9/PRD_TRXS_PTLF_2024-07-09.ZIP'
+[2025-10-17T00:37:04.428Z] Request method: 'GET'
+[2025-10-17T00:37:04.428Z] Request headers:
+[2025-10-17T00:37:04.428Z]     'x-ms-range': 'REDACTED'
+[2025-10-17T00:37:04.428Z]     'x-ms-version': 'REDACTED'
+[2025-10-17T00:37:04.428Z]     'Accept': 'application/xml'
+[2025-10-17T00:37:04.428Z]     'User-Agent': 'azsdk-python-storage-blob/12.26.0 Python/3.12.2 (macOS-15.7.1-arm64-arm-64bit)'
+[2025-10-17T00:37:04.428Z]     'x-ms-date': 'REDACTED'
+[2025-10-17T00:37:04.428Z]     'x-ms-client-request-id': '673b97f0-aaf1-11f0-ab2a-a268264b95d0'
+[2025-10-17T00:37:04.428Z]     'Authorization': 'REDACTED'
+[2025-10-17T00:37:04.428Z] No body was attached to the request
+[2025-10-17T00:37:04.429Z] 2025-10-16 18:37:04,429 [INFO] azure.core.pipeline.policies.http_logging_policy: Request URL: 'https://sttexcocoadmdev.blob.core.windows.net/mediospago/fiserv/2025/9/11/PRD_TRXS_PTLF_2025-09-11.ZIP'
+[2025-10-17T00:37:04.429Z] Request method: 'GET'
+[2025-10-17T00:37:04.429Z] Request headers:
+[2025-10-17T00:37:04.429Z]     'x-ms-range': 'REDACTED'
+[2025-10-17T00:37:04.429Z]     'x-ms-version': 'REDACTED'
+[2025-10-17T00:37:04.429Z]     'Accept': 'application/xml'
+[2025-10-17T00:37:04.429Z]     'User-Agent': 'azsdk-python-storage-blob/12.26.0 Python/3.12.2 (macOS-15.7.1-arm64-arm-64bit)'
+[2025-10-17T00:37:04.429Z]     'x-ms-date': 'REDACTED'
+[2025-10-17T00:37:04.429Z]     'x-ms-client-request-id': '673bb474-aaf1-11f0-ab2a-a268264b95d0'
+[2025-10-17T00:37:04.429Z]     'Authorization': 'REDACTED'
+[2025-10-17T00:37:04.429Z] No body was attached to the request
+[2025-10-17T00:37:04.524Z] 2025-10-16 18:37:04,524 [INFO] azure.core.pipeline.policies.http_logging_policy: Response status: 206
+[2025-10-17T00:37:04.524Z] Response headers:
+[2025-10-17T00:37:04.524Z]     'Content-Length': '144'
+[2025-10-17T00:37:04.524Z]     'Content-Type': 'application/octet-stream'
+[2025-10-17T00:37:04.524Z]     'Content-Range': 'REDACTED'
+[2025-10-17T00:37:04.524Z]     'Last-Modified': 'Mon, 30 Jun 2025 15:17:05 GMT'
+[2025-10-17T00:37:04.524Z]     'Accept-Ranges': 'REDACTED'
+[2025-10-17T00:37:04.524Z]     'ETag': '"0x8DDB7E92C77EC04"'
+[2025-10-17T00:37:04.524Z]     'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+[2025-10-17T00:37:04.524Z]     'x-ms-request-id': 'a197d2be-901e-006c-62fe-3ec757000000'
+[2025-10-17T00:37:04.524Z]     'x-ms-client-request-id': '673b97f0-aaf1-11f0-ab2a-a268264b95d0'
+[2025-10-17T00:37:04.524Z]     'x-ms-version': 'REDACTED'
+[2025-10-17T00:37:04.524Z]     'x-ms-tag-count': 'REDACTED'
+[2025-10-17T00:37:04.524Z]     'x-ms-version-id': 'REDACTED'
+[2025-10-17T00:37:04.524Z]     'x-ms-is-current-version': 'REDACTED'
+[2025-10-17T00:37:04.524Z]     'x-ms-creation-time': 'REDACTED'
+[2025-10-17T00:37:04.524Z]     'x-ms-blob-content-md5': 'REDACTED'
+[2025-10-17T00:37:04.524Z]     'x-ms-lease-status': 'REDACTED'
+[2025-10-17T00:37:04.524Z]     'x-ms-lease-state': 'REDACTED'
+[2025-10-17T00:37:04.524Z]     'x-ms-blob-type': 'REDACTED'
+[2025-10-17T00:37:04.524Z]     'x-ms-server-encrypted': 'REDACTED'
+[2025-10-17T00:37:04.524Z]     'Date': 'Fri, 17 Oct 2025 00:37:04 GMT'
+[2025-10-17T00:37:04.634Z] Executed 'Functions.PTLF-Blob-To-SQL' (Failed, Id=a5bcff3c-ed54-4433-8209-d7b9eb6d4104, Duration=687ms)
+[2025-10-17T00:37:04.634Z] System.Private.CoreLib: Exception while executing function: Functions.PTLF-Blob-To-SQL. System.Private.CoreLib: Result: Failure
+[2025-10-17T00:37:04.634Z] Exception: KeyError: 0
+[2025-10-17T00:37:04.634Z] Stack:   File "/opt/homebrew/Cellar/azure-functions-core-tools@4/4.2.2/workers/python/3.12/OSX/Arm64/azure_functions_worker/dispatcher.py", line 676, in _handle__invocation_request
+[2025-10-17T00:37:04.634Z]     call_result = await self._loop.run_in_executor(
+[2025-10-17T00:37:04.634Z]   File "/Users/diego.vbineo.com/.pyenv/versions/3.12.2/lib/python3.12/concurrent/futures/thread.py", line 58, in run
+[2025-10-17T00:37:04.634Z]     result = self.fn(*self.args, **self.kwargs)
+[2025-10-17T00:37:04.634Z]   File "/opt/homebrew/Cellar/azure-functions-core-tools@4/4.2.2/workers/python/3.12/OSX/Arm64/azure_functions_worker/dispatcher.py", line 1006, in _run_sync_func
+[2025-10-17T00:37:04.634Z]     return ExtensionManager.get_sync_invocation_wrapper(context,
+[2025-10-17T00:37:04.634Z]   File "/opt/homebrew/Cellar/azure-functions-core-tools@4/4.2.2/workers/python/3.12/OSX/Arm64/azure_functions_worker/extension.py", line 211, in _raw_invocation_wrapper
+[2025-10-17T00:37:04.635Z]     result = function(**args)
+[2025-10-17T00:37:04.635Z]   File "/Users/diego.vbineo.com/Developer/Repos/3-ops/fiserv-ptlf/src/ptlf/function_app.py", line 35, in blob_trigger
+[2025-10-17T00:37:04.635Z]     the_flow.run(alq_eng)
+[2025-10-17T00:37:04.635Z]   File "/Users/diego.vbineo.com/Developer/Repos/3-ops/fiserv-ptlf/src/ptlf/flow.py", line 96, in run
+[2025-10-17T00:37:04.635Z]     data_df = self.read_data(specs)
+[2025-10-17T00:37:04.635Z]   File "/Users/diego.vbineo.com/Developer/Repos/3-ops/fiserv-ptlf/src/ptlf/flow.py", line 144, in read_data
+[2025-10-17T00:37:04.635Z]     if (df_key != df_key[0]).all():
+[2025-10-17T00:37:04.635Z]   File "/Users/diego.vbineo.com/.pyenv/versions/fiserv312/lib/python3.12/site-packages/pandas/core/series.py", line 1133, in __getitem__
+[2025-10-17T00:37:04.635Z]     return self._get_value(key)
+[2025-10-17T00:37:04.635Z]   File "/Users/diego.vbineo.com/.pyenv/versions/fiserv312/lib/python3.12/site-packages/pandas/core/series.py", line 1249, in _get_value
+[2025-10-17T00:37:04.635Z]     loc = self.index.get_loc(label)
+[2025-10-17T00:37:04.635Z]   File "/Users/diego.vbineo.com/.pyenv/versions/fiserv312/lib/python3.12/site-packages/pandas/core/indexes/range.py", line 415, in get_loc
+[2025-10-17T00:37:04.635Z]     raise KeyError(key) from err
+[2025-10-17T00:37:04.635Z] .
+[2025-10-17T00:37:04.678Z] Executing 'Functions.PTLF-Blob-To-SQL' (Reason='New blob detected(LogsAndContainerScan): mediospago/fiserv/2025/7/8/PRD_TRXS_PTLF_2024-07-08.ZIP', Id=ce59d00d-d805-4a75-8361-07e178edae4a)
+[2025-10-17T00:37:04.678Z] Trigger Details: MessageId: a622980b-15ec-4fda-8fd6-ab276f0b030a, DequeueCount: 5, InsertedOn: 2025-10-17T00:36:58.000+00:00, BlobCreated: 2025-06-30T15:17:03.000+00:00, BlobLastModified: 2025-06-30T15:17:03.000+00:00
+[2025-10-17T00:37:04.681Z] 2025-10-16 18:37:04,681 [INFO] azure_functions_worker: Received FunctionInvocationRequest, request ID: ed76d6aa-6940-4cd4-8db4-94a39522e31a, function ID: efc8b33c-e71f-5be7-9cf2-dcf37cc2904a, function name: PTLF-Blob-To-SQL, invocation ID: ce59d00d-d805-4a75-8361-07e178edae4a, function type: sync, timestamp (UTC): 2025-10-17 00:37:04.681554, sync threadpool max workers: 1000
+[2025-10-17T00:37:04.682Z] 2025-10-16 18:37:04,682 [INFO] ptlf-blob-to-sql: Downloading Blob fiserv/2025/7/8/PRD_TRXS_PTLF_2024-07-08.ZIP | blob=fiserv/2025/7/8/PRD_TRXS_PTLF_2024-07-08.ZIP
+[2025-10-17T00:37:04.687Z] 2025-10-16 18:37:04,687 [INFO] azure.core.pipeline.policies.http_logging_policy: Request URL: 'https://sttexcocoadmdev.blob.core.windows.net/mediospago/fiserv/2025/7/8/PRD_TRXS_PTLF_2024-07-08.ZIP'
+[2025-10-17T00:37:04.687Z] Request method: 'GET'
+[2025-10-17T00:37:04.687Z] Request headers:
+[2025-10-17T00:37:04.687Z]     'x-ms-range': 'REDACTED'
+[2025-10-17T00:37:04.687Z]     'x-ms-version': 'REDACTED'
+[2025-10-17T00:37:04.687Z]     'Accept': 'application/xml'
+[2025-10-17T00:37:04.687Z]     'User-Agent': 'azsdk-python-storage-blob/12.26.0 Python/3.12.2 (macOS-15.7.1-arm64-arm-64bit)'
+[2025-10-17T00:37:04.687Z]     'x-ms-date': 'REDACTED'
+[2025-10-17T00:37:04.687Z]     'x-ms-client-request-id': '67631302-aaf1-11f0-ab2a-a268264b95d0'
+[2025-10-17T00:37:04.687Z]     'Authorization': 'REDACTED'
+[2025-10-17T00:37:04.687Z] No body was attached to the request
+[2025-10-17T00:37:04.875Z] 2025-10-16 18:37:04,875 [INFO] azure.core.pipeline.policies.http_logging_policy: Response status: 206
+[2025-10-17T00:37:04.875Z] Response headers:
+[2025-10-17T00:37:04.875Z]     'Content-Length': '2861677'
+[2025-10-17T00:37:04.875Z]     'Content-Type': 'application/zip'
+[2025-10-17T00:37:04.875Z]     'Content-Range': 'REDACTED'
+[2025-10-17T00:37:04.875Z]     'Last-Modified': 'Fri, 12 Sep 2025 16:53:16 GMT'
+[2025-10-17T00:37:04.875Z]     'Accept-Ranges': 'REDACTED'
+[2025-10-17T00:37:04.875Z]     'ETag': '"0x8DDF21CDEC59155"'
+[2025-10-17T00:37:04.875Z]     'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+[2025-10-17T00:37:04.875Z]     'x-ms-request-id': '3e08d382-a01e-0005-27fe-3efe1b000000'
+[2025-10-17T00:37:04.875Z]     'x-ms-client-request-id': '673bb474-aaf1-11f0-ab2a-a268264b95d0'
+[2025-10-17T00:37:04.875Z]     'x-ms-version': 'REDACTED'
+[2025-10-17T00:37:04.875Z]     'x-ms-tag-count': 'REDACTED'
+[2025-10-17T00:37:04.875Z]     'x-ms-version-id': 'REDACTED'
+[2025-10-17T00:37:04.875Z]     'x-ms-is-current-version': 'REDACTED'
+[2025-10-17T00:37:04.875Z]     'x-ms-creation-time': 'REDACTED'
+[2025-10-17T00:37:04.875Z]     'x-ms-blob-content-md5': 'REDACTED'
+[2025-10-17T00:37:04.876Z]     'x-ms-lease-status': 'REDACTED'
+[2025-10-17T00:37:04.876Z]     'x-ms-lease-state': 'REDACTED'
+[2025-10-17T00:37:04.876Z]     'x-ms-blob-type': 'REDACTED'
+[2025-10-17T00:37:04.876Z]     'x-ms-server-encrypted': 'REDACTED'
+[2025-10-17T00:37:04.876Z]     'Date': 'Fri, 17 Oct 2025 00:37:04 GMT'
+[2025-10-17T00:37:04.994Z] 2025-10-16 18:37:04,994 [INFO] azure.core.pipeline.policies.http_logging_policy: Request URL: 'https://sttexcocoadmdev.blob.core.windows.net/mediospago/fiserv/2025/8/6/PRD_TRXS_PTLF_2025-08-06.ZIP'
+[2025-10-17T00:37:04.994Z] Request method: 'GET'
+[2025-10-17T00:37:04.994Z] Request headers:
+[2025-10-17T00:37:04.994Z]     'x-ms-range': 'REDACTED'
+[2025-10-17T00:37:04.994Z]     'x-ms-version': 'REDACTED'
+[2025-10-17T00:37:04.994Z]     'Accept': 'application/xml'
+[2025-10-17T00:37:04.994Z]     'User-Agent': 'azsdk-python-storage-blob/12.26.0 Python/3.12.2 (macOS-15.7.1-arm64-arm-64bit)'
+[2025-10-17T00:37:04.994Z]     'x-ms-date': 'REDACTED'
+[2025-10-17T00:37:04.994Z]     'x-ms-client-request-id': '6791e36c-aaf1-11f0-ab2a-a268264b95d0'
+[2025-10-17T00:37:04.994Z]     'Authorization': 'REDACTED'
+[2025-10-17T00:37:04.994Z] No body was attached to the request
+[2025-10-17T00:37:05.001Z] Executing 'Functions.PTLF-Blob-To-SQL' (Reason='New blob detected(LogsAndContainerScan): mediospago/fiserv/2025/7/9/PRD_TRXS_PTLF_2024-07-09.ZIP', Id=c005b76f-757a-423a-8247-08b52e4d89ff)
+[2025-10-17T00:37:05.001Z] Trigger Details: MessageId: 69828921-1d40-49a8-ade9-da8f3d2d0207, DequeueCount: 5, InsertedOn: 2025-10-17T00:36:59.000+00:00, BlobCreated: 2025-06-30T15:17:05.000+00:00, BlobLastModified: 2025-06-30T15:17:05.000+00:00
+[2025-10-17T00:37:05.005Z] 2025-10-16 18:37:05,005 [INFO] azure_functions_worker: Received FunctionInvocationRequest, request ID: ed76d6aa-6940-4cd4-8db4-94a39522e31a, function ID: efc8b33c-e71f-5be7-9cf2-dcf37cc2904a, function name: PTLF-Blob-To-SQL, invocation ID: c005b76f-757a-423a-8247-08b52e4d89ff, function type: sync, timestamp (UTC): 2025-10-17 00:37:05.005662, sync threadpool max workers: 1000
+[2025-10-17T00:37:05.008Z] 2025-10-16 18:37:05,008 [INFO] ptlf-blob-to-sql: Downloading Blob fiserv/2025/7/9/PRD_TRXS_PTLF_2024-07-09.ZIP | blob=fiserv/2025/7/9/PRD_TRXS_PTLF_2024-07-09.ZIP
+[2025-10-17T00:37:05.012Z] 2025-10-16 18:37:05,012 [INFO] azure.core.pipeline.policies.http_logging_policy: Request URL: 'https://sttexcocoadmdev.blob.core.windows.net/mediospago/fiserv/2025/7/9/PRD_TRXS_PTLF_2024-07-09.ZIP'
+[2025-10-17T00:37:05.012Z] Request method: 'GET'
+[2025-10-17T00:37:05.012Z] Request headers:
+[2025-10-17T00:37:05.012Z]     'x-ms-range': 'REDACTED'
+[2025-10-17T00:37:05.012Z]     'x-ms-version': 'REDACTED'
+[2025-10-17T00:37:05.012Z]     'Accept': 'application/xml'
+[2025-10-17T00:37:05.012Z]     'User-Agent': 'azsdk-python-storage-blob/12.26.0 Python/3.12.2 (macOS-15.7.1-arm64-arm-64bit)'
+[2025-10-17T00:37:05.012Z]     'x-ms-date': 'REDACTED'
+[2025-10-17T00:37:05.013Z]     'x-ms-client-request-id': '6794be3e-aaf1-11f0-ab2a-a268264b95d0'
+[2025-10-17T00:37:05.013Z]     'Authorization': 'REDACTED'
+[2025-10-17T00:37:05.013Z] No body was attached to the request
+[2025-10-17T00:37:05.067Z] 2025-10-16 18:37:05,067 [INFO] azure.core.pipeline.policies.http_logging_policy: Response status: 206
+[2025-10-17T00:37:05.067Z] Response headers:
+[2025-10-17T00:37:05.067Z]     'Content-Length': '144'
+[2025-10-17T00:37:05.067Z]     'Content-Type': 'application/octet-stream'
+[2025-10-17T00:37:05.067Z]     'Content-Range': 'REDACTED'
+[2025-10-17T00:37:05.067Z]     'Last-Modified': 'Mon, 30 Jun 2025 15:17:03 GMT'
+[2025-10-17T00:37:05.067Z]     'Accept-Ranges': 'REDACTED'
+[2025-10-17T00:37:05.067Z]     'ETag': '"0x8DDB7E92B4DC901"'
+[2025-10-17T00:37:05.067Z]     'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+[2025-10-17T00:37:05.067Z]     'x-ms-request-id': '245c99e5-101e-0000-78fe-3e2cc0000000'
+[2025-10-17T00:37:05.067Z]     'x-ms-client-request-id': '67631302-aaf1-11f0-ab2a-a268264b95d0'
+[2025-10-17T00:37:05.067Z]     'x-ms-version': 'REDACTED'
+[2025-10-17T00:37:05.067Z]     'x-ms-tag-count': 'REDACTED'
+[2025-10-17T00:37:05.067Z]     'x-ms-version-id': 'REDACTED'
+[2025-10-17T00:37:05.067Z]     'x-ms-is-current-version': 'REDACTED'
+[2025-10-17T00:37:05.067Z]     'x-ms-creation-time': 'REDACTED'
+[2025-10-17T00:37:05.067Z]     'x-ms-blob-content-md5': 'REDACTED'
+[2025-10-17T00:37:05.067Z]     'x-ms-lease-status': 'REDACTED'
+[2025-10-17T00:37:05.067Z]     'x-ms-lease-state': 'REDACTED'
+[2025-10-17T00:37:05.068Z]     'x-ms-blob-type': 'REDACTED'
+[2025-10-17T00:37:05.068Z]     'x-ms-server-encrypted': 'REDACTED'
+[2025-10-17T00:37:05.068Z]     'Date': 'Fri, 17 Oct 2025 00:37:04 GMT'
+[2025-10-17T00:37:05.071Z] 2025-10-16 18:37:05,071 [INFO] azure.core.pipeline.policies.http_logging_policy: Request URL: 'https://sttexcocoadmdev.blob.core.windows.net/mediospago/fiserv/2025/7/8/PRD_TRXS_PTLF_2024-07-08.ZIP'
+[2025-10-17T00:37:05.071Z] Request method: 'GET'
+[2025-10-17T00:37:05.071Z] Request headers:
+[2025-10-17T00:37:05.072Z]     'x-ms-range': 'REDACTED'
+[2025-10-17T00:37:05.072Z]     'x-ms-version': 'REDACTED'
+[2025-10-17T00:37:05.072Z]     'Accept': 'application/xml'
+[2025-10-17T00:37:05.072Z]     'User-Agent': 'azsdk-python-storage-blob/12.26.0 Python/3.12.2 (macOS-15.7.1-arm64-arm-64bit)'
+[2025-10-17T00:37:05.072Z]     'x-ms-date': 'REDACTED'
+[2025-10-17T00:37:05.072Z]     'x-ms-client-request-id': '679dc150-aaf1-11f0-ab2a-a268264b95d0'
+[2025-10-17T00:37:05.072Z]     'Authorization': 'REDACTED'
+[2025-10-17T00:37:05.072Z] No body was attached to the request
+[2025-10-17T00:37:05.076Z] 2025-10-16 18:37:05,076 [INFO] azure.core.pipeline.policies.http_logging_policy: Response status: 206
+[2025-10-17T00:37:05.076Z] Response headers:
+[2025-10-17T00:37:05.076Z]     'Content-Length': '2894463'
+[2025-10-17T00:37:05.076Z]     'Content-Type': 'application/zip'
+[2025-10-17T00:37:05.076Z]     'Content-Range': 'REDACTED'
+[2025-10-17T00:37:05.076Z]     'Last-Modified': 'Thu, 07 Aug 2025 15:43:51 GMT'
+[2025-10-17T00:37:05.076Z]     'Accept-Ranges': 'REDACTED'
+[2025-10-17T00:37:05.076Z]     'ETag': '"0x8DDD5C935576542"'
+[2025-10-17T00:37:05.076Z]     'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+[2025-10-17T00:37:05.076Z]     'x-ms-request-id': '55fae7e9-101e-004d-36fe-3ee32c000000'
+[2025-10-17T00:37:05.076Z]     'x-ms-client-request-id': '6791e36c-aaf1-11f0-ab2a-a268264b95d0'
+[2025-10-17T00:37:05.076Z]     'x-ms-version': 'REDACTED'
+[2025-10-17T00:37:05.076Z]     'x-ms-tag-count': 'REDACTED'
+[2025-10-17T00:37:05.076Z]     'x-ms-version-id': 'REDACTED'
+[2025-10-17T00:37:05.076Z]     'x-ms-is-current-version': 'REDACTED'
+[2025-10-17T00:37:05.076Z]     'x-ms-creation-time': 'REDACTED'
+[2025-10-17T00:37:05.076Z]     'x-ms-blob-content-md5': 'REDACTED'
+[2025-10-17T00:37:05.076Z]     'x-ms-lease-status': 'REDACTED'
+[2025-10-17T00:37:05.076Z]     'x-ms-lease-state': 'REDACTED'
+[2025-10-17T00:37:05.076Z]     'x-ms-blob-type': 'REDACTED'
+[2025-10-17T00:37:05.076Z]     'x-ms-server-encrypted': 'REDACTED'
+[2025-10-17T00:37:05.076Z]     'Date': 'Fri, 17 Oct 2025 00:37:04 GMT'
+[2025-10-17T00:37:05.173Z] 2025-10-16 18:37:05,173 [INFO] azure.core.pipeline.policies.http_logging_policy: Response status: 206
+[2025-10-17T00:37:05.173Z] Response headers:
+[2025-10-17T00:37:05.173Z]     'Content-Length': '144'
+[2025-10-17T00:37:05.173Z]     'Content-Type': 'application/octet-stream'
+[2025-10-17T00:37:05.173Z]     'Content-Range': 'REDACTED'
+[2025-10-17T00:37:05.173Z]     'Last-Modified': 'Mon, 30 Jun 2025 15:17:03 GMT'
+[2025-10-17T00:37:05.173Z]     'Accept-Ranges': 'REDACTED'
+[2025-10-17T00:37:05.173Z]     'ETag': '"0x8DDB7E92B4DC901"'
+[2025-10-17T00:37:05.173Z]     'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+[2025-10-17T00:37:05.173Z]     'x-ms-request-id': '245c9a0e-101e-0000-1bfe-3e2cc0000000'
+[2025-10-17T00:37:05.173Z]     'x-ms-client-request-id': '679dc150-aaf1-11f0-ab2a-a268264b95d0'
+[2025-10-17T00:37:05.173Z]     'x-ms-version': 'REDACTED'
+[2025-10-17T00:37:05.173Z]     'x-ms-tag-count': 'REDACTED'
+[2025-10-17T00:37:05.173Z]     'x-ms-version-id': 'REDACTED'
+[2025-10-17T00:37:05.174Z]     'x-ms-is-current-version': 'REDACTED'
+[2025-10-17T00:37:05.174Z]     'x-ms-creation-time': 'REDACTED'
+[2025-10-17T00:37:05.174Z]     'x-ms-blob-content-md5': 'REDACTED'
+[2025-10-17T00:37:05.174Z]     'x-ms-lease-status': 'REDACTED'
+[2025-10-17T00:37:05.174Z]     'x-ms-lease-state': 'REDACTED'
+[2025-10-17T00:37:05.174Z]     'x-ms-blob-type': 'REDACTED'
+[2025-10-17T00:37:05.174Z]     'x-ms-server-encrypted': 'REDACTED'
+[2025-10-17T00:37:05.174Z]     'Date': 'Fri, 17 Oct 2025 00:37:04 GMT'
+[2025-10-17T00:37:05.440Z] Executed 'Functions.PTLF-Blob-To-SQL' (Failed, Id=ce59d00d-d805-4a75-8361-07e178edae4a, Duration=835ms)
+[2025-10-17T00:37:05.440Z] System.Private.CoreLib: Exception while executing function: Functions.PTLF-Blob-To-SQL. System.Private.CoreLib: Result: Failure
+[2025-10-17T00:37:05.440Z] Exception: KeyError: 0
+[2025-10-17T00:37:05.440Z] Stack:   File "/opt/homebrew/Cellar/azure-functions-core-tools@4/4.2.2/workers/python/3.12/OSX/Arm64/azure_functions_worker/dispatcher.py", line 676, in _handle__invocation_request
+[2025-10-17T00:37:05.440Z]     call_result = await self._loop.run_in_executor(
+[2025-10-17T00:37:05.440Z]   File "/Users/diego.vbineo.com/.pyenv/versions/3.12.2/lib/python3.12/concurrent/futures/thread.py", line 58, in run
+[2025-10-17T00:37:05.440Z]     result = self.fn(*self.args, **self.kwargs)
+[2025-10-17T00:37:05.440Z]   File "/opt/homebrew/Cellar/azure-functions-core-tools@4/4.2.2/workers/python/3.12/OSX/Arm64/azure_functions_worker/dispatcher.py", line 1006, in _run_sync_func
+[2025-10-17T00:37:05.440Z]     return ExtensionManager.get_sync_invocation_wrapper(context,
+[2025-10-17T00:37:05.440Z]   File "/opt/homebrew/Cellar/azure-functions-core-tools@4/4.2.2/workers/python/3.12/OSX/Arm64/azure_functions_worker/extension.py", line 211, in _raw_invocation_wrapper
+[2025-10-17T00:37:05.440Z]     result = function(**args)
+[2025-10-17T00:37:05.440Z]   File "/Users/diego.vbineo.com/Developer/Repos/3-ops/fiserv-ptlf/src/ptlf/function_app.py", line 35, in blob_trigger
+[2025-10-17T00:37:05.440Z]     the_flow.run(alq_eng)
+[2025-10-17T00:37:05.440Z]   File "/Users/diego.vbineo.com/Developer/Repos/3-ops/fiserv-ptlf/src/ptlf/flow.py", line 96, in run
+[2025-10-17T00:37:05.440Z]     data_df = self.read_data(specs)
+[2025-10-17T00:37:05.440Z]   File "/Users/diego.vbineo.com/Developer/Repos/3-ops/fiserv-ptlf/src/ptlf/flow.py", line 144, in read_data
+[2025-10-17T00:37:05.440Z]     if (df_key != df_key[0]).all():
+[2025-10-17T00:37:05.440Z]   File "/Users/diego.vbineo.com/.pyenv/versions/fiserv312/lib/python3.12/site-packages/pandas/core/series.py", line 1133, in __getitem__
+[2025-10-17T00:37:05.440Z]     return self._get_value(key)
+[2025-10-17T00:37:05.440Z]   File "/Users/diego.vbineo.com/.pyenv/versions/fiserv312/lib/python3.12/site-packages/pandas/core/series.py", line 1249, in _get_value
+[2025-10-17T00:37:05.440Z]     loc = self.index.get_loc(label)
+[2025-10-17T00:37:05.440Z]   File "/Users/diego.vbineo.com/.pyenv/versions/fiserv312/lib/python3.12/site-packages/pandas/core/indexes/range.py", line 415, in get_loc
+[2025-10-17T00:37:05.440Z]     raise KeyError(key) from err
+[2025-10-17T00:37:05.440Z] .
+[2025-10-17T00:37:05.441Z] Message has reached MaxDequeueCount of 5. Moving message to queue 'webjobs-blobtrigger-poison'.
+[2025-10-17T00:37:05.463Z] Executing 'Functions.PTLF-Blob-To-SQL' (Reason='New blob detected(LogsAndContainerScan): mediospago/fiserv/2025/9/12/PRD_TRXS_PTLF_2025-09-12.ZIP', Id=d9447972-f9c1-4c15-b3ad-e7021106d090)
+[2025-10-17T00:37:05.463Z] Trigger Details: MessageId: f5fe8757-738e-4d67-b4e9-ddfd683f930c, DequeueCount: 1, InsertedOn: 2025-10-17T00:37:05.000+00:00, BlobCreated: 2025-09-15T21:55:34.000+00:00, BlobLastModified: 2025-09-15T21:55:34.000+00:00
+[2025-10-17T00:37:05.466Z] 2025-10-16 18:37:05,466 [INFO] azure_functions_worker: Received FunctionInvocationRequest, request ID: ed76d6aa-6940-4cd4-8db4-94a39522e31a, function ID: efc8b33c-e71f-5be7-9cf2-dcf37cc2904a, function name: PTLF-Blob-To-SQL, invocation ID: d9447972-f9c1-4c15-b3ad-e7021106d090, function type: sync, timestamp (UTC): 2025-10-17 00:37:05.466198, sync threadpool max workers: 1000
+[2025-10-17T00:37:05.470Z] 2025-10-16 18:37:05,470 [INFO] ptlf-blob-to-sql: Downloading Blob fiserv/2025/9/12/PRD_TRXS_PTLF_2025-09-12.ZIP | blob=fiserv/2025/9/12/PRD_TRXS_PTLF_2025-09-12.ZIP
+[2025-10-17T00:37:05.481Z] 2025-10-16 18:37:05,480 [INFO] azure.core.pipeline.policies.http_logging_policy: Request URL: 'https://sttexcocoadmdev.blob.core.windows.net/mediospago/fiserv/2025/9/12/PRD_TRXS_PTLF_2025-09-12.ZIP'
+[2025-10-17T00:37:05.481Z] Request method: 'GET'
+[2025-10-17T00:37:05.481Z] Request headers:
+[2025-10-17T00:37:05.481Z]     'x-ms-range': 'REDACTED'
+[2025-10-17T00:37:05.481Z]     'x-ms-version': 'REDACTED'
+[2025-10-17T00:37:05.481Z]     'Accept': 'application/xml'
+[2025-10-17T00:37:05.481Z]     'User-Agent': 'azsdk-python-storage-blob/12.26.0 Python/3.12.2 (macOS-15.7.1-arm64-arm-64bit)'
+[2025-10-17T00:37:05.481Z]     'x-ms-date': 'REDACTED'
+[2025-10-17T00:37:05.481Z]     'x-ms-client-request-id': '67dc2c74-aaf1-11f0-ab2a-a268264b95d0'
+[2025-10-17T00:37:05.481Z]     'Authorization': 'REDACTED'
+[2025-10-17T00:37:05.481Z] No body was attached to the request
+[2025-10-17T00:37:05.499Z] 2025-10-16 18:37:05,499 [INFO] azure.core.pipeline.policies.http_logging_policy: Response status: 206
+[2025-10-17T00:37:05.499Z] Response headers:
+[2025-10-17T00:37:05.499Z]     'Content-Length': '144'
+[2025-10-17T00:37:05.499Z]     'Content-Type': 'application/octet-stream'
+[2025-10-17T00:37:05.499Z]     'Content-Range': 'REDACTED'
+[2025-10-17T00:37:05.499Z]     'Last-Modified': 'Mon, 30 Jun 2025 15:17:05 GMT'
+[2025-10-17T00:37:05.499Z]     'Accept-Ranges': 'REDACTED'
+[2025-10-17T00:37:05.499Z]     'ETag': '"0x8DDB7E92C77EC04"'
+[2025-10-17T00:37:05.499Z]     'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+[2025-10-17T00:37:05.499Z]     'x-ms-request-id': '05b11cde-a01e-0077-1bfe-3ef954000000'
+[2025-10-17T00:37:05.499Z]     'x-ms-client-request-id': '6794be3e-aaf1-11f0-ab2a-a268264b95d0'
+[2025-10-17T00:37:05.499Z]     'x-ms-version': 'REDACTED'
+[2025-10-17T00:37:05.499Z]     'x-ms-tag-count': 'REDACTED'
+[2025-10-17T00:37:05.499Z]     'x-ms-version-id': 'REDACTED'
+[2025-10-17T00:37:05.499Z]     'x-ms-is-current-version': 'REDACTED'
+[2025-10-17T00:37:05.499Z]     'x-ms-creation-time': 'REDACTED'
+[2025-10-17T00:37:05.499Z]     'x-ms-blob-content-md5': 'REDACTED'
+[2025-10-17T00:37:05.499Z]     'x-ms-lease-status': 'REDACTED'
+[2025-10-17T00:37:05.499Z]     'x-ms-lease-state': 'REDACTED'
+[2025-10-17T00:37:05.499Z]     'x-ms-blob-type': 'REDACTED'
+[2025-10-17T00:37:05.499Z]     'x-ms-server-encrypted': 'REDACTED'
+[2025-10-17T00:37:05.500Z]     'Date': 'Fri, 17 Oct 2025 00:37:05 GMT'
+[2025-10-17T00:37:05.502Z] 2025-10-16 18:37:05,502 [INFO] azure.core.pipeline.policies.http_logging_policy: Request URL: 'https://sttexcocoadmdev.blob.core.windows.net/mediospago/fiserv/2025/7/9/PRD_TRXS_PTLF_2024-07-09.ZIP'
+[2025-10-17T00:37:05.502Z] Request method: 'GET'
+[2025-10-17T00:37:05.502Z] Request headers:
+[2025-10-17T00:37:05.502Z]     'x-ms-range': 'REDACTED'
+[2025-10-17T00:37:05.502Z]     'x-ms-version': 'REDACTED'
+[2025-10-17T00:37:05.502Z]     'Accept': 'application/xml'
+[2025-10-17T00:37:05.502Z]     'User-Agent': 'azsdk-python-storage-blob/12.26.0 Python/3.12.2 (macOS-15.7.1-arm64-arm-64bit)'
+[2025-10-17T00:37:05.502Z]     'x-ms-date': 'REDACTED'
+[2025-10-17T00:37:05.502Z]     'x-ms-client-request-id': '67df6a92-aaf1-11f0-ab2a-a268264b95d0'
+[2025-10-17T00:37:05.502Z]     'Authorization': 'REDACTED'
+[2025-10-17T00:37:05.502Z] No body was attached to the request
+[2025-10-17T00:37:05.571Z] 2025-10-16 18:37:05,571 [INFO] azure.core.pipeline.policies.http_logging_policy: Response status: 206
+[2025-10-17T00:37:05.571Z] Response headers:
+[2025-10-17T00:37:05.571Z]     'Content-Length': '144'
+[2025-10-17T00:37:05.571Z]     'Content-Type': 'application/octet-stream'
+[2025-10-17T00:37:05.571Z]     'Content-Range': 'REDACTED'
+[2025-10-17T00:37:05.572Z]     'Last-Modified': 'Mon, 30 Jun 2025 15:17:05 GMT'
+[2025-10-17T00:37:05.572Z]     'Accept-Ranges': 'REDACTED'
+[2025-10-17T00:37:05.572Z]     'ETag': '"0x8DDB7E92C77EC04"'
+[2025-10-17T00:37:05.572Z]     'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+[2025-10-17T00:37:05.572Z]     'x-ms-request-id': '05b11cf0-a01e-0077-2cfe-3ef954000000'
+[2025-10-17T00:37:05.572Z]     'x-ms-client-request-id': '67df6a92-aaf1-11f0-ab2a-a268264b95d0'
+[2025-10-17T00:37:05.572Z]     'x-ms-version': 'REDACTED'
+[2025-10-17T00:37:05.572Z]     'x-ms-tag-count': 'REDACTED'
+[2025-10-17T00:37:05.572Z]     'x-ms-version-id': 'REDACTED'
+[2025-10-17T00:37:05.572Z]     'x-ms-is-current-version': 'REDACTED'
+[2025-10-17T00:37:05.572Z]     'x-ms-creation-time': 'REDACTED'
+[2025-10-17T00:37:05.572Z]     'x-ms-blob-content-md5': 'REDACTED'
+[2025-10-17T00:37:05.572Z]     'x-ms-lease-status': 'REDACTED'
+[2025-10-17T00:37:05.572Z]     'x-ms-lease-state': 'REDACTED'
+[2025-10-17T00:37:05.572Z]     'x-ms-blob-type': 'REDACTED'
+[2025-10-17T00:37:05.572Z]     'x-ms-server-encrypted': 'REDACTED'
+[2025-10-17T00:37:05.572Z]     'Date': 'Fri, 17 Oct 2025 00:37:05 GMT'
+[2025-10-17T00:37:05.719Z] Executed 'Functions.PTLF-Blob-To-SQL' (Failed, Id=c005b76f-757a-423a-8247-08b52e4d89ff, Duration=781ms)
+[2025-10-17T00:37:05.719Z] System.Private.CoreLib: Exception while executing function: Functions.PTLF-Blob-To-SQL. System.Private.CoreLib: Result: Failure
+[2025-10-17T00:37:05.719Z] Exception: KeyError: 0
+[2025-10-17T00:37:05.719Z] Stack:   File "/opt/homebrew/Cellar/azure-functions-core-tools@4/4.2.2/workers/python/3.12/OSX/Arm64/azure_functions_worker/dispatcher.py", line 676, in _handle__invocation_request
+[2025-10-17T00:37:05.719Z]     call_result = await self._loop.run_in_executor(
+[2025-10-17T00:37:05.719Z]   File "/Users/diego.vbineo.com/.pyenv/versions/3.12.2/lib/python3.12/concurrent/futures/thread.py", line 58, in run
+[2025-10-17T00:37:05.719Z]     result = self.fn(*self.args, **self.kwargs)
+[2025-10-17T00:37:05.719Z]   File "/opt/homebrew/Cellar/azure-functions-core-tools@4/4.2.2/workers/python/3.12/OSX/Arm64/azure_functions_worker/dispatcher.py", line 1006, in _run_sync_func
+[2025-10-17T00:37:05.719Z]     return ExtensionManager.get_sync_invocation_wrapper(context,
+[2025-10-17T00:37:05.719Z]   File "/opt/homebrew/Cellar/azure-functions-core-tools@4/4.2.2/workers/python/3.12/OSX/Arm64/azure_functions_worker/extension.py", line 211, in _raw_invocation_wrapper
+[2025-10-17T00:37:05.719Z]     result = function(**args)
+[2025-10-17T00:37:05.719Z]   File "/Users/diego.vbineo.com/Developer/Repos/3-ops/fiserv-ptlf/src/ptlf/function_app.py", line 35, in blob_trigger
+[2025-10-17T00:37:05.719Z]     the_flow.run(alq_eng)
+[2025-10-17T00:37:05.719Z]   File "/Users/diego.vbineo.com/Developer/Repos/3-ops/fiserv-ptlf/src/ptlf/flow.py", line 96, in run
+[2025-10-17T00:37:05.719Z]     data_df = self.read_data(specs)
+[2025-10-17T00:37:05.719Z]   File "/Users/diego.vbineo.com/Developer/Repos/3-ops/fiserv-ptlf/src/ptlf/flow.py", line 144, in read_data
+[2025-10-17T00:37:05.719Z]     if (df_key != df_key[0]).all():
+[2025-10-17T00:37:05.719Z]   File "/Users/diego.vbineo.com/.pyenv/versions/fiserv312/lib/python3.12/site-packages/pandas/core/series.py", line 1133, in __getitem__
+[2025-10-17T00:37:05.719Z]     return self._get_value(key)
+[2025-10-17T00:37:05.719Z]   File "/Users/diego.vbineo.com/.pyenv/versions/fiserv312/lib/python3.12/site-packages/pandas/core/series.py", line 1249, in _get_value
+[2025-10-17T00:37:05.719Z]     loc = self.index.get_loc(label)
+[2025-10-17T00:37:05.719Z]   File "/Users/diego.vbineo.com/.pyenv/versions/fiserv312/lib/python3.12/site-packages/pandas/core/indexes/range.py", line 415, in get_loc
+[2025-10-17T00:37:05.719Z]     raise KeyError(key) from err
+[2025-10-17T00:37:05.719Z] .
+[2025-10-17T00:37:05.719Z] Message has reached MaxDequeueCount of 5. Moving message to queue 'webjobs-blobtrigger-poison'.
+[2025-10-17T00:37:05.749Z] 2025-10-16 18:37:05,749 [INFO] azure.core.pipeline.policies.http_logging_policy: Request URL: 'https://sttexcocoadmdev.blob.core.windows.net/mediospago/fiserv/2025/9/11/PRD_TRXS_PTLF_2025-09-11.ZIP'
+[2025-10-17T00:37:05.749Z] Request method: 'GET'
+[2025-10-17T00:37:05.749Z] Request headers:
+[2025-10-17T00:37:05.749Z]     'x-ms-range': 'REDACTED'
+[2025-10-17T00:37:05.749Z]     'x-ms-version': 'REDACTED'
+[2025-10-17T00:37:05.749Z]     'Accept': 'application/xml'
+[2025-10-17T00:37:05.749Z]     'User-Agent': 'azsdk-python-storage-blob/12.26.0 Python/3.12.2 (macOS-15.7.1-arm64-arm-64bit)'
+[2025-10-17T00:37:05.749Z]     'x-ms-date': 'REDACTED'
+[2025-10-17T00:37:05.749Z]     'x-ms-client-request-id': '68052714-aaf1-11f0-ab2a-a268264b95d0'
+[2025-10-17T00:37:05.749Z]     'Authorization': 'REDACTED'
+[2025-10-17T00:37:05.749Z] No body was attached to the request
+[2025-10-17T00:37:05.784Z] 2025-10-16 18:37:05,784 [WARNING] ptlf-blob-to-sql: Check types in ReadData: | blob=fiserv/2025/8/30/PRD_TRXS_PTLF_2025-08-30.ZIP
+[2025-10-17T00:37:05.784Z] 2025-10-16 18:37:05,784 [INFO] ptlf-blob-to-sql: {'int': [('NZBBSE24-CE-CRNCY-CDE_1', 87), ('NZBBSE24-CE-CRNCY-CDE_2', 87)]} | blob=fiserv/2025/8/30/PRD_TRXS_PTLF_2025-08-30.ZIP
+[2025-10-17T00:37:05.843Z] 2025-10-16 18:37:05,843 [INFO] azure.core.pipeline.policies.http_logging_policy: Response status: 206
+[2025-10-17T00:37:05.843Z] Response headers:
+[2025-10-17T00:37:05.843Z]     'Content-Length': '2861677'
+[2025-10-17T00:37:05.843Z]     'Content-Type': 'application/zip'
+[2025-10-17T00:37:05.843Z]     'Content-Range': 'REDACTED'
+[2025-10-17T00:37:05.843Z]     'Last-Modified': 'Fri, 12 Sep 2025 16:53:16 GMT'
+[2025-10-17T00:37:05.843Z]     'Accept-Ranges': 'REDACTED'
+[2025-10-17T00:37:05.843Z]     'ETag': '"0x8DDF21CDEC59155"'
+[2025-10-17T00:37:05.843Z]     'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+[2025-10-17T00:37:05.843Z]     'x-ms-request-id': '3e08d588-a01e-0005-13fe-3efe1b000000'
+[2025-10-17T00:37:05.843Z]     'x-ms-client-request-id': '68052714-aaf1-11f0-ab2a-a268264b95d0'
+[2025-10-17T00:37:05.843Z]     'x-ms-version': 'REDACTED'
+[2025-10-17T00:37:05.843Z]     'x-ms-tag-count': 'REDACTED'
+[2025-10-17T00:37:05.843Z]     'x-ms-version-id': 'REDACTED'
+[2025-10-17T00:37:05.843Z]     'x-ms-is-current-version': 'REDACTED'
+[2025-10-17T00:37:05.843Z]     'x-ms-creation-time': 'REDACTED'
+[2025-10-17T00:37:05.843Z]     'x-ms-blob-content-md5': 'REDACTED'
+[2025-10-17T00:37:05.843Z]     'x-ms-lease-status': 'REDACTED'
+[2025-10-17T00:37:05.843Z]     'x-ms-lease-state': 'REDACTED'
+[2025-10-17T00:37:05.843Z]     'x-ms-blob-type': 'REDACTED'
+[2025-10-17T00:37:05.843Z]     'x-ms-server-encrypted': 'REDACTED'
+[2025-10-17T00:37:05.843Z]     'Date': 'Fri, 17 Oct 2025 00:37:05 GMT'
+[2025-10-17T00:37:05.948Z] 2025-10-16 18:37:05,948 [INFO] azure.core.pipeline.policies.http_logging_policy: Response status: 206
+[2025-10-17T00:37:05.949Z] Response headers:
+[2025-10-17T00:37:05.949Z]     'Content-Length': '3013922'
+[2025-10-17T00:37:05.949Z]     'Content-Type': 'application/zip'
+[2025-10-17T00:37:05.949Z]     'Content-Range': 'REDACTED'
+[2025-10-17T00:37:05.949Z]     'Last-Modified': 'Mon, 15 Sep 2025 21:55:34 GMT'
+[2025-10-17T00:37:05.949Z]     'Accept-Ranges': 'REDACTED'
+[2025-10-17T00:37:05.949Z]     'ETag': '"0x8DDF4A299273AEC"'
+[2025-10-17T00:37:05.949Z]     'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+[2025-10-17T00:37:05.949Z]     'x-ms-request-id': 'f1459336-701e-0074-0ffe-3e1830000000'
+[2025-10-17T00:37:05.949Z]     'x-ms-client-request-id': '67dc2c74-aaf1-11f0-ab2a-a268264b95d0'
+[2025-10-17T00:37:05.949Z]     'x-ms-version': 'REDACTED'
+[2025-10-17T00:37:05.949Z]     'x-ms-tag-count': 'REDACTED'
+[2025-10-17T00:37:05.949Z]     'x-ms-version-id': 'REDACTED'
+[2025-10-17T00:37:05.949Z]     'x-ms-is-current-version': 'REDACTED'
+[2025-10-17T00:37:05.949Z]     'x-ms-creation-time': 'REDACTED'
+[2025-10-17T00:37:05.949Z]     'x-ms-blob-content-md5': 'REDACTED'
+[2025-10-17T00:37:05.949Z]     'x-ms-lease-status': 'REDACTED'
+[2025-10-17T00:37:05.949Z]     'x-ms-lease-state': 'REDACTED'
+[2025-10-17T00:37:05.949Z]     'x-ms-blob-type': 'REDACTED'
+[2025-10-17T00:37:05.949Z]     'x-ms-server-encrypted': 'REDACTED'
+[2025-10-17T00:37:05.949Z]     'Date': 'Fri, 17 Oct 2025 00:37:05 GMT'
+[2025-10-17T00:37:06.529Z] Executing 'Functions.PTLF-Blob-To-SQL' (Reason='New blob detected(LogsAndContainerScan): mediospago/fiserv/2025/9/4/PRD_TRXS_PTLF_2025-09-04.ZIP', Id=43570aec-0dae-4a9d-a981-bd2efe8e07cb)
+[2025-10-17T00:37:06.529Z] Trigger Details: MessageId: 499bf3aa-ab07-49ea-9fe9-a716e0984a02, DequeueCount: 1, InsertedOn: 2025-10-17T00:37:06.000+00:00, BlobCreated: 2025-09-05T22:32:47.000+00:00, BlobLastModified: 2025-09-05T22:32:47.000+00:00
+[2025-10-17T00:37:06.536Z] 2025-10-16 18:37:06,536 [INFO] azure_functions_worker: Received FunctionInvocationRequest, request ID: ed76d6aa-6940-4cd4-8db4-94a39522e31a, function ID: efc8b33c-e71f-5be7-9cf2-dcf37cc2904a, function name: PTLF-Blob-To-SQL, invocation ID: 43570aec-0dae-4a9d-a981-bd2efe8e07cb, function type: sync, timestamp (UTC): 2025-10-17 00:37:06.536720, sync threadpool max workers: 1000
+[2025-10-17T00:37:06.537Z] 2025-10-16 18:37:06,537 [INFO] ptlf-blob-to-sql: Downloading Blob fiserv/2025/9/4/PRD_TRXS_PTLF_2025-09-04.ZIP | blob=fiserv/2025/9/4/PRD_TRXS_PTLF_2025-09-04.ZIP
+[2025-10-17T00:37:06.541Z] 2025-10-16 18:37:06,541 [INFO] azure.core.pipeline.policies.http_logging_policy: Request URL: 'https://sttexcocoadmdev.blob.core.windows.net/mediospago/fiserv/2025/9/4/PRD_TRXS_PTLF_2025-09-04.ZIP'
+[2025-10-17T00:37:06.541Z] Request method: 'GET'
+[2025-10-17T00:37:06.541Z] Request headers:
+[2025-10-17T00:37:06.541Z]     'x-ms-range': 'REDACTED'
+[2025-10-17T00:37:06.541Z]     'x-ms-version': 'REDACTED'
+[2025-10-17T00:37:06.541Z]     'Accept': 'application/xml'
+[2025-10-17T00:37:06.541Z]     'User-Agent': 'azsdk-python-storage-blob/12.26.0 Python/3.12.2 (macOS-15.7.1-arm64-arm-64bit)'
+[2025-10-17T00:37:06.541Z]     'x-ms-date': 'REDACTED'
+[2025-10-17T00:37:06.541Z]     'x-ms-client-request-id': '687df356-aaf1-11f0-ab2a-a268264b95d0'
+[2025-10-17T00:37:06.541Z]     'Authorization': 'REDACTED'
+[2025-10-17T00:37:06.541Z] No body was attached to the request
+[2025-10-17T00:37:06.659Z] 2025-10-16 18:37:06,659 [WARNING] ptlf-blob-to-sql: Check types in ReadData: | blob=fiserv/2025/8/6/PRD_TRXS_PTLF_2025-08-06.ZIP
+[2025-10-17T00:37:06.659Z] 2025-10-16 18:37:06,659 [INFO] ptlf-blob-to-sql: {'int': [('NZBBSE24-CE-CRNCY-CDE_1', 92), ('NZBBSE24-CE-CRNCY-CDE_2', 92)], 'bigint': [('NZBBSE24-CE-AMT-AUTH_1', 4), ('NZBBSE24-CE-AMT-AUTH_2', 4)]} | blob=fiserv/2025/8/6/PRD_TRXS_PTLF_2025-08-06.ZIP
+[2025-10-17T00:37:06.834Z] 2025-10-16 18:37:06,834 [INFO] azure.core.pipeline.policies.http_logging_policy: Request URL: 'https://sttexcocoadmdev.blob.core.windows.net/mediospago/fiserv/2025/9/12/PRD_TRXS_PTLF_2025-09-12.ZIP'
+[2025-10-17T00:37:06.834Z] Request method: 'GET'
+[2025-10-17T00:37:06.834Z] Request headers:
+[2025-10-17T00:37:06.834Z]     'x-ms-range': 'REDACTED'
+[2025-10-17T00:37:06.834Z]     'x-ms-version': 'REDACTED'
+[2025-10-17T00:37:06.834Z]     'Accept': 'application/xml'
+[2025-10-17T00:37:06.834Z]     'User-Agent': 'azsdk-python-storage-blob/12.26.0 Python/3.12.2 (macOS-15.7.1-arm64-arm-64bit)'
+[2025-10-17T00:37:06.834Z]     'x-ms-date': 'REDACTED'
+[2025-10-17T00:37:06.834Z]     'x-ms-client-request-id': '68aaacf2-aaf1-11f0-ab2a-a268264b95d0'
+[2025-10-17T00:37:06.834Z]     'Authorization': 'REDACTED'
+[2025-10-17T00:37:06.834Z] No body was attached to the request
+[2025-10-17T00:37:06.904Z] 2025-10-16 18:37:06,904 [INFO] azure.core.pipeline.policies.http_logging_policy: Response status: 206
+[2025-10-17T00:37:06.904Z] Response headers:
+[2025-10-17T00:37:06.904Z]     'Content-Length': '2778753'
+[2025-10-17T00:37:06.904Z]     'Content-Type': 'application/zip'
+[2025-10-17T00:37:06.904Z]     'Content-Range': 'REDACTED'
+[2025-10-17T00:37:06.904Z]     'Last-Modified': 'Fri, 05 Sep 2025 22:32:47 GMT'
+[2025-10-17T00:37:06.904Z]     'Accept-Ranges': 'REDACTED'
+[2025-10-17T00:37:06.904Z]     'ETag': '"0x8DDECCC239E341E"'
+[2025-10-17T00:37:06.904Z]     'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+[2025-10-17T00:37:06.904Z]     'x-ms-request-id': '6fe9298c-601e-000a-3bfe-3e8877000000'
+[2025-10-17T00:37:06.904Z]     'x-ms-client-request-id': '687df356-aaf1-11f0-ab2a-a268264b95d0'
+[2025-10-17T00:37:06.904Z]     'x-ms-version': 'REDACTED'
+[2025-10-17T00:37:06.904Z]     'x-ms-tag-count': 'REDACTED'
+[2025-10-17T00:37:06.904Z]     'x-ms-version-id': 'REDACTED'
+[2025-10-17T00:37:06.904Z]     'x-ms-is-current-version': 'REDACTED'
+[2025-10-17T00:37:06.904Z]     'x-ms-creation-time': 'REDACTED'
+[2025-10-17T00:37:06.904Z]     'x-ms-blob-content-md5': 'REDACTED'
+[2025-10-17T00:37:06.904Z]     'x-ms-lease-status': 'REDACTED'
+[2025-10-17T00:37:06.904Z]     'x-ms-lease-state': 'REDACTED'
+[2025-10-17T00:37:06.904Z]     'x-ms-blob-type': 'REDACTED'
+[2025-10-17T00:37:06.904Z]     'x-ms-server-encrypted': 'REDACTED'
+[2025-10-17T00:37:06.904Z]     'Date': 'Fri, 17 Oct 2025 00:37:06 GMT'
+[2025-10-17T00:37:06.932Z] 2025-10-16 18:37:06,932 [INFO] azure.core.pipeline.policies.http_logging_policy: Response status: 206
+[2025-10-17T00:37:06.932Z] Response headers:
+[2025-10-17T00:37:06.932Z]     'Content-Length': '3013922'
+[2025-10-17T00:37:06.932Z]     'Content-Type': 'application/zip'
+[2025-10-17T00:37:06.932Z]     'Content-Range': 'REDACTED'
+[2025-10-17T00:37:06.932Z]     'Last-Modified': 'Mon, 15 Sep 2025 21:55:34 GMT'
+[2025-10-17T00:37:06.932Z]     'Accept-Ranges': 'REDACTED'
+[2025-10-17T00:37:06.932Z]     'ETag': '"0x8DDF4A299273AEC"'
+[2025-10-17T00:37:06.932Z]     'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+[2025-10-17T00:37:06.932Z]     'x-ms-request-id': 'f14595b3-701e-0074-68fe-3e1830000000'
+[2025-10-17T00:37:06.933Z]     'x-ms-client-request-id': '68aaacf2-aaf1-11f0-ab2a-a268264b95d0'
+[2025-10-17T00:37:06.933Z]     'x-ms-version': 'REDACTED'
+[2025-10-17T00:37:06.933Z]     'x-ms-tag-count': 'REDACTED'
+[2025-10-17T00:37:06.933Z]     'x-ms-version-id': 'REDACTED'
+[2025-10-17T00:37:06.933Z]     'x-ms-is-current-version': 'REDACTED'
+[2025-10-17T00:37:06.933Z]     'x-ms-creation-time': 'REDACTED'
+[2025-10-17T00:37:06.933Z]     'x-ms-blob-content-md5': 'REDACTED'
+[2025-10-17T00:37:06.933Z]     'x-ms-lease-status': 'REDACTED'
+[2025-10-17T00:37:06.933Z]     'x-ms-lease-state': 'REDACTED'
+[2025-10-17T00:37:06.933Z]     'x-ms-blob-type': 'REDACTED'
+[2025-10-17T00:37:06.933Z]     'x-ms-server-encrypted': 'REDACTED'
+[2025-10-17T00:37:06.933Z]     'Date': 'Fri, 17 Oct 2025 00:37:06 GMT'
+[2025-10-17T00:37:07.291Z] 2025-10-16 18:37:07,291 [ERROR] ptlf-blob-to-sql: Upload error at TrackIntegrity | blob=fiserv/2025/8/29/PRD_TRXS_PTLF_2025-08-29.ZIP
+[2025-10-17T00:37:07.295Z] 2025-10-16 18:37:07,295 [INFO] ptlf-blob-to-sql: Blob fiserv/2025/8/29/PRD_TRXS_PTLF_2025-08-29.ZIP successful | blob=fiserv/2025/8/29/PRD_TRXS_PTLF_2025-08-29.ZIP
+[2025-10-17T00:37:07.299Z] Executed 'Functions.PTLF-Blob-To-SQL' (Succeeded, Id=276caff4-ac0c-4020-81f8-f482ab0cc90b, Duration=6372ms)
+[2025-10-17T00:37:07.605Z] 2025-10-16 18:37:07,604 [WARNING] ptlf-blob-to-sql: Check types in ReadData: | blob=fiserv/2025/9/11/PRD_TRXS_PTLF_2025-09-11.ZIP
+[2025-10-17T00:37:07.605Z] 2025-10-16 18:37:07,605 [INFO] ptlf-blob-to-sql: {'int': [('NZBBSE24-CE-CRNCY-CDE_1', 78), ('NZBBSE24-CE-CRNCY-CDE_2', 78)]} | blob=fiserv/2025/9/11/PRD_TRXS_PTLF_2025-09-11.ZIP
+[2025-10-17T00:37:07.817Z] 2025-10-16 18:37:07,817 [INFO] azure.core.pipeline.policies.http_logging_policy: Request URL: 'https://sttexcocoadmdev.blob.core.windows.net/mediospago/fiserv/2025/9/4/PRD_TRXS_PTLF_2025-09-04.ZIP'
+[2025-10-17T00:37:07.817Z] Request method: 'GET'
+[2025-10-17T00:37:07.817Z] Request headers:
+[2025-10-17T00:37:07.817Z]     'x-ms-range': 'REDACTED'
+[2025-10-17T00:37:07.817Z]     'x-ms-version': 'REDACTED'
+[2025-10-17T00:37:07.817Z]     'Accept': 'application/xml'
+[2025-10-17T00:37:07.817Z]     'User-Agent': 'azsdk-python-storage-blob/12.26.0 Python/3.12.2 (macOS-15.7.1-arm64-arm-64bit)'
+[2025-10-17T00:37:07.817Z]     'x-ms-date': 'REDACTED'
+[2025-10-17T00:37:07.817Z]     'x-ms-client-request-id': '6940b22e-aaf1-11f0-ab2a-a268264b95d0'
+[2025-10-17T00:37:07.817Z]     'Authorization': 'REDACTED'
+[2025-10-17T00:37:07.817Z] No body was attached to the request
+[2025-10-17T00:37:07.915Z] 2025-10-16 18:37:07,915 [INFO] azure.core.pipeline.policies.http_logging_policy: Response status: 206
+[2025-10-17T00:37:07.915Z] Response headers:
+[2025-10-17T00:37:07.915Z]     'Content-Length': '2778753'
+[2025-10-17T00:37:07.915Z]     'Content-Type': 'application/zip'
+[2025-10-17T00:37:07.915Z]     'Content-Range': 'REDACTED'
+[2025-10-17T00:37:07.915Z]     'Last-Modified': 'Fri, 05 Sep 2025 22:32:47 GMT'
+[2025-10-17T00:37:07.915Z]     'Accept-Ranges': 'REDACTED'
+[2025-10-17T00:37:07.915Z]     'ETag': '"0x8DDECCC239E341E"'
+[2025-10-17T00:37:07.915Z]     'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+[2025-10-17T00:37:07.915Z]     'x-ms-request-id': '6fe92ba9-601e-000a-34fe-3e8877000000'
+[2025-10-17T00:37:07.915Z]     'x-ms-client-request-id': '6940b22e-aaf1-11f0-ab2a-a268264b95d0'
+[2025-10-17T00:37:07.915Z]     'x-ms-version': 'REDACTED'
+[2025-10-17T00:37:07.915Z]     'x-ms-tag-count': 'REDACTED'
+[2025-10-17T00:37:07.915Z]     'x-ms-version-id': 'REDACTED'
+[2025-10-17T00:37:07.915Z]     'x-ms-is-current-version': 'REDACTED'
+[2025-10-17T00:37:07.915Z]     'x-ms-creation-time': 'REDACTED'
+[2025-10-17T00:37:07.915Z]     'x-ms-blob-content-md5': 'REDACTED'
+[2025-10-17T00:37:07.915Z]     'x-ms-lease-status': 'REDACTED'
+[2025-10-17T00:37:07.915Z]     'x-ms-lease-state': 'REDACTED'
+[2025-10-17T00:37:07.915Z]     'x-ms-blob-type': 'REDACTED'
+[2025-10-17T00:37:07.915Z]     'x-ms-server-encrypted': 'REDACTED'
+[2025-10-17T00:37:07.915Z]     'Date': 'Fri, 17 Oct 2025 00:37:07 GMT'
+[2025-10-17T00:37:08.492Z] 2025-10-16 18:37:08,492 [WARNING] ptlf-blob-to-sql: Check types in ReadData: | blob=fiserv/2025/9/12/PRD_TRXS_PTLF_2025-09-12.ZIP
+[2025-10-17T00:37:08.492Z] 2025-10-16 18:37:08,492 [INFO] ptlf-blob-to-sql: {'int': [('NZBBSE24-CE-CRNCY-CDE_1', 61), ('NZBBSE24-CE-CRNCY-CDE_2', 61)]} | blob=fiserv/2025/9/12/PRD_TRXS_PTLF_2025-09-12.ZIP
+[2025-10-17T00:37:08.522Z] 2025-10-16 18:37:08,521 [ERROR] ptlf-blob-to-sql: Upload error at TrackIntegrity | blob=fiserv/2025/8/30/PRD_TRXS_PTLF_2025-08-30.ZIP
+[2025-10-17T00:37:08.522Z] 2025-10-16 18:37:08,522 [INFO] ptlf-blob-to-sql: Blob fiserv/2025/8/30/PRD_TRXS_PTLF_2025-08-30.ZIP successful | blob=fiserv/2025/8/30/PRD_TRXS_PTLF_2025-08-30.ZIP
+[2025-10-17T00:37:08.522Z] Executed 'Functions.PTLF-Blob-To-SQL' (Succeeded, Id=4f4b5449-1260-49cc-af94-eabfeef282fb, Duration=6417ms)
+[2025-10-17T00:37:09.352Z] 2025-10-16 18:37:09,352 [WARNING] ptlf-blob-to-sql: Check types in ReadData: | blob=fiserv/2025/9/4/PRD_TRXS_PTLF_2025-09-04.ZIP
+[2025-10-17T00:37:09.352Z] 2025-10-16 18:37:09,352 [INFO] ptlf-blob-to-sql: {'int': [('NZBBSE24-CE-CRNCY-CDE_1', 79), ('NZBBSE24-CE-CRNCY-CDE_2', 79)]} | blob=fiserv/2025/9/4/PRD_TRXS_PTLF_2025-09-04.ZIP
+[2025-10-17T00:37:09.408Z] 2025-10-16 18:37:09,408 [ERROR] ptlf-blob-to-sql: Upload error at TrackIntegrity | blob=fiserv/2025/8/6/PRD_TRXS_PTLF_2025-08-06.ZIP
+[2025-10-17T00:37:09.409Z] 2025-10-16 18:37:09,408 [INFO] ptlf-blob-to-sql: Blob fiserv/2025/8/6/PRD_TRXS_PTLF_2025-08-06.ZIP successful | blob=fiserv/2025/8/6/PRD_TRXS_PTLF_2025-08-06.ZIP
+[2025-10-17T00:37:09.409Z] Executed 'Functions.PTLF-Blob-To-SQL' (Succeeded, Id=5bb9f11c-2ddd-4d3f-9a4c-20c39e10343b, Duration=6118ms)
+[2025-10-17T00:37:10.385Z] 2025-10-16 18:37:10,384 [ERROR] ptlf-blob-to-sql: Upload error at TrackIntegrity | blob=fiserv/2025/9/11/PRD_TRXS_PTLF_2025-09-11.ZIP
+[2025-10-17T00:37:10.385Z] 2025-10-16 18:37:10,385 [INFO] ptlf-blob-to-sql: Blob fiserv/2025/9/11/PRD_TRXS_PTLF_2025-09-11.ZIP successful | blob=fiserv/2025/9/11/PRD_TRXS_PTLF_2025-09-11.ZIP
+[2025-10-17T00:37:10.386Z] Executed 'Functions.PTLF-Blob-To-SQL' (Succeeded, Id=57b68786-103c-469a-9d85-1ce1ff8322e2, Duration=6083ms)
+[2025-10-17T00:37:11.368Z] 2025-10-16 18:37:11,368 [ERROR] ptlf-blob-to-sql: Upload error at TrackIntegrity | blob=fiserv/2025/9/12/PRD_TRXS_PTLF_2025-09-12.ZIP
+[2025-10-17T00:37:11.368Z] 2025-10-16 18:37:11,368 [INFO] ptlf-blob-to-sql: Blob fiserv/2025/9/12/PRD_TRXS_PTLF_2025-09-12.ZIP successful | blob=fiserv/2025/9/12/PRD_TRXS_PTLF_2025-09-12.ZIP
+[2025-10-17T00:37:11.369Z] Executed 'Functions.PTLF-Blob-To-SQL' (Succeeded, Id=d9447972-f9c1-4c15-b3ad-e7021106d090, Duration=5969ms)

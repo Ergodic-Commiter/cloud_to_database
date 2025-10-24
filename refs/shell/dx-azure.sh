@@ -1,11 +1,11 @@
 ## Build & Push
-az login
-RG="<rg>" ; LOC="eastus" ; APP="ptlf-func-app" ; PLAN="ptlf-func-plan"
-ACR="ptlfacr$RANDOM" ; IMG="fiserv-ptlf-func:1.0.0"
+RG="data-fiserv"; APP="ptlf-func-app"; ACR=$AZURE_CONTAINER
+IMG="ptlf/blob-to-sql"
+TAG="1.0"
+FQ_IMG=$ACR.azurecr.io/$IMG:$TAG
+#IMG="fiserv-ptlf-func:1.0.0"
 
-az acr create -g "$RG" -n "$ACR" --sku Basic
 az acr login -n "$ACR"
-ACR_LOGIN="$ACR.azurecr.io"
 az login
 
 docker buildx build --platform linux/amd64 -t "$ACR_LOGIN/$IMG" .

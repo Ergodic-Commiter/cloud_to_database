@@ -1,0 +1,81 @@
+ Executed 'Functions.PTLF-Blob-To-SQL' (Failed, Id=4751700a-5daa-453f-b44e-c86b5b33b7bf, Duration=17861ms)
+[2025-10-17T22:39:20.387Z] System.Private.CoreLib: Exception while executing function: Functions.PTLF-Blob-To-SQL. System.Private.CoreLib: Result: Failure
+[2025-10-17T22:39:20.387Z] Exception: OperationalError: (pyodbc.OperationalError) ('HYT00', '[HYT00] [Microsoft][ODBC Driver 18 for SQL Server]Login timeout expired (0) (SQLDriverConnect)')
+[2025-10-17T22:39:20.387Z] (Background on this error at: https://sqlalche.me/e/20/e3q8)
+[2025-10-17T22:39:20.387Z] Stack:   File "/opt/homebrew/Cellar/azure-functions-core-tools@4/4.2.2/workers/python/3.12/OSX/Arm64/azure_functions_worker/dispatcher.py", line 676, in _handle__invocation_request
+[2025-10-17T22:39:20.387Z]     call_result = await self._loop.run_in_executor(
+[2025-10-17T22:39:20.387Z]   File "/Users/diego.vbineo.com/.pyenv/versions/3.12.2/lib/python3.12/concurrent/futures/thread.py", line 58, in run
+[2025-10-17T22:39:20.387Z]     result = self.fn(*self.args, **self.kwargs)
+[2025-10-17T22:39:20.387Z]   File "/opt/homebrew/Cellar/azure-functions-core-tools@4/4.2.2/workers/python/3.12/OSX/Arm64/azure_functions_worker/dispatcher.py", line 1006, in _run_sync_func
+[2025-10-17T22:39:20.387Z]     return ExtensionManager.get_sync_invocation_wrapper(context,
+[2025-10-17T22:39:20.387Z]   File "/opt/homebrew/Cellar/azure-functions-core-tools@4/4.2.2/workers/python/3.12/OSX/Arm64/azure_functions_worker/extension.py", line 211, in _raw_invocation_wrapper
+[2025-10-17T22:39:20.387Z]     result = function(**args)
+[2025-10-17T22:39:20.387Z]   File "/Users/diego.vbineo.com/Developer/Repos/3-ops/fiserv-ptlf/src/ptlf/function_app.py", line 35, in blob_trigger
+[2025-10-17T22:39:20.387Z]     the_flow.run(alq_eng)
+[2025-10-17T22:39:20.387Z]   File "/Users/diego.vbineo.com/Developer/Repos/3-ops/fiserv-ptlf/src/ptlf/flow.py", line 105, in run
+[2025-10-17T22:39:20.387Z]     self.upload_data(data_df, engine)
+[2025-10-17T22:39:20.387Z]   File "/Users/diego.vbineo.com/Developer/Repos/3-ops/fiserv-ptlf/src/ptlf/flow.py", line 161, in upload_data
+[2025-10-17T22:39:20.387Z]     an_id = track.start_raw(engine, meta)
+[2025-10-17T22:39:20.387Z]   File "/Users/diego.vbineo.com/Developer/Repos/3-ops/fiserv-ptlf/src/ptlf/track.py", line 18, in start_raw
+[2025-10-17T22:39:20.387Z]     t_track = get_table(engine)
+[2025-10-17T22:39:20.387Z]   File "/Users/diego.vbineo.com/Developer/Repos/3-ops/fiserv-ptlf/src/ptlf/track.py", line 12, in get_table
+[2025-10-17T22:39:20.387Z]     return alq.Table('PTLF_track', alq_meta, autoload_with=engine)
+[2025-10-17T22:39:20.387Z]   File "<string>", line 2, in __new__
+[2025-10-17T22:39:20.387Z]   File "/Users/diego.vbineo.com/.pyenv/versions/fiserv312/lib/python3.12/site-packages/sqlalchemy/util/deprecations.py", line 281, in warned
+[2025-10-17T22:39:20.387Z]     return fn(*args, **kwargs)  # type: ignore[no-any-return]
+[2025-10-17T22:39:20.387Z]   File "/Users/diego.vbineo.com/.pyenv/versions/fiserv312/lib/python3.12/site-packages/sqlalchemy/sql/schema.py", line 429, in __new__
+[2025-10-17T22:39:20.387Z]     return cls._new(*args, **kw)
+[2025-10-17T22:39:20.387Z]   File "/Users/diego.vbineo.com/.pyenv/versions/fiserv312/lib/python3.12/site-packages/sqlalchemy/sql/schema.py", line 483, in _new
+[2025-10-17T22:39:20.387Z]     with util.safe_reraise():
+[2025-10-17T22:39:20.387Z]   File "/Users/diego.vbineo.com/.pyenv/versions/fiserv312/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 224, in __exit__
+[2025-10-17T22:39:20.387Z]     raise exc_value.with_traceback(exc_tb)
+[2025-10-17T22:39:20.387Z]   File "/Users/diego.vbineo.com/.pyenv/versions/fiserv312/lib/python3.12/site-packages/sqlalchemy/sql/schema.py", line 479, in _new
+[2025-10-17T22:39:20.387Z]     table.__init__(name, metadata, *args, _no_init=False, **kw)  # type: ignore[misc] # noqa: E501
+[2025-10-17T22:39:20.387Z]   File "/Users/diego.vbineo.com/.pyenv/versions/fiserv312/lib/python3.12/site-packages/sqlalchemy/sql/schema.py", line 861, in __init__
+[2025-10-17T22:39:20.387Z]     self._autoload(
+[2025-10-17T22:39:20.387Z]   File "/Users/diego.vbineo.com/.pyenv/versions/fiserv312/lib/python3.12/site-packages/sqlalchemy/sql/schema.py", line 891, in _autoload
+[2025-10-17T22:39:20.387Z]     insp = inspection.inspect(autoload_with)
+[2025-10-17T22:39:20.387Z]   File "/Users/diego.vbineo.com/.pyenv/versions/fiserv312/lib/python3.12/site-packages/sqlalchemy/inspection.py", line 140, in inspect
+[2025-10-17T22:39:20.387Z]     ret = reg(subject)
+[2025-10-17T22:39:20.387Z]   File "/Users/diego.vbineo.com/.pyenv/versions/fiserv312/lib/python3.12/site-packages/sqlalchemy/engine/reflection.py", line 313, in _engine_insp
+[2025-10-17T22:39:20.387Z]     return Inspector._construct(Inspector._init_engine, bind)
+[2025-10-17T22:39:20.387Z]   File "/Users/diego.vbineo.com/.pyenv/versions/fiserv312/lib/python3.12/site-packages/sqlalchemy/engine/reflection.py", line 246, in _construct
+[2025-10-17T22:39:20.387Z]     init(self, bind)
+[2025-10-17T22:39:20.387Z]   File "/Users/diego.vbineo.com/.pyenv/versions/fiserv312/lib/python3.12/site-packages/sqlalchemy/engine/reflection.py", line 257, in _init_engine
+[2025-10-17T22:39:20.387Z]     engine.connect().close()
+[2025-10-17T22:39:20.387Z]   File "/Users/diego.vbineo.com/.pyenv/versions/fiserv312/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 3277, in connect
+[2025-10-17T22:39:20.387Z]     return self._connection_cls(self)
+[2025-10-17T22:39:20.387Z]   File "/Users/diego.vbineo.com/.pyenv/versions/fiserv312/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 145, in __init__
+[2025-10-17T22:39:20.387Z]     Connection._handle_dbapi_exception_noconnection(
+[2025-10-17T22:39:20.387Z]   File "/Users/diego.vbineo.com/.pyenv/versions/fiserv312/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2440, in _handle_dbapi_exception_noconnection
+[2025-10-17T22:39:20.387Z]     raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+[2025-10-17T22:39:20.387Z]   File "/Users/diego.vbineo.com/.pyenv/versions/fiserv312/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 143, in __init__
+[2025-10-17T22:39:20.387Z]     self._dbapi_connection = engine.raw_connection()
+[2025-10-17T22:39:20.388Z]   File "/Users/diego.vbineo.com/.pyenv/versions/fiserv312/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 3301, in raw_connection
+[2025-10-17T22:39:20.388Z]     return self.pool.connect()
+[2025-10-17T22:39:20.388Z]   File "/Users/diego.vbineo.com/.pyenv/versions/fiserv312/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 447, in connect
+[2025-10-17T22:39:20.388Z]     return _ConnectionFairy._checkout(self)
+[2025-10-17T22:39:20.388Z]   File "/Users/diego.vbineo.com/.pyenv/versions/fiserv312/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 1264, in _checkout
+[2025-10-17T22:39:20.388Z]     fairy = _ConnectionRecord.checkout(pool)
+[2025-10-17T22:39:20.388Z]   File "/Users/diego.vbineo.com/.pyenv/versions/fiserv312/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 711, in checkout
+[2025-10-17T22:39:20.388Z]     rec = pool._do_get()
+[2025-10-17T22:39:20.388Z]   File "/Users/diego.vbineo.com/.pyenv/versions/fiserv312/lib/python3.12/site-packages/sqlalchemy/pool/impl.py", line 177, in _do_get
+[2025-10-17T22:39:20.388Z]     with util.safe_reraise():
+[2025-10-17T22:39:20.388Z]   File "/Users/diego.vbineo.com/.pyenv/versions/fiserv312/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 224, in __exit__
+[2025-10-17T22:39:20.388Z]     raise exc_value.with_traceback(exc_tb)
+[2025-10-17T22:39:20.388Z]   File "/Users/diego.vbineo.com/.pyenv/versions/fiserv312/lib/python3.12/site-packages/sqlalchemy/pool/impl.py", line 175, in _do_get
+[2025-10-17T22:39:20.388Z]     return self._create_connection()
+[2025-10-17T22:39:20.388Z]   File "/Users/diego.vbineo.com/.pyenv/versions/fiserv312/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 388, in _create_connection
+[2025-10-17T22:39:20.388Z]     return _ConnectionRecord(self)
+[2025-10-17T22:39:20.388Z]   File "/Users/diego.vbineo.com/.pyenv/versions/fiserv312/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 673, in __init__
+[2025-10-17T22:39:20.388Z]     self.__connect()
+[2025-10-17T22:39:20.388Z]   File "/Users/diego.vbineo.com/.pyenv/versions/fiserv312/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 899, in __connect
+[2025-10-17T22:39:20.388Z]     with util.safe_reraise():
+[2025-10-17T22:39:20.388Z]   File "/Users/diego.vbineo.com/.pyenv/versions/fiserv312/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 224, in __exit__
+[2025-10-17T22:39:20.388Z]     raise exc_value.with_traceback(exc_tb)
+[2025-10-17T22:39:20.388Z]   File "/Users/diego.vbineo.com/.pyenv/versions/fiserv312/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 895, in __connect
+[2025-10-17T22:39:20.388Z]     self.dbapi_connection = connection = pool._invoke_creator(self)
+[2025-10-17T22:39:20.388Z]   File "/Users/diego.vbineo.com/.pyenv/versions/fiserv312/lib/python3.12/site-packages/sqlalchemy/engine/create.py", line 661, in connect
+[2025-10-17T22:39:20.388Z]     return dialect.connect(*cargs, **cparams)
+[2025-10-17T22:39:20.388Z]   File "/Users/diego.vbineo.com/.pyenv/versions/fiserv312/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 629, in connect
+[2025-10-17T22:39:20.388Z]     return self.loaded_dbapi.connect(*cargs, **cparams)  # type: ignore[no-any-return]  # NOQA: E501

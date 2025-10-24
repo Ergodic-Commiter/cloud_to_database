@@ -11,7 +11,7 @@ GO
 
 -- N_RECORDS OK. 
 SELECT t.file_name, 
-  CONVERT(DATE, t.data_date, 12) as data_date, 
+  CONVERT(DATE, t.data_date,12) as data_date, 
   t.n_records as n_meta, r.n_data, 
   case when r.n_data = t.n_records then 'cargado' 
       when r.n_data is NULL then 'en ejecucion'
@@ -43,7 +43,7 @@ SELECT OBJECT_SCHEMA_NAME(referencing_id) AS schema_name,
        referenced_entity_name             AS referenced_column
 FROM sys.sql_expression_dependencies
 WHERE referenced_id = OBJECT_ID('dbo.PTLF_track')
-  AND referenced_minor_name = 'date_str';
+  AND referenced_minor_name = 'date_str';   -- noqa
 GO
 
 
@@ -54,7 +54,7 @@ WHERE CONVERT(char(6), date_file, 12) = data_date;
 
 SELECT * 
 FROM dbo.PTLF_track
-WHERE TRYCONVERT(date, date_file, 12) = date_file; 
+WHERE TRYCONVERT(date, date_file, 12) = date_file;    -- noqa 
 GO 
 
 

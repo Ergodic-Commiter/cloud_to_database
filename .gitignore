@@ -1,6 +1,6 @@
 .env*
 config.cfg
-**local.settings.json
+**settings.json
 
 .vscode
 

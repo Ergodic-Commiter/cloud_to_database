@@ -15,7 +15,7 @@ from openpyxl.worksheet.table import Table as XLTable
 
 class OpenTable(XLTable): 
     """Lightweight wrapper around openpyxl.Table"""
-    __module__ = 'src.tools'
+    __module__ = 'ptlf.tools'
 
     def __init__(self, wb_path:Path, ws_name:str, tb_name:str, *, 
             data_only=True, read_only=False):
@@ -77,8 +77,9 @@ class ShortcutPath(Path):
             return self._mac_alias()
         raise ValueError(f"Can't get shortcut target in system {system_}")
 
-    def _mac_alias(self): 
-        from mac_alias import read_alias   
+    def _mac_alias(self):
+        # Tramposo porque Mac tiene tanto Alias como Shortcuts y no son lo mismo. 
+        from mac_alias import read_alias  # pylint: disable=no-name-in-module
         with self.obj.open('rb') as _f: 
             return read_alias(_f).path
 

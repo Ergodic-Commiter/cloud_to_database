@@ -1,2 +1,2 @@
 # pylint: disable=unused-import
-from ptlf.function_app import app
+from ptlf.services.blob_app import app

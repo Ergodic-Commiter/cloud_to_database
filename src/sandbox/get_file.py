@@ -2,7 +2,7 @@ from datetime import datetime as dt
 from sys import argv
 import zipfile as zp
 
-from ptlf.storage import engine
+from ptlf import infra
 
 # pylint: disable=invalid-name
 # pylint: disable=redefined-outer-name
@@ -26,7 +26,7 @@ if __name__ == '__main__':
     today_str = str(dt.today().date())
     date_str = argv[1] if len(argv) > 1 else today_str
     fpsl_file = f'data/temp/PTLF_{date_str}'
-    az_container = engine.get_container()
+    az_container = infra.get_container()
     download_fpsl(az_container, date_str)
     # unzip_fpsl(date_str)
 

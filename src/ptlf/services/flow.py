@@ -16,13 +16,13 @@ import sqlalchemy as alq
 from sqlalchemy.engine import Engine
 from sqlalchemy.exc import IntegrityError, OperationalError
 
-from ptlf.config import Settings
-from ptlf import track, tools, errors as ee, typer
+from ptlf import core, tools
+from ptlf.core import errors as ee, models
 
 fspath = tools.noner(os.fspath)
 
 # pylint: disable=anomalous-backslash-in-string
-
+# pylint: disable=too-many-locals
 
 @dataclass()
 class FlowConfig: 
@@ -65,7 +65,7 @@ class DayDataFlow:
 
     @classmethod
     def from_blob_client(cls, blob:BlobClient, logger:logging.Logger, debug=False):
-        out_cfg = Settings()
+        out_cfg = core.Settings()
         at_data = out_cfg.data_loc
 
         blob_reg = r"^fiserv/([\d/]{5,10})/PRD_TRXS_PTLF_([\d\-]{10}).ZIP$"
@@ -73,7 +73,7 @@ class DayDataFlow:
             logger.info("ACC=%s, CONT=%s, NAME=%s", 
                 blob.account_name, blob.container_name, blob.blob_name) 
             raise ee.PTLF_FlowError(blob.blob_name, 'BlobName')
-        _, date2 = mm.groups()
+        _datepath, date2 = mm.groups()
         the_date = dt.strptime(date2, '%Y-%m-%d').date()
         in_cfg = FlowConfig(the_date, at_data, None, debug)
         
@@ -91,7 +91,7 @@ class DayDataFlow:
         """Este proceso se encarga del procesamiento de carga. 
         Además es el único donde se hace error-handling."""
         if specs is None: 
-            specs = typer.read_specs()
+            specs = models.read_specs()
         try:
             data_df = self.read_data(specs)
         except ee.PTLF_FlowError as er:
@@ -131,7 +131,7 @@ class DayDataFlow:
 
     def read_data(self, specs=None) -> pd.DataFrame: 
         if specs is None: 
-            specs = typer.read_specs()
+            specs = models.read_specs()
         fwf_args = dict(dtype=str, header=None, colspecs=[(0, None)], 
             names=['value'])
         reporter = defaultdict(list)
@@ -158,7 +158,7 @@ class DayDataFlow:
             data_date = self.cfg.date + delta(days=self.dates_off)
             meta['data_date'] = data_date.strftime('%y%m%d')
         try: 
-            an_id = track.start_raw(engine, meta)
+            an_id = models.start_raw(engine, meta)
         except IntegrityError as e1:
             raise ee.PTLF_FlowError(self.datafile.name, 'TrackIntegrity') from e1
         status = 'failed'
@@ -168,7 +168,7 @@ class DayDataFlow:
         except Exception as e1:
             raise ee.PTLF_FlowError(self.datafile.name, 'RawUpload') from e1
         finally: 
-            track.finish_raw(engine, an_id, status)
+            models.finish_raw(engine, an_id, status)
 
 
     def determine_stage(self, engine:Engine,    
@@ -242,24 +242,3 @@ class DayDataFlow:
     def __repr__(self): 
         return f"<DayDataFlow at {self.datafile.name}>"
 
-
-
-def files_to_dataframe(data_dir:Optional[Path]=None): 
-    data_dir = data_dir or Path('data/temp')
-    ptlf_gen = map(tools.file_meta, data_dir.rglob("PTLF_[0-9-]*"))
-    dir_status = {'text' : 'incierto', 
-        'failed/3-start' : 'pos.repetido',
-        'failed/4-upload': 'err.carga'}
-    mutates = dict(
-        data_date = pd.NaT, 
-        n_meta = lambda df: df['n_records'], 
-        n_data = pd.NA, 
-        estatus = lambda df: df['file_path'].str
-            .extract(rf"{data_dir}/(.*)/PTLF").replace(dir_status))
-    χ_extension = lambda df: ~df['file_name'].str.endswith('.txt', na=False)
-    keep_cols = ['file_name', 'data_date', 'n_meta', 'n_data', 'estatus']
-    ptlf_df = (pd.DataFrame.from_records(ptlf_gen)
-        .assign(**mutates)
-        .loc[χ_extension, keep_cols])
-    ptlf_df.to_clipboard(index=False, header=False, excel=True)
-    return ptlf_df

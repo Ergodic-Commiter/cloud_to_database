@@ -2,8 +2,7 @@ from datetime import date, datetime as dt
 import logging
 from sys import argv
 
-from ptlf import flow, engine, storage as stg, local_logging
-from ptlf import config
+from ptlf import core, infra, services
 # pylint: disable=invalid-name
 
 
@@ -13,16 +12,16 @@ if __name__ == '__main__':
     debug = (len(argv) > 2) and (argv[2] == 'debug')
     the_date = dt.strptime(date_str, '%Y-%m-%d').date() if date_str else date.today()
 
-    cfg = config.Settings()
-    local_logging.setup(cfg)
+    cfg = core.Settings()
+    infra.logging.setup(cfg)
     logger = logging.getLogger('ptlf.log')
     
-    f_config = flow.FlowConfig(the_date, cfg.data_loc, debug=debug)    
-    the_flow = flow.DayDataFlow(f_config)    
+    config = services.FlowConfig(the_date, cfg.data_loc, debug=debug)    
+    the_flow = services.DayDataFlow(config)    
     
     eng_args = dict(fast_executemany=False, echo='debug') if debug else {}
-    alq_eng = engine.get_engine(cfg, **eng_args)
-    container = stg.get_container(cfg)
+    alq_eng = core.get_engine(cfg, **eng_args)
+    container = infra.get_container(cfg)
     
     at_stage = the_flow.determine_stage(alq_eng, container)
     if at_stage == 3:

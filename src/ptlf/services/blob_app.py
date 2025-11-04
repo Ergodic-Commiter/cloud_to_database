@@ -3,12 +3,13 @@ import logging
 import azure.functions as func
 from azurefunctions.extensions.bindings import blob
 
-from ptlf.config import Settings
-from ptlf import flow, engine, errors as ee, local_logging
+from ptlf import core, infra
+from ptlf.core import errors as ee
+from . import flow
 
-cfg = Settings()
-alq_eng = engine.get_engine(cfg)
-local_logging.setup(cfg)
+cfg = core.Settings()
+alq_eng = core.get_engine(cfg)
+infra.logging.setup(cfg)
 
 
 class ContextAdapter(logging.LoggerAdapter):

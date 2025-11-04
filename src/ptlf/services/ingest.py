@@ -2,9 +2,9 @@ from pathlib import Path
 import re, zipfile
 
 import sqlalchemy as alq
-from ptlf import config, flow, engine, typer
+from ptlf import core
+from . import flow
 
-# pylint:disable=redefined-outer-name
 
 RE_PTLF_DAT = re.compile(r"^PTLF_([\d\-]{10})$")
 RE_PTLF_ZIP = re.compile(r"^PRD_TRXS_PTLF_([\d\-]{10}).ZIP$")
@@ -28,12 +28,12 @@ def _multi_run(path:Path, specs:dict, engine:alq.Engine, debug:bool):
         _single_run(ff, specs, engine, debug)
 
 
-def from_path(path:Path, *, debug:bool=False):
-    cfg = config.Settings()
+def upload_data(path:Path, *, debug:bool=False):
+    cfg = core.Settings()
     eng_args = ({} if not debug else 
         dict(fast_executemany=False, echo='debug'))
-    alq_eng = engine.get_engine(cfg, **eng_args)
-    specs = typer.read_specs() 
+    alq_eng = core.get_engine(cfg, **eng_args)
+    specs = core.models.read_specs() 
     
     mm_zip = RE_PTLF_ZIP.match(path.name)
     if zipfile.is_zipfile(str(path)) and not mm_zip:

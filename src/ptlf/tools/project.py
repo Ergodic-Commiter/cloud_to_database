@@ -3,20 +3,11 @@ import hashlib
 import os
 from pathlib import Path
 import re
+from typing import Optional
 
 import pandas as pd
+from .misc import noner
 # pylint: disable=invalid-name
-
-
-class classproperty(property):
-    # Python beauty. 
-    def __get__(self, _, owner):
-        return self.fget(owner)
-
-
-def noner(func): 
-    """Para funciones que se quiebran con None."""
-    return lambda x: func(x) if x is not None else None
 
 
 def index_duplicates(srs:pd.Series):
@@ -39,7 +30,8 @@ def _sha256_file(path:str, chunk=1024*1024) -> bytes:  # 10**20.
 def file_meta(path:Path|str) -> dict:
     """Función asociada a la SQL-tabla PTLF-track."""
     path = Path(path)
-    n_records = sum(1 for _ in open(path, encoding='latin1'))
+    with open(path, encoding='latin1') as ff: 
+        n_records = sum(1 for _ in ff)
     date_match = re.search(r'(\d{4}-\d{2}-\d{2})', path.name)
     if not date_match: 
         raise ValueError(f"Path named {path.name} doesnt match date format 'YYYY-MM-DD'")
@@ -95,3 +87,24 @@ def trim_file(a_file, length):
             w.write(λ_trim(line))
     return str(trim_2)
 
+
+
+def files_to_dataframe(data_dir:Optional[Path]=None): 
+    data_dir = data_dir or Path('data/temp')
+    ptlf_gen = map(file_meta, data_dir.rglob("PTLF_[0-9-]*"))
+    dir_status = {'text' : 'incierto', 
+        'failed/3-start' : 'pos.repetido',
+        'failed/4-upload': 'err.carga'}
+    mutates = dict(
+        data_date = pd.NaT, 
+        n_meta = lambda df: df['n_records'], 
+        n_data = pd.NA, 
+        estatus = lambda df: df['file_path'].str
+            .extract(rf"{data_dir}/(.*)/PTLF").replace(dir_status))
+    χ_extension = lambda df: ~df['file_name'].str.endswith('.txt', na=False)
+    keep_cols = ['file_name', 'data_date', 'n_meta', 'n_data', 'estatus']
+    ptlf_df = (pd.DataFrame.from_records(ptlf_gen)
+        .assign(**mutates)
+        .loc[χ_extension, keep_cols])
+    ptlf_df.to_clipboard(index=False, header=False, excel=True)
+    return ptlf_df

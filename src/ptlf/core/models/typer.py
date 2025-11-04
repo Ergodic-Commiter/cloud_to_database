@@ -3,8 +3,8 @@ from decimal import Decimal
 from dataclasses import dataclass
 from datetime import datetime as dt
 from importlib.resources import as_file, files
-from io import BytesIO
 from operator import attrgetter as ɑ, methodcaller as ρ
+from pathlib import Path
 import re
 from typing import (Any, ClassVar, DefaultDict, Dict, 
     List, NamedTuple, Optional, Tuple, Type, Union)
@@ -15,8 +15,8 @@ import sqlalchemy as alq
 from sqlalchemy.dialects import mssql
 from toolz import functoolz as fz
 
-from ptlf import errors as ee, tools
-from ptlf.config import Settings
+from ptlf import tools
+from .. import errors as ee, settings
 # pylint:disable=abstract-method
 # pylint:disable=invalid-name
 # pylint:disable=no-member
@@ -36,7 +36,7 @@ class FieldSpecs:
         return slice(ff, ff+ll)
 
 
-class Typer: 
+class Converter: 
     """A factory and mixin class of converters for different types. 
     Each converter reads a Pandas (specs) tuple representing a column of a wider table. 
     """
@@ -52,7 +52,7 @@ class Typer:
         super().__init_subclass__()
         if not hasattr(cls, 'typeid') or cls.typeid is None:
             raise TypeError(f"{cls.__name__} must define 'typeid'.")
-        Typer.registry[cls.typeid] = cls
+        Converter.registry[cls.typeid] = cls
 
     # Inicialización (de subclases). 
     def __init__(self, raw_row:NamedTuple):
@@ -78,7 +78,7 @@ class Typer:
 
     # Conjunción de muchos Converter's en diccionario
     @classmethod
-    def dataframe_to_dict(cls, types_df: pd.DataFrame) -> Dict[str, 'Typer']: 
+    def dataframe_to_dict(cls, types_df: pd.DataFrame) -> Dict[str, 'Converter']: 
         λ_prepare = dict(
             Name0 = lambda df: df['Field_Name'].str.replace(' ', ''), 
             Name1 = lambda df: tools.index_duplicates(df['Name0']), 
@@ -104,7 +104,7 @@ class Typer:
 
     @property
     def format_groups(self): 
-        """Typer subclasses use format_groups to choose their type."""
+        """Converter subclasses use format_groups to choose their type."""
         # COBOL: (S?9|X)\((\d+)\)(V9(9|\(\d\)))?
         # S9(n), 9(n), X(n), S9(n)V9(k), 9(n)V99...
         fmt_str = self.specs.Format
@@ -154,7 +154,7 @@ class Typer:
         return f"<{self.__class__.__name__} ({self.typeid}: {self.specs})>"
 
 
-class StrConverter(Typer):
+class StrConverter(Converter):
     typeid = 'str'
     pytype = str
     _pandas_dtype = 'string'
@@ -179,7 +179,7 @@ class StrConverter(Typer):
         return str_srs.str.strip().replace('', pd.NA)
 
     
-class IntConverter(Typer): 
+class IntConverter(Converter): 
     typeid = 'int'
     pytype = int
     _pandas_dtype = 'Int64'
@@ -214,7 +214,7 @@ class BigIntConverter(IntConverter):
         return mssql.BIGINT()
     
 
-class DecimalConverter(Typer): 
+class DecimalConverter(Converter): 
     typeid = 'decimal'
     pytype = Decimal
     _pandas_dtype = 'Float64'
@@ -223,7 +223,7 @@ class DecimalConverter(Typer):
 
     @property
     def format_groups(self): 
-        """Typer subclasses use format_groups to choose their type."""
+        """Converter subclasses use format_groups to choose their type."""
         # COBOL: (S?9|X)\((\d+)\)(V9(9|\(\d\)))?
         # S9(n), 9(n), X(n), S9(n)V9(k), 9(n)V99...
         fmt_str = self.specs.Format
@@ -266,7 +266,7 @@ class DecimalConverter(Typer):
         return prs_srs.astype(self.pandas_dtype).div(10**v9).round(v9)
 
 
-class DatetimeConverter(Typer): 
+class DatetimeConverter(Converter): 
     typeid = 'datetime'
     pytype = dt
 
@@ -293,7 +293,7 @@ class DatetimeConverter(Typer):
 
 
 
-class DateConverter(Typer): 
+class DateConverter(Converter): 
     typeid = 'date'
     pytype = dt.date
 
@@ -320,7 +320,7 @@ class DateConverter(Typer):
 
 
 
-class FracTimeConverter(Typer): 
+class FracTimeConverter(Converter): 
     typeid = 'fractime'
     pytype = dt 
 
@@ -346,22 +346,31 @@ class FracTimeConverter(Typer):
 
 #### Specs Stuff
 
+def reload_specs(): 
+    cfg = settings.Settings() 
+    λ_mutate = dict(
+        Name0 = lambda df: df['Field_Name'].str.replace(' ', ''), 
+        Name1 = lambda df: tools.index_duplicates(df['Name0']), 
+        Format = lambda df: df['Format'].str.replace(' ', ''))
+    to_path = Path('src/ptlf/data/ptlf_cols.feather')
+    
+    specs_ref = tools.OpenTable(*cfg.xl_ref)
+    pre_df = specs_ref.get_dataframe()
+    specs_df = pre_df.assign(**λ_mutate)
+    specs_df.to_feather(to_path)
+
+
 def read_specs(output='dict') -> Union[dict, pd.DataFrame]:
     # Antes regresaba el DataFrame, pero es mejor el dccionario convertido.
-    try:
-        with as_file(files('ptlf.data')/'ptlf_cols.feather') as ff:
-            specs_df = pd.read_feather(ff)
-    except ModuleNotFoundError:  
-        cfg = Settings() 
-        specs_ref = tools.OpenTable(*cfg.xl_ref)
-        specs_df = specs_ref.get_dataframe()
+    with as_file(files('ptlf.data')/'ptlf_cols.feather') as ff:
+        specs_df = pd.read_feather(ff)
     if output == 'dataframe': 
         return specs_df
-    return Typer.dataframe_to_dict(specs_df)
+    return Converter.dataframe_to_dict(specs_df)
 
 
 def specs_plus(specs_0):
-    attrs = Typer.dataframe_to_dict(specs_0.values())
+    attrs = Converter.dataframe_to_dict(specs_0.values())
     meta = dict(
         Name0=ɑ('_specs.Field_Name'),  # corresponds to "Field Name"
         Name1=ɑ('specs.Name1'), 
@@ -372,8 +381,8 @@ def specs_plus(specs_0):
     return pd.DataFrame(attrs_data, columns=list(meta.keys()))
 
 
-def specs_plus_to_excel(specs_1:pd.DataFrame, cfg:Optional[Settings]=None):
-    cfg = cfg or Settings() 
+def specs_plus_to_excel(specs_1:pd.DataFrame, cfg:Optional[settings.Settings]=None):
+    cfg = cfg or settings.Settings() 
     specs_ref = tools.OpenTable(*cfg.XL_REF)
     _, min_row, max_col, _ = specs_ref.boundaries
     writer_args = dict(engine='openpyxl', mode='a', if_sheet_exists='overlay')  

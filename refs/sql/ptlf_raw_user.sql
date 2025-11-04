@@ -15,8 +15,6 @@ ADD member_prefix AS LEFT([NGBBSE24-HEAD-MBR-NUM], 6) PERSISTED,
 CREATE NONCLUSTERED INDEX IX_PTLF_raw_member_prefix
 ON dbo.PTLF_raw(member_prefix);
 
-CREATE NONCLUSTERED INDEX IX_PTLF_raw_member_bucket
-ON dbo.PTLF_raw(member_bucket);
 
 -- unique key, en caso de necesitar updates 
 ALTER TABLE dbo.PTLF_raw
@@ -26,10 +24,9 @@ ALTER TABLE dbo.PTLF_raw
 ADD CONSTRAINT PK_PTLF_raw PRIMARY KEY CLUSTERED (row_id);
 
 
-
 -- Por TERMINAL, sólo si se llega a necesitar. 
 -- Pero de hecho no es único, así que bye. 
-CREATE UNIQUE INDEX UX_PTLF_raw_terminal
+CREATE UNIQUE INDEX UX_PTLF_terminal
 ON dbo.PTLF_raw ([NGBBSE24-AUTH-POST-DAT], [NGBBSE24-HEAD-TERM-TERM-ID], [NGBBSE24-AUTH-SEQ-NUM]); 
 
 

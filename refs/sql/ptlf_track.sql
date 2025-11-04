@@ -33,9 +33,9 @@ GO
 -- Keep statuses constrained
 ALTER TABLE dbo.PTLF_track WITH CHECK ADD
     CONSTRAINT CK_PTLF_track_raw_status
-    CHECK (raw_status IN ('pending','running','success','failed')),
+    CHECK (raw_status IN ('pending', 'running', 'success', 'failed')),
     CONSTRAINT CK_PTLF_track_ops_status
-    CHECK (ops_status IN ('pending','running','success','failed'));
+    CHECK (ops_status IN ('pending', 'running', 'success', 'failed'));
 GO
 
 -- Sanity constraints on timestamps

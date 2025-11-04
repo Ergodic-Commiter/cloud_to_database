@@ -27,3 +27,31 @@ AND name NOT LIKE '##%';
 
 -- ## Cambiar el nombre de la tabla. 
 -- EXEC sp_rename 'dbo.PTLF', 'PTLF_raw';
+
+
+
+WITH k(num_tarjeta, f_posteo, num_autorizacion, monto_txn, tipo_auth) 
+  AS (SELECT * FROM (VALUES 
+    ('000540208T1521N4947',CAST('2025-10-24' AS date),'003457',CAST(214.48 AS decimal(19,2)),CAST(210 AS int))
+    ) v(num_tarjeta, f_posteo, num_autorizacion, monto_txn, tipo_auth))
+SELECT t.*
+FROM dbo.v_PTLF_Token AS t
+JOIN k
+  ON t.num_tarjeta = k.num_tarjeta
+  AND t.f_posteo = k.f_posteo
+  AND t.num_autorizacion = k.num_autorizacion
+  AND t.monto_txn = k.monto_txn
+  AND t.tipo_auth = k.tipo_auth
+
+
+
+SELECT t.* 
+FROM dbo.v_PTLF_Token AS t 
+JOIN (VALUES 
+    ('000540208T1521N4947',CAST('2025-10-24' AS date),'003457',CAST(214.48 AS decimal(19,2)),CAST(210 AS int))
+    ) AS k(num_tarjeta, f_posteo, num_autorizacion, monto_txn, tipo_auth)
+  ON  t.num_tarjeta = k.num_tarjeta
+  AND t.f_posteo = k.f_posteo
+  AND t.num_autorizacion = k.num_autorizacion
+  AND t.monto_txn = k.monto_txn
+  AND t.tipo_auth = k.tipo_auth

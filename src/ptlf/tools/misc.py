@@ -41,4 +41,15 @@ def thread(val, *forms):
     eval_ff = (lambda vv, ff: 
         partial2(*ff)(vv) if isinstance(ff, tuple) else ff(vv))
     return reduce(eval_ff, forms, val)
-   
+
+
+def noner(func): 
+    """Para funciones que se quiebran con None."""
+    return lambda x: func(x) if x is not None else None
+
+  
+class classproperty(property):
+    # Python beauty. 
+    def __get__(self, _, owner):
+        return self.fget(owner)
+

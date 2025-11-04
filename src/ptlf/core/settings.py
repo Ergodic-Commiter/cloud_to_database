@@ -6,9 +6,10 @@ from azure.identity import ClientSecretCredential, DefaultAzureCredential
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from ptlf import errors as ee
+from ptlf.core import errors as ee
 # pylint: disable=too-few-public-methods
 # pylint: disable=arguments-differ
+
 
 class Settings(BaseSettings): 
     model_config = SettingsConfigDict(
@@ -18,7 +19,7 @@ class Settings(BaseSettings):
     
     env: str = Field(default='dev', validation_alias='PTLF_ENV')
     data_loc: Optional[Path] = None  # Se configura en model_post_init
-    xl_ref: Tuple[Path, str, str] = (Path('data/PTLF-cols-1.xlsx'), 'LO', 'ptlf_cols')
+    xl_ref: Tuple[Path, str, str] = (Path('data/PTLF-cols.xlsx'), 'LO', 'ptlf_cols')
     
     # Azure Service Principal
     tenant_id: Optional[str] = Field(None, validation_alias='AZURE_TENANT_ID')
@@ -83,4 +84,3 @@ class Settings(BaseSettings):
             is_auto = self.env in {'prod', 'azure'}
             self.data_loc = Path(gettempdir()) if is_auto else Path("data/temp")
         return 
-

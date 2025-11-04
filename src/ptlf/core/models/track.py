@@ -1,12 +1,12 @@
-from __future__ import annotations
+# Propuesto por ChatGPT, pero no me encanta este script. 
 
 import sqlalchemy as alq
 from sqlalchemy import engine as eng, exc
 
-from ptlf import errors as ee
+from ptlf.core import errors as ee
 
 
-def get_table(engine): 
+def get_table(engine:eng.Engine): 
     alq_meta = alq.MetaData()
     try: 
         return alq.Table('PTLF_track', alq_meta, autoload_with=engine)
@@ -33,6 +33,7 @@ def finish_raw(engine:eng.Engine, track_id:int, raw_status:str) -> None:
     with engine.begin() as conn: 
         conn.execute(update_stmt)
     return
+
 
 def delete_raw(engine:eng.Engine, data_date:str): 
     t_track = get_table(engine)

@@ -19,18 +19,8 @@ ENV PATH="root/.local/bin:${PATH}" \
     POETRY_CACHE_DIR=/tmp/poetry_cache \
     PYTHONPATH="/home/site/wwwroot/src"
     
-# RUN curl -sSL https://install.python-poetry.org | python3 - --version ${POETRY_VERSION} && \
 RUN /opt/python/3/bin/python3 -m pip install --upgrade pip && \
     /opt/python/3/bin/python3 -m pip install "poetry==${POETRY_VERSION}" 
-#     && \
-#     /opt/python/3/bin/python3 - <<'PY'
-# import sys, sysconfig, shutil, subprocess
-# print("Python:", sys.executable)
-# print("Scripts dir:", sysconfig.get_paths()['scripts'])
-# print("PATH:", __import__('os').environ.get('PATH'))
-# print("poetry:", shutil.which("poetry"))
-# subprocess.run(["python","-m","poetry","--version"], check=True)
-# PY
 
 COPY poetry.lock pyproject.toml ./
 RUN /opt/python/3/bin/python3 -m poetry install --only main --no-root

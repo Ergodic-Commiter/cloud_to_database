@@ -1,9 +1,9 @@
 import logging
 from pathlib import Path
-from ptlf.config import Settings
+from ptlf import core
 
 
-def setup(cfg: Settings):
+def setup(cfg:core.Settings):
     root = logging.getLogger()
     root.handlers.clear()   # reset (avoid duplicate handlers)
     root.setLevel(logging.INFO)

@@ -1,7 +1,8 @@
 from .excel import OpenTable
-from .functions import partial2, star, thread 
-from .project import prev_datestr, classproperty, noner, index_duplicates, file_meta
+from .misc import partial2, star, thread, classproperty, noner
+from .project import prev_datestr, index_duplicates, file_meta
 
-__all__ = ['OpenTable', 
-    'partial2', 'star', 'thread', 
-    'prev_datestr', 'classproperty', 'noner', 'index_duplicates', 'file_meta']
+__all__ = [
+    'OpenTable', 
+    'partial2', 'star', 'thread', 'classproperty', 'noner',  
+    'prev_datestr', 'index_duplicates', 'file_meta']

@@ -1,7 +1,7 @@
 from pytest import mark
 import sqlalchemy as alq
 
-from ptlf import engine
+from ptlf import core 
 
 χ_module = lambda obj, m_str: m_str in type(obj).__module__
 
@@ -20,13 +20,13 @@ def run_single_query(conn, query=None):
 
 @mark.parametrize('user_type', ['sql', 'sp'])
 def test_sqlalchemy_connection(user_type):
-    conn = engine.get_connection(user_type, 'sqlalchemy')
+    conn = core.get_connection(user_type, 'sqlalchemy')
     result = run_single_query(conn, "SELECT 1")
     assert result == 1
 
 @mark.parametrize('user_type', ['sql', 'sp'])
 def test_pyodbc_connection(user_type):
-    conn = engine.get_connection(user_type, 'pyodbc')
+    conn = core.get_connection(user_type, 'pyodbc')
     result = run_single_query(conn, "SELECT 1")
     assert result == 1
 

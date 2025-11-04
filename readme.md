@@ -15,17 +15,21 @@ Para comentarios escríbenos por [Teams][teams].
 
 
 ## Runbook de Azure
-- `data-fiserv`:      _Resource group_
-- `fiserv-reports`:   _SQL server_      
-- `fiserv-db`:        _SQL database_    ($5.25 USD)
-- `medios-pago-data-dev`: _Service Principal_  
-- `mediospago`:       _Azure Container_ (ya existe)
-- `fiserv-blob-to-sql`: _Azure Functions_ 
-  - `cae-bh-microsrv-data-dev`: _Container Apps environment_??
-  - `fiserv-blob-to-sql`: _Container details_ 
-  - `acrcommonacrsdatadev`: _Container_ ❌ no sirve (admin credentials disabled)
-  - `dataappsregistry`: _Registry_ ✅
-  - `funcs/ptlf`: _Registry Repository_ 
+- `data-fiserv`:      _Resource group_  
+- `fiserv-reports`:   _SQL server_       
+- `fiserv-db`:        _SQL database_    ($5.25 USD)  
+- `medios-pago-data-dev`: _Service Principal_   
+- `mediospago`:       _Azure Container_ (ya existe)  
+- `fiserv-blob-to-sql`: _Azure Functions_   
+  - `cae-bh-microsrv-data-dev`: _Container Apps environment_??  
+  - `fiserv-blob-to-sql`: _Container details_  
+  - `acrcommonacrsdatadev`: _Container_ ❌ no sirve (admin credentials disabled)  
+  - `dataappsregistry`: _Registry_ ✅  
+  - `funcs/ptlf`: _Registry Repository_  
+  - plan: Elastic Premium   
+- `vnet-fiserv`:  _Virtual network_
+  - conectar a SQL Server
+  - Ajustar conn-string
 
 
 El servidor SQL tiene muchas configuraciones truculentas: 

@@ -1,13 +1,12 @@
 let
-  Keys0 = Excel.CurrentWorkbook(){[Name="multiQ"]}[Content],
+  Keys0 = Excel.CurrentWorkbook(){[Name="B_Exacta"]}[Content],
 
   // Normalize types (text, date, number). Keep it simple & explicit.
   Keys = Table.TransformColumnTypes(Keys0,{
-      {"Num-Tarjeta", type text},
-      {"F-Posteo",  type date},
-      {"Num-Auth",  type text},
-      {"Monto-Txn", type number}, 
-      {"Tipo-Auth", type number}
+      {"FID", type text},
+      {"Tarjeta",  type number},
+      {"Afiliacion",  type text},
+      {"F_Posteo", type date}
     }, "en-US"),
 
   // --- Safe SQL literals -----------------------------------
@@ -21,11 +20,10 @@ let
       "CAST(" & Text.From(Number.Round(ii, 0), "en-US") & " AS int)", 
   
   RowToSql = (row as record) as text => "(" &
-      TxtQuote(Record.Field(row, "Num-Tarjeta")) & "," &
-      DateLit (Record.Field(row, "F-Posteo"   )) & "," &
-      TxtQuote(Record.Field(row, "Num-Auth"   )) & "," &
-      DecLit  (Record.Field(row, "Monto-Txn"  )) & "," &
-      IntLit  (Record.Field(row, "Tipo-Auth"  )) & ")",
+      TxtQuote(Record.Field(row, "FID")) & "," &
+      DateLit (Record.Field(row, "Tarjeta"   )) & "," &
+      TxtQuote(Record.Field(row, "Afiliacion" )) & "," &
+      DecLit  (Record.Field(row, "F_Poste0"   )) & ")", 
   RowsText = List.Transform(Table.ToRecords(Keys), each RowToSql(_)),
   ValuesClause =
       if List.IsEmpty(RowsText)
@@ -34,26 +32,24 @@ let
 
   Qry = "
     ; SELECT t.*
-    FROM dbo.v_PTLF_Token AS t
+    FROM dbo.v_PTLF_Fraudes AS t
     JOIN ("& ValuesClause & "
-      ) AS k(num_tarjeta, f_posteo, num_autorizacion, monto_txn, tipo_auth) 
-      ON t.num_tarjeta = k.num_tarjeta
-     AND t.f_posteo = k.f_posteo
-     AND t.num_autorizacion = k.num_autorizacion
-     AND t.monto_txn = k.monto_txn
-     AND t.tipo_auth = k.tipo_auth",
+      ) AS k(FID, Tarjeta, Afiliacion, Fecha_Posteo) 
+      ON t.FID = k.FID
+     AND t.Tarjeta = k.Tarjeta
+     AND t.Afiliacion = k.Afiliacion
+     AND t.Fecha_Posteo = k.Fecha_Posteo",
   Qry2 = "
-    ; WITH k(num_tarjeta, f_posteo, num_autorizacion, monto_txn, tipo_auth) 
+    ; WITH k(FID, Tarjeta, Afiliacion, Fecha_Posteo) 
     AS ( SELECT * FROM (" & ValuesClause & "
-       ) v(num_tarjeta, f_posteo, num_autorizacion, monto_txn, tipo_auth)
+       ) v(FID, Tarjeta, Afiliacion, Fecha_Posteo)
     SELECT t.*
-    FROM dbo.v_PTLF_Token AS t
+    FROM dbo.v_PTLF_Fraudes AS t
     JOIN k
-      ON t.num_tarjeta = k.num_tarjeta
-     AND t.f_posteo = k.f_posteo
-     AND t.num_autorizacion = k.num_autorizacion
-     AND t.monto_txn = k.monto_txn
-     AND t.tipo_auth = k.tipo_auth",
+      ON t.FID = k.FID
+     AND t.Tarjeta = k.Tarjeta
+     AND t.Afiliacion = k.Afiliacion
+     AND t.Fecha_Posteo = k.Fecha_Posteo",
   
   // 2) Execute as a native query (runs entirely on SQL Server, uses your composite index)
   Db = Sql.Database("fiserv-reports.database.windows.net", "fiserv-db"),

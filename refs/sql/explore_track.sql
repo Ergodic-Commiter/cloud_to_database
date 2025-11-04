@@ -10,6 +10,7 @@ GO
 
 
 -- N_RECORDS OK. 
+-- Ya capturé este query dentro de CLI: `ptlf check-status`
 SELECT t.file_name, 
   CONVERT(DATE, t.data_date,12) as data_date, 
   t.n_records as n_meta, r.n_data, 
@@ -25,16 +26,16 @@ LEFT JOIN (SELECT
     GROUP BY [NGBBSE24-AUTH-POST-DAT]
     ) r
 ON t.data_date = r.date_str
-ORDER BY file_name 
+ORDER BY file_name DESC 
 GO
 
 
 DELETE FROM PTLF_raw 
-WHERE [NGBBSE24-AUTH-POST-DAT] in ('250904'); 
+WHERE [NGBBSE24-AUTH-POST-DAT] in ('251101'); 
 GO
 
 DELETE FROM PTLF_track
-WHERE data_date in ('250904'); 
+WHERE data_date in ('251101'); 
 GO 
 
 -- Para encontrar las dependencias de DATE_STR. 
@@ -58,4 +59,8 @@ WHERE TRYCONVERT(date, date_file, 12) = date_file;    -- noqa
 GO 
 
 
-
+SELECT TOP 100 *
+FROM dbo.v_PTLF_Fraudes
+WHERE Tarjeta = '000540208G3OP4F5300'
+AND Codigo_Aprov = '001073'
+  

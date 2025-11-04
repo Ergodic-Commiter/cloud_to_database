@@ -13,7 +13,7 @@ def setup(cfg:core.Settings):
     root.addHandler(ch)
 
     if cfg.env.lower() in {"dev", "test"}:
-        logdir = Path(cfg.data_loc) / "logs"
+        logdir = Path(cfg.data_loc)/"logs"
         logdir.mkdir(parents=True, exist_ok=True)
         fh = logging.FileHandler(logdir / "flow.log", encoding="utf-8")
         fh.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(name)s: %(message)s"))

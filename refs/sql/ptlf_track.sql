@@ -51,6 +51,11 @@ GO
 CREATE UNIQUE INDEX UX_PTLF_track_hash
     ON dbo.PTLF_track (file_hash)
     WHERE file_hash IS NOT NULL;
+
+-- Cambiar definición del índice con nueva columna FILE_DUPLICATE
+
+
+
 -- 2) Or by (file_name, file_size_bytes)
 -- CREATE UNIQUE INDEX UX_PTLF_track_file ON dbo.PTLF_track(file_name, file_size_bytes);
 
@@ -75,12 +80,6 @@ END
 GO
 
 -- Round 2:  Agregar DATE_STR para KEY con PTLF_RAW
--- Ya se cambió la definición arriba.  
-ALTER TABLE dbo.PTLF_track 
-ALTER COLUMN date_file DATE NOT NULL; 
-
-ALTER TABLE dbo.PTLF_track
-ADD data_date VARCHAR(6) NOT NULL;  -- ANtes era DATE_STR
 
 -- Quitamos esta porque hay muchos archivos que no. 
 -- UPDATE dbo.PTLF_track  
@@ -92,7 +91,6 @@ ADD CONSTRAINT UQ_PTLF_track_data_date UNIQUE (data_date);
 GO
 
 -- ✅ Round3: Ajustar DATE_STR -> DATA_DATE, y mantener FILE_DATE a partir de FILE_NAME. 
-EXEC sp_rename 'dbo.PTLF_track.date_str', 'data_date', 'COLUMN';
 
 ALTER TABLE dbo.PTLF_track
 ADD CONSTRAINT CK_PTLF_track_data_date_YYMMDD
@@ -132,10 +130,6 @@ GO
 -- 3) Drop anything depending on old file_date (indexes/constraints) if they exist
 -- Example:
 -- DROP INDEX IX_track_file_date ON dbo.PTLF_track;
-
--- 4) Drop the old column and rename the computed one
-ALTER TABLE dbo.PTLF_track DROP COLUMN file_date;
-EXEC sp_rename 'dbo.PTLF_track.file_date_from_name', 'file_date', 'COLUMN';
 
 -- 5) Recreate any dropped indexes on the (now computed) file_date if needed
 -- CREATE INDEX IX_track_file_date ON dbo.PTLF_track(file_date);

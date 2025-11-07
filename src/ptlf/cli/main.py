@@ -1,10 +1,9 @@
+from datetime import datetime as dt
 from pathlib import Path
-
 import typer 
 
 from ptlf import services
 from ptlf.core import models 
-
 
 
 app = typer.Typer()
@@ -26,6 +25,14 @@ def check_status():
     status_df = services.check_status()
     print_df = status_df.to_csv(sep='\t', index=False)
     print(print_df)
+
+@app.command()
+def reload_data(filename:Path, *, debug=False): 
+    services.reload_data(filename, debug=debug)
+
+@app.command()
+def delete_date(a_date:dt, *, debug=False):
+    services.delete_date(a_date, debug=debug)
 
 @app.command()
 def create_view(from_col:str):

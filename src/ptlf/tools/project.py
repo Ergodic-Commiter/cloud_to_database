@@ -12,8 +12,8 @@ from .misc import noner
 
 def index_duplicates(srs:pd.Series):
     """Si en la serie hay repetidos, los numeramos para que no haya."""
-    duplicates = srs.duplicated(False)
     occurrence = srs.groupby(srs).cumcount() + 1
+    duplicates = srs.duplicated(False)
     suffix = ('_' + occurrence.astype(str)).where(duplicates, '')
     return srs+suffix
 

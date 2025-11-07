@@ -3,12 +3,11 @@ import logging
 import azure.functions as func
 from azurefunctions.extensions.bindings import blob
 
-from ptlf import core, infra
-from ptlf.core import errors as ee
-from . import flow
+from ptlf import infra
+from ptlf.core import errors as ee, settings, flow, engine
 
-cfg = core.Settings()
-alq_eng = core.get_engine(cfg)
+cfg = settings.Settings()
+alq_eng = engine.get_engine(cfg)
 infra.logging.setup(cfg)
 
 

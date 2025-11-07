@@ -11,13 +11,13 @@ import zipfile as zf
 
 from azure.storage.blob import ContainerClient, BlobClient
 import pandas as pd
-from toolz import dicttoolz as dz
 import sqlalchemy as alq 
 from sqlalchemy.engine import Engine
 from sqlalchemy.exc import IntegrityError, OperationalError
+from toolz import dicttoolz as dz
 
-from ptlf import core, tools
-from ptlf.core import errors as ee, models
+from ptlf import tools
+from ptlf.core import errors as ee, models as mm, settings as ss
 
 fspath = tools.noner(os.fspath)
 
@@ -37,26 +37,31 @@ class DayDataFlow:
     def __init__(self, config:FlowConfig, logger:Optional[logging.Logger]=None): 
         self.cfg = config
         self.dates_off = 0
-        self.reports = {}
         self.log = logger or logging.getLogger('__name__')
+        self.reports = {}
     
+    @classmethod
+    def from_date(cls, date:dt.date, work_dir:Path, debug:bool=False) -> 'DayDataFlow':
+        return cls(FlowConfig(date, work_dir, None, debug)) 
+        
+
     # Pasada la inicialización, las funciones se enlistan de alto nivel a bajo nivel. 
     @classmethod
-    def from_data(cls, data_file:Path, debug=False): 
+    def from_data(cls, data_file:Path, debug=False) -> 'DayDataFlow': 
         txt_fmt = r"^(.*)/text/PTLF_([\d\-]{10}$)"
-        if (mm := re.match(txt_fmt, fspath(data_file))) is None: 
+        if (data_match := re.match(txt_fmt, fspath(data_file))) is None: 
             raise ee.PTLF_FlowError(data_file.name, 'DataFileTitle') 
-        _workdir, _datestr = mm.groups()
+        _workdir, _datestr = data_match.groups()
         the_date = dt.strptime(_datestr, '%Y-%m-%d').date()
         the_dir = Path(_workdir)
         return cls(FlowConfig(the_date, the_dir, None, debug))
 
     @classmethod
-    def from_zipfile(cls, zip_file:Path, missing_ok=False, debug=False): 
+    def from_zipfile(cls, zip_file:Path, missing_ok=False, debug=False) -> 'DayDataFlow': 
         zip_fmt = r"(.*)/zips/(.*/)?PRD_TRXS_PTLF_([\d\-]{10}).ZIP"
-        if (mm := re.match(zip_fmt, fspath(zip_file))) is None: 
+        if (zip_match := re.match(zip_fmt, fspath(zip_file))) is None: 
             raise ee.PTLF_FlowError(zip_file.name, 'ZipFileName')
-        _workdir, _, _datestr = mm.groups()
+        _workdir, _, _datestr = zip_match.groups()
         the_date = dt.strptime(_datestr, '%Y-%m-%d').date()
         the_dir = Path(_workdir)
         flow = cls(FlowConfig(the_date, the_dir, zip_file, debug))
@@ -64,16 +69,16 @@ class DayDataFlow:
         return flow
 
     @classmethod
-    def from_blob_client(cls, blob:BlobClient, logger:logging.Logger, debug=False):
-        out_cfg = core.Settings()
+    def from_blob_client(cls, blob:BlobClient, logger:logging.Logger, debug=False) -> 'DayDataFlow':
+        out_cfg = ss.Settings()
         at_data = out_cfg.data_loc
 
         blob_reg = r"^fiserv/([\d/]{5,10})/PRD_TRXS_PTLF_([\d\-]{10}).ZIP$"
-        if (mm := re.match(blob_reg, blob.blob_name)) is None:
+        if (blob_match := re.match(blob_reg, blob.blob_name)) is None:
             logger.info("ACC=%s, CONT=%s, NAME=%s", 
                 blob.account_name, blob.container_name, blob.blob_name) 
             raise ee.PTLF_FlowError(blob.blob_name, 'BlobName')
-        _datepath, date2 = mm.groups()
+        _datepath, date2 = blob_match.groups()
         the_date = dt.strptime(date2, '%Y-%m-%d').date()
         in_cfg = FlowConfig(the_date, at_data, None, debug)
         
@@ -91,7 +96,7 @@ class DayDataFlow:
         """Este proceso se encarga del procesamiento de carga. 
         Además es el único donde se hace error-handling."""
         if specs is None: 
-            specs = models.read_specs()
+            specs = mm.read_specs()
         try:
             data_df = self.read_data(specs)
         except ee.PTLF_FlowError as er:
@@ -105,6 +110,10 @@ class DayDataFlow:
             self.upload_data(data_df, engine)
         except ee.PTLF_FlowError as er:
             self.log.error("Upload error at %s", er.event)
+
+
+    def delete_from(self, engine:Engine): 
+        mm.delete_raw(engine, self.datestr)
 
 
     def clean_up(self, status): 
@@ -131,7 +140,7 @@ class DayDataFlow:
 
     def read_data(self, specs=None) -> pd.DataFrame: 
         if specs is None: 
-            specs = models.read_specs()
+            specs = mm.read_specs()
         fwf_args = dict(dtype=str, header=None, colspecs=[(0, None)], 
             names=['value'])
         reporter = defaultdict(list)
@@ -158,7 +167,7 @@ class DayDataFlow:
             data_date = self.cfg.date + delta(days=self.dates_off)
             meta['data_date'] = data_date.strftime('%y%m%d')
         try: 
-            an_id = models.start_raw(engine, meta)
+            an_id = mm.start_raw(engine, meta)
         except IntegrityError as e1:
             raise ee.PTLF_FlowError(self.datafile.name, 'TrackIntegrity') from e1
         status = 'failed'
@@ -168,7 +177,7 @@ class DayDataFlow:
         except Exception as e1:
             raise ee.PTLF_FlowError(self.datafile.name, 'RawUpload') from e1
         finally: 
-            models.finish_raw(engine, an_id, status)
+            mm.finish_raw(engine, an_id, status)
 
 
     def determine_stage(self, engine:Engine,    

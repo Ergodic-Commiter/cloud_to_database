@@ -23,16 +23,17 @@ class OpenTable(XLTable):
         self.ws_name = ws_name
         self.tb_name = tb_name
         self.wb_args = dict(data_only=data_only, read_only=read_only)
-        (wb, _) = self.check_workbook(wb_path, **self.wb_args)
+        wb = self.check_workbook(wb_path, **self.wb_args)
         self.workbook = wb
         self._table = wb[ws_name].tables[tb_name]
 
     def __getattr__(self, name): 
         return getattr(self._table, name)
     
-    def __repr__(self): 
+    def __repr__(self):
+        attrs = ɑ('tb_name', '_table.ref', 'wb_path', 'ws_name')(self)
         repr_str = ("<OpenTable wraps Table(name={0}, ref={1}) at (path={2}, sheet={3})>"
-            .format(*ɑ('tb_name', '_table.ref', 'wb_path', 'ws_name')(self)))
+            .format(*attrs))
         return repr_str
     
     def get_dataframe(self, **kwargs):
@@ -53,11 +54,10 @@ class OpenTable(XLTable):
         a_path = Path(a_path)
         wb_args = dict(data_only=data_only, read_only=read_only)
         try: 
-            a_wb = load_workbook(a_path, **wb_args)
+            return load_workbook(a_path, **wb_args)
         except PermissionError: 
             a_path = ShortcutPath(a_path).get_target()
-            a_wb = load_workbook(a_path, **wb_args)
-        return (a_wb, a_path)
+            return load_workbook(a_path, **wb_args)
 
     def get_sheet(self): 
         return self.workbook[self.ws_name]    

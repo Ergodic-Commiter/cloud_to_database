@@ -5,11 +5,14 @@ from ptlf import core
 from ptlf.core import models
 # pylint: disable=invalid-name
 
-if __name__ == '__main__':    
+from_specs 
 
+if __name__ == '__main__':    
     ptlf_df = models.read_specs()
     ptlf_attrs = map(models.Converter.from_specs, ptlf_df.itertuples())
     ptlf_cols = list(map(σ('alq_mssql'), ptlf_attrs))
+    # from_specs = models.Converter.from_specs
+    # [ from_specs(spec_tpl).alq_mssql for spec_tpl in ptlf_df.itertuples() ]
     
     cfg = core.Settings()
     alq_eng = core.get_engine(cfg)

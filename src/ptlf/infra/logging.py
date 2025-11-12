@@ -3,6 +3,14 @@ from pathlib import Path
 from ptlf import core
 
 
+
+class ContextAdapter(logging.LoggerAdapter):
+    def process(self, msg, kwargs):
+        extra = {**getattr(self, 'extra', {}), **kwargs.get('extra', {})}
+        kwargs['extra'] = extra
+        return msg, kwargs
+
+
 def setup(cfg:core.Settings):
     root = logging.getLogger()
     root.handlers.clear()   # reset (avoid duplicate handlers)
@@ -19,3 +27,9 @@ def setup(cfg:core.Settings):
         fh.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(name)s: %(message)s"))
         root.addHandler(fh)
         root.info("Logging initialized (flow.log)")
+
+
+def get_logger(name:str=None, **context) -> logging.LoggerAdapter: 
+    dot_name = f".{name}" if name else ""
+    base = logging.getLogger("ptlf"+dot_name)
+    return ContextAdapter(base, context)

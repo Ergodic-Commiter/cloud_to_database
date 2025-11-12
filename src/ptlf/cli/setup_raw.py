@@ -5,7 +5,6 @@ from ptlf import core
 from ptlf.core import models
 # pylint: disable=invalid-name
 
-from_specs 
 
 if __name__ == '__main__':    
     ptlf_df = models.read_specs()

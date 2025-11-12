@@ -34,7 +34,7 @@ class FlowConfig:
 
 class DayDataFlow: 
     '''Cloud -> Zip -> File -> DataFrame -> SQL'''
-    def __init__(self, config:FlowConfig, logger:Optional[logging.Logger]=None): 
+    def __init__(self, config:FlowConfig, logger:logging.Logger=None): 
         self.cfg = config
         self.dates_off = 0
         self.log = logger or logging.getLogger('__name__')
@@ -69,7 +69,8 @@ class DayDataFlow:
         return flow
 
     @classmethod
-    def from_blob_client(cls, blob:BlobClient, logger:logging.Logger, debug=False) -> 'DayDataFlow':
+    def from_blob_client(cls, blob:BlobClient, 
+            logger:logging.Logger=None, debug=False) -> 'DayDataFlow':
         out_cfg = ss.Settings()
         at_data = out_cfg.data_loc
 

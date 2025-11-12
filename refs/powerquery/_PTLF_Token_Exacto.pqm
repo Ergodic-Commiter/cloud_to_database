@@ -1,0 +1,104 @@
+let
+  TextLit = (ss as text  ) as text => 
+    "'" & Text.Replace(ss, "'", "''") & "'",
+  DateLit  = (dd as date  ) as text =>
+    "CAST(" & TextLit(Date.ToText(dd, "yyyy-MM-dd")) & " AS date)",
+  DecLit   = (nn as number) as text =>
+    "CAST(" & Text.From(Number.Round(nn, 2), "en-US") & " AS decimal(19,2))",
+  IntLit   = (ii as number) as text =>
+    "CAST(" & Text.From(Number.Round(ii, 0), "en-US") & " AS int)", 
+  
+  Keys0 = Excel.CurrentWorkbook(){[Name="B_Exacta"]}[Content],
+  Keys = Table.TransformColumnTypes(Keys0, {
+    { "", type  }, 
+    { "", type  }, 
+    { "", type  }, 
+    { "", type  }, 
+    { "", type  }, 
+    { "", type  }, 
+    { "", type  }, 
+    { "", type  }, 
+    { "", type  }, 
+    { "", type  }, 
+    { "", type  }, 
+    { "", type  }, 
+    { "", type  }, 
+    { "", type  }, 
+    { "", type  }, 
+    { "", type  }, 
+    { "", type  }, 
+    { "", type  }, 
+    { "", type  }, 
+    { "", type  }, 
+    { "", type  }, 
+    { "", type  }, 
+    { "", type  }, 
+    { "", type  }, 
+    { "", type  }, 
+  }, "en-US"),
+  RowToSql = (row as record) as text => "(" & 
+    (Record.Field(row, "")) & "," & 
+    (Record.Field(row, "")) & "," & 
+    (Record.Field(row, "")) & "," & 
+    (Record.Field(row, "")) & "," & 
+    (Record.Field(row, "")) & "," & 
+    (Record.Field(row, "")) & "," & 
+    (Record.Field(row, "")) & "," & 
+    (Record.Field(row, "")) & "," & 
+    (Record.Field(row, "")) & "," & 
+    (Record.Field(row, "")) & "," & 
+    (Record.Field(row, "")) & "," & 
+    (Record.Field(row, "")) & "," & 
+    (Record.Field(row, "")) & "," & 
+    (Record.Field(row, "")) & "," & 
+    (Record.Field(row, "")) & "," & 
+    (Record.Field(row, "")) & "," & 
+    (Record.Field(row, "")) & "," & 
+    (Record.Field(row, "")) & "," & 
+    (Record.Field(row, "")) & "," & 
+    (Record.Field(row, "")) & "," & 
+    (Record.Field(row, "")) & "," & 
+    (Record.Field(row, "")) & "," & 
+    (Record.Field(row, "")) & "," & 
+    (Record.Field(row, "")) & "," & 
+    (Record.Field(row, "")) & "," & 
+  & ")", 
+  RowsText = List.Transform(Table.ToRecords(Keys), each RowToSql(_)),
+  ValuesClause = if List.IsEmpty(RowsText)
+    then "VALUES (NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)" 
+    else "VALUES " & Text.Combine(RowsText, ","),
+
+  Query = ";
+    SELECT t.*
+    FROM v_PTLF_Token AS t
+    JOIN ("& ValuesClause &"
+      ) AS k('NGBBSE24-HEAD-CRD-CARD-NUM', 'NGBBSE24-AUTH-POST-DAT', 'NGBBSE24-AUTH-SEQ-NUM', 'NGBBSE24-AUTH-AMT-1', 'NGBBSE24-AUTH-APPRV-CDE', 'NGBBSE24-C0-E-COM-FLG', 'NGBBSE24-C0-AUTHN-COLL-IND', 'NGBBSE24-C4-TERM-ATTEND-IND', 'NGBBSE24-C4-TERM-LOC-IND', 'NGBBSE24-C4-CHLDR-PRES-IND', 'NGBBSE24-C4-CHLDR-ACT-TRM-IND', 'NGBBSE24-TERM-INPUT-CAP-IND', 'NGBBSE24-CRDHLDR-ID-METHOD', 'NGBBSE24-B2-CRYPTO-INFO-DATA', 'NGBBSE24-B2-TVR', 'NGBBSE24-B2-C-CRD-VRFY-RSLTS', 'NGBBSE24-B3-CVM-RSLTS', 'NGBBSE24-B4-TERM-ENTRY-CAP', 'NGBBSE24-B4-ARQC-VRFY', 'NZBBSE24-CE-CAP-TKN_1', 'NZBBSE24-B0-PMT-INIT-CHAN', 'NZBBSE24-S8-SF2', 'NZBBSE24-CE-CAP-TKN_2', 'NZBBSE24-F3-TXN-TYP-IND', 'NZBBSE24-F3-TRNSPRT-MDE-IND') 
+      ON  t.NGBBSE24-HEAD-CRD-CARD-NUM = k.NGBBSE24-HEAD-CRD-CARD-NUM
+      AND t.NGBBSE24-AUTH-POST-DAT = k.NGBBSE24-AUTH-POST-DAT
+      AND t.NGBBSE24-AUTH-SEQ-NUM = k.NGBBSE24-AUTH-SEQ-NUM
+      AND t.NGBBSE24-AUTH-AMT-1 = k.NGBBSE24-AUTH-AMT-1
+      AND t.NGBBSE24-AUTH-APPRV-CDE = k.NGBBSE24-AUTH-APPRV-CDE
+      AND t.NGBBSE24-C0-E-COM-FLG = k.NGBBSE24-C0-E-COM-FLG
+      AND t.NGBBSE24-C0-AUTHN-COLL-IND = k.NGBBSE24-C0-AUTHN-COLL-IND
+      AND t.NGBBSE24-C4-TERM-ATTEND-IND = k.NGBBSE24-C4-TERM-ATTEND-IND
+      AND t.NGBBSE24-C4-TERM-LOC-IND = k.NGBBSE24-C4-TERM-LOC-IND
+      AND t.NGBBSE24-C4-CHLDR-PRES-IND = k.NGBBSE24-C4-CHLDR-PRES-IND
+      AND t.NGBBSE24-C4-CHLDR-ACT-TRM-IND = k.NGBBSE24-C4-CHLDR-ACT-TRM-IND
+      AND t.NGBBSE24-TERM-INPUT-CAP-IND = k.NGBBSE24-TERM-INPUT-CAP-IND
+      AND t.NGBBSE24-CRDHLDR-ID-METHOD = k.NGBBSE24-CRDHLDR-ID-METHOD
+      AND t.NGBBSE24-B2-CRYPTO-INFO-DATA = k.NGBBSE24-B2-CRYPTO-INFO-DATA
+      AND t.NGBBSE24-B2-TVR = k.NGBBSE24-B2-TVR
+      AND t.NGBBSE24-B2-C-CRD-VRFY-RSLTS = k.NGBBSE24-B2-C-CRD-VRFY-RSLTS
+      AND t.NGBBSE24-B3-CVM-RSLTS = k.NGBBSE24-B3-CVM-RSLTS
+      AND t.NGBBSE24-B4-TERM-ENTRY-CAP = k.NGBBSE24-B4-TERM-ENTRY-CAP
+      AND t.NGBBSE24-B4-ARQC-VRFY = k.NGBBSE24-B4-ARQC-VRFY
+      AND t.NZBBSE24-CE-CAP-TKN_1 = k.NZBBSE24-CE-CAP-TKN_1
+      AND t.NZBBSE24-B0-PMT-INIT-CHAN = k.NZBBSE24-B0-PMT-INIT-CHAN
+      AND t.NZBBSE24-S8-SF2 = k.NZBBSE24-S8-SF2
+      AND t.NZBBSE24-CE-CAP-TKN_2 = k.NZBBSE24-CE-CAP-TKN_2
+      AND t.NZBBSE24-F3-TXN-TYP-IND = k.NZBBSE24-F3-TXN-TYP-IND
+      AND t.NZBBSE24-F3-TRNSPRT-MDE-IND = k.NZBBSE24-F3-TRNSPRT-MDE-IND",
+  Database = Sql.Database("fiserv-reports.database.windows.net", "fiserv-db"),
+  Result = Value.NativeQuery(Database, Query, null, [EnableFolding=true])
+in
+  Result

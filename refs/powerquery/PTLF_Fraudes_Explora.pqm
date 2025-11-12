@@ -16,7 +16,7 @@ let
 
   // Los parámetros
 , Params = [fid = OptText(ReadName("par_fid")), 
-    tarjeta  = OptNum(ReadName("par_tarjeta")), 
+    tarjeta = OptNum(ReadName("par_tarjeta")), 
     afiliacion = OptText(ReadName("par_afiliacion")), 
     posteo = OptDate(ReadName("par_posteo"))]
 

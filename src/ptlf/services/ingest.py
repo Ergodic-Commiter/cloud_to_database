@@ -30,25 +30,6 @@ def _zip_run(path:Path, specs:dict, engine:alq.Engine, debug:bool):
         _single_run(ff, specs, engine, debug)
 
 
-def reload_data(path:Path, *, debug:bool=False): 
-    cfg = settings.Settings()
-    specs = models.read_specs() 
-    eng_args = ({} if not debug else 
-        dict(fast_executemany=False, echo='debug'))
-    alq_eng = ptlf_eng.get_engine(cfg, **eng_args)
-    the_flow = flow.DayDataFlow.from_data(path, debug=debug)
-    the_flow.delete_from(alq_eng)
-    the_flow.run(alq_eng, specs)
-
-
-def delete_date(date:dt.date, *, debug:bool=False): 
-    cfg = settings.Settings()
-    eng_args = ({} if not debug else 
-        dict(fast_executemany=False, echo='debug'))
-    alq_eng = ptlf_eng.get_engine(cfg, **eng_args)
-    the_flow = flow.DayDataFlow.from_date(date, cfg.data_loc, debug=debug)
-    the_flow.delete_from(alq_eng)
-
 
 def upload_data(path:Path, *, debug:bool=False):
     cfg = settings.Settings()
@@ -61,3 +42,23 @@ def upload_data(path:Path, *, debug:bool=False):
         _zip_run(path, specs, alq_eng, debug)
     else: 
         _single_run(path, specs, alq_eng, debug)
+
+
+def delete_date(date:dt.date, *, debug:bool=False): 
+    cfg = settings.Settings()
+    eng_args = ({} if not debug else 
+        dict(fast_executemany=False, echo='debug'))
+    alq_eng = ptlf_eng.get_engine(cfg, **eng_args)
+    the_flow = flow.DayDataFlow.from_date(date, cfg.data_loc, debug=debug)
+    the_flow.delete_from(alq_eng)
+
+
+def reload_data(path:Path, *, debug:bool=False): 
+    cfg = settings.Settings()
+    specs = models.read_specs() 
+    eng_args = ({} if not debug else 
+        dict(fast_executemany=False, echo='debug'))
+    alq_eng = ptlf_eng.get_engine(cfg, **eng_args)
+    the_flow = flow.DayDataFlow.from_data(path, debug=debug)
+    the_flow.delete_from(alq_eng)
+    the_flow.run(alq_eng, specs)

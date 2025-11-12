@@ -1,20 +1,13 @@
-import logging
-
 import azure.functions as func
 from azurefunctions.extensions.bindings import blob
 
-from ptlf import infra
+from ptlf.infra import get_logger
 from ptlf.core import errors as ee, settings, flow, engine
 
 cfg = settings.Settings()
 alq_eng = engine.get_engine(cfg)
-infra.logging.setup(cfg)
 
 
-class ContextAdapter(logging.LoggerAdapter):
-    def process(self, msg, kwargs):
-        ctx = " ".join(f"{k}={v}" for k,v in self.extra.items())
-        return f"{msg} | {ctx}", kwargs
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.FUNCTION)
 @app.function_name(name="PTLF-Blob-To-SQL")
@@ -22,8 +15,7 @@ app = func.FunctionApp(http_auth_level=func.AuthLevel.FUNCTION)
     path="%STORAGE_CONTAINER%/fiserv/{date1}/PRD_TRXS_PTLF_{date2}.ZIP", 
     connection="BlobConn")
 def blob_trigger(a_blob: blob.BlobClient):
-    logbase = logging.getLogger("ptlf-blob-to-sql")
-    logger = ContextAdapter(logbase, {"blob": a_blob.blob_name})
+    logger = get_logger("func.blob_ingest", blob=a_blob.name)
     logger.info("Downloading Blob %s", a_blob.blob_name)
     try:
         the_flow = flow.DayDataFlow.from_blob_client(a_blob, logger=logger)

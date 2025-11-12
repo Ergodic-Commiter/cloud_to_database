@@ -1,5 +1,4 @@
 let
-  // Para leer parámetros. 
   ReadName = (nm as text) as nullable any =>
       try Excel.CurrentWorkbook(){[Name=nm]}[Content]{0}[Column1] otherwise null,
   OptText = (v as any) as nullable text =>
@@ -14,7 +13,6 @@ let
         in if t = "" then null
           else try Number.From(t) otherwise null
 
-  // Los parámetros
 , Params = [pTarjeta = OptText(ReadName("num_tarjeta")), 
     pInicio  = OptDate(ReadName("f_inicio")), 
     pFinal   = OptDate(ReadName("f_final")), 
@@ -22,7 +20,6 @@ let
     importe_min = OptNum(ReadName("importe_min")), 
     import_max = OptNum(ReadName("importe_max"))]
 
-// las fuentes de datos
 , Db = Sql.Database("tcp:fiserv-reports.database.windows.net,1433", "fiserv-db")
 , BaseView = Db{[Schema = "dbo", Item = "v_PTLF_Token"]}[Data]
 , FilterCard = if Params[pTarjeta] <> null then 
@@ -33,7 +30,6 @@ let
     Table.SelectRows(FilterDateMin, each [num_autorizacion] = Params[autorizacion]) else FilterDateMin
 , Tops = FilterAuth.FirstN(9999)
 , WTypes = Table.TransformColumnTypes(FilterDateMin, {{"f_posteo", type date}
-//  , {"monto_txn", Currency.Type}
 })
   
 in

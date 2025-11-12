@@ -1,0 +1,117 @@
+let
+  ReadName = (nm as text) as nullable any =>
+    try Excel.CurrentWorkbook(){[Name=nm]}[Content]{0}[Column1] otherwise null,
+, OptText = (v as any) as nullable text =>
+    if v = null then null 
+    else let t = Text.Trim(Text.From(v)) 
+      in if t = "" then null else t,
+, OptDate = (v as any) as nullable date =>
+    if v = null then null else try Date.From(v) otherwise null, 
+, OptNum = (v as any) as nullable number =>
+    if v = null then null else let t = Text.Trim(Text.From(v))
+    in if t = "" then null else try Number.From(t) otherwise null
+, Params = [    = Opt(ReadName("par_")), 
+   = Opt(ReadName("par_")), 
+   = Opt(ReadName("par_")), 
+   = Opt(ReadName("par_")), 
+   = Opt(ReadName("par_")), 
+   = Opt(ReadName("par_")), 
+   = Opt(ReadName("par_")), 
+   = Opt(ReadName("par_")), 
+   = Opt(ReadName("par_")), 
+   = Opt(ReadName("par_")), 
+   = Opt(ReadName("par_")), 
+   = Opt(ReadName("par_")), 
+   = Opt(ReadName("par_")), 
+   = Opt(ReadName("par_")), 
+   = Opt(ReadName("par_")), 
+   = Opt(ReadName("par_")), 
+   = Opt(ReadName("par_")), 
+   = Opt(ReadName("par_")), 
+   = Opt(ReadName("par_")), 
+   = Opt(ReadName("par_")), 
+   = Opt(ReadName("par_")), 
+   = Opt(ReadName("par_")), 
+   = Opt(ReadName("par_")), 
+   = Opt(ReadName("par_")), 
+   = Opt(ReadName("par_")), 
+]
+, Db = Sql.Database("tcp:fiserv-reports.database.windows.net,1433", "fiserv-db")
+, Filter0 = Db{[Schema = "dbo", Item = "v_PTLF_Token"]}[Data]
+, Filter1 = if Params[] <> null then 
+    Table.SelectRows(Filter0, 
+        each [col.excel] = Params[]) else Filter0
+, Filter2 = if Params[] <> null then 
+    Table.SelectRows(Filter1, 
+        each [col.excel] = Params[]) else Filter1
+, Filter3 = if Params[] <> null then 
+    Table.SelectRows(Filter2, 
+        each [col.excel] = Params[]) else Filter2
+, Filter4 = if Params[] <> null then 
+    Table.SelectRows(Filter3, 
+        each [col.excel] = Params[]) else Filter3
+, Filter5 = if Params[] <> null then 
+    Table.SelectRows(Filter4, 
+        each [col.excel] = Params[]) else Filter4
+, Filter6 = if Params[] <> null then 
+    Table.SelectRows(Filter5, 
+        each [col.excel] = Params[]) else Filter5
+, Filter7 = if Params[] <> null then 
+    Table.SelectRows(Filter6, 
+        each [col.excel] = Params[]) else Filter6
+, Filter8 = if Params[] <> null then 
+    Table.SelectRows(Filter7, 
+        each [col.excel] = Params[]) else Filter7
+, Filter9 = if Params[] <> null then 
+    Table.SelectRows(Filter8, 
+        each [col.excel] = Params[]) else Filter8
+, Filter10 = if Params[] <> null then 
+    Table.SelectRows(Filter9, 
+        each [col.excel] = Params[]) else Filter9
+, Filter11 = if Params[] <> null then 
+    Table.SelectRows(Filter10, 
+        each [col.excel] = Params[]) else Filter10
+, Filter12 = if Params[] <> null then 
+    Table.SelectRows(Filter11, 
+        each [col.excel] = Params[]) else Filter11
+, Filter13 = if Params[] <> null then 
+    Table.SelectRows(Filter12, 
+        each [col.excel] = Params[]) else Filter12
+, Filter14 = if Params[] <> null then 
+    Table.SelectRows(Filter13, 
+        each [col.excel] = Params[]) else Filter13
+, Filter15 = if Params[] <> null then 
+    Table.SelectRows(Filter14, 
+        each [col.excel] = Params[]) else Filter14
+, Filter16 = if Params[] <> null then 
+    Table.SelectRows(Filter15, 
+        each [col.excel] = Params[]) else Filter15
+, Filter17 = if Params[] <> null then 
+    Table.SelectRows(Filter16, 
+        each [col.excel] = Params[]) else Filter16
+, Filter18 = if Params[] <> null then 
+    Table.SelectRows(Filter17, 
+        each [col.excel] = Params[]) else Filter17
+, Filter19 = if Params[] <> null then 
+    Table.SelectRows(Filter18, 
+        each [col.excel] = Params[]) else Filter18
+, Filter20 = if Params[] <> null then 
+    Table.SelectRows(Filter19, 
+        each [col.excel] = Params[]) else Filter19
+, Filter21 = if Params[] <> null then 
+    Table.SelectRows(Filter20, 
+        each [col.excel] = Params[]) else Filter20
+, Filter22 = if Params[] <> null then 
+    Table.SelectRows(Filter21, 
+        each [col.excel] = Params[]) else Filter21
+, Filter23 = if Params[] <> null then 
+    Table.SelectRows(Filter22, 
+        each [col.excel] = Params[]) else Filter22
+, Filter24 = if Params[] <> null then 
+    Table.SelectRows(Filter23, 
+        each [col.excel] = Params[]) else Filter23
+, Filter25 = if Params[] <> null then 
+    Table.SelectRows(Filter24, 
+        each [col.excel] = Params[]) else Filter24
+, Tops99 = Table.FirstN(Filter25, 9999)
+in Tops99

@@ -1,4 +1,4 @@
--- Instrucciones recopiladas por un servidor, con ayuda de ChatGPT. 
+-- Instrucciones recopiladas por el desarrollador, con ayuda de ChatGPT. 
 
 -- dbo.PTLF_track: one row per source file (or per run)
 CREATE TABLE dbo.PTLF_track (

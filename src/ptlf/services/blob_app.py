@@ -1,12 +1,15 @@
+from functools import lru_cache
+
 import azure.functions as func
 from azurefunctions.extensions.bindings import blob
 
 from ptlf.infra import get_logger
 from ptlf.core import errors as ee, settings, flow, engine
 
-cfg = settings.Settings()
-alq_eng = engine.get_engine(cfg)
-
+@lru_cache
+def get_alq_engine():
+    cfg = settings.Settings()
+    return engine.get_engine(cfg)
 
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.FUNCTION)
@@ -15,7 +18,8 @@ app = func.FunctionApp(http_auth_level=func.AuthLevel.FUNCTION)
     path="%STORAGE_CONTAINER%/fiserv/{date1}/PRD_TRXS_PTLF_{date2}.ZIP", 
     connection="BlobConn")
 def blob_trigger(a_blob: blob.BlobClient):
-    logger = get_logger("func.blob_ingest", blob=a_blob.name)
+    alq_eng = get_alq_engine()    
+    logger = get_logger("func.blob_ingest", blob=a_blob.blob_name)
     logger.info("Downloading Blob %s", a_blob.blob_name)
     try:
         the_flow = flow.DayDataFlow.from_blob_client(a_blob, logger=logger)

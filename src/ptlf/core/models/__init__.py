@@ -1,6 +1,6 @@
 from .misc import read_specs, reload_specs
 from .track import start_raw, finish_raw, delete_raw
-from .typer import Converter
+from .converter import Converter
 
 
 __all__= ['start_raw', 'finish_raw', 'delete_raw',

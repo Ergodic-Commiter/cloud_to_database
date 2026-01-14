@@ -1,4 +1,17 @@
 
+-- create unique index ... 
+-- create nonclustered index
+-- alter table ... add constraint ... primary key clustered (...)
+-- alter table ... add constraint ... foreign key (...) references 
+-- alter table ... add ... persisted
+-- alter table ... alter column 
+
+-- begin tran update ... set ... where ... 
+--     alter table ... alter column ... 
+--     commit tran 
+
+
+
 -- FOREIGN KEY a PTLF_TRACK  ✅
 CREATE NONCLUSTERED INDEX IX_PTLX_raw_date_key 
 	ON dbo.PTLF_raw([NGBBSE24-AUTH-POST-DAT]); 
@@ -53,7 +66,6 @@ ALTER COLUMN [NGBBSE24-AUTH-AMT-2] DECIMAL(17,2) NULL;  -- or NOT NULL if approp
 
 COMMIT TRAN
 GO;
-
 
 
 ALTER TABLE [PTLF_raw] ALTER COLUMN 	[NGBBSE24-HEAD-RETL-ID] NVARCHAR(19) NULL;

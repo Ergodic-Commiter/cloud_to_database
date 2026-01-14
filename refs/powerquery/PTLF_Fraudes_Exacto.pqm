@@ -1,57 +1,41 @@
 let
+  TextLit = (vv as text  ) as text => 
+    "'" & Text.Replace(vv, "'", "''") & "'",
+  DateLit = (vv as date  ) as text =>
+    "CAST(" & TextLit(Date.ToText(vv, "yyyy-MM-dd")) & " AS date)",
+  DecLit  = (vv as number) as text =>
+    "CAST(" & Text.From(Number.Round(vv, 2), "en-US") & " AS decimal(19,2))",
+  IntLit  = (vv as number) as text =>
+    "CAST(" & Text.From(Number.Round(vv, 0), "en-US") & " AS int)", 
+  
   Keys0 = Excel.CurrentWorkbook(){[Name="B_Exacta"]}[Content],
-
-  // Normalize types (text, date, number). Keep it simple & explicit.
-  Keys = Table.TransformColumnTypes(Keys0,{
-      {"FID", type text},
-      {"Tarjeta",  type number},
-      {"Afiliacion",  type text},
-      {"F_Posteo", type date}
+  Keys = Table.TransformColumnTypes(Keys0, {
+      {"Tarjeta", type text},
+      {"Codigo_Aprov",  type text},
+      {"Fecha_Trans",  type date},
+      {"Tipo_Auth", type number}
     }, "en-US"),
 
-  // --- Safe SQL literals -----------------------------------
-  TxtQuote = (ss as text  ) as text => 
-      "'" & Text.Replace(ss, "'", "''") & "'",
-  DateLit  = (dd as date  ) as text =>
-      "CAST(" & TxtQuote(Date.ToText(dd, "yyyy-MM-dd")) & " AS date)",
-  DecLit   = (nn as number) as text =>
-      "CAST(" & Text.From(Number.Round(nn, 2), "en-US") & " AS decimal(19,2))",
-  IntLit   = (ii as number) as text =>
-      "CAST(" & Text.From(Number.Round(ii, 0), "en-US") & " AS int)", 
-  
   RowToSql = (row as record) as text => "(" &
-      TxtQuote(Record.Field(row, "FID")) & "," &
-      DateLit (Record.Field(row, "Tarjeta"   )) & "," &
-      TxtQuote(Record.Field(row, "Afiliacion" )) & "," &
-      DecLit  (Record.Field(row, "F_Poste0"   )) & ")", 
+      TextLit(Record.Field(row, "Tarjeta"))      & "," &
+      TextLit(Record.Field(row, "Codigo_Aprov")) & "," &
+      DateLit(Record.Field(row, "Fecha_Trans" )) & "," &
+      IntLit (Record.Field(row, "Tipo_Auth"   )) & ")", 
   RowsText = List.Transform(Table.ToRecords(Keys), each RowToSql(_)),
   ValuesClause =
       if List.IsEmpty(RowsText)
-      then "VALUES (NULL, NULL, NULL, NULL, NULL)"  // harmless empty guard
+      then "VALUES (NULL, NULL, NULL, NULL)"
       else "VALUES " & Text.Combine(RowsText, ","),
-
+  
   Qry = "
     ; SELECT t.*
     FROM dbo.v_PTLF_Fraudes AS t
     JOIN ("& ValuesClause & "
-      ) AS k(FID, Tarjeta, Afiliacion, Fecha_Posteo) 
-      ON t.FID = k.FID
-     AND t.Tarjeta = k.Tarjeta
-     AND t.Afiliacion = k.Afiliacion
-     AND t.Fecha_Posteo = k.Fecha_Posteo",
-  Qry2 = "
-    ; WITH k(FID, Tarjeta, Afiliacion, Fecha_Posteo) 
-    AS ( SELECT * FROM (" & ValuesClause & "
-       ) v(FID, Tarjeta, Afiliacion, Fecha_Posteo)
-    SELECT t.*
-    FROM dbo.v_PTLF_Fraudes AS t
-    JOIN k
-      ON t.FID = k.FID
-     AND t.Tarjeta = k.Tarjeta
-     AND t.Afiliacion = k.Afiliacion
-     AND t.Fecha_Posteo = k.Fecha_Posteo",
-  
-  // 2) Execute as a native query (runs entirely on SQL Server, uses your composite index)
+      ) AS k(Tarjeta, Codigo_Aprov, Fecha_Trans, Tipo_Auth) 
+      ON t.Tarjeta = k.Tarjeta
+     AND t.Codigo_Aprov = k.Codigo_Aprov
+     AND t.Fecha_Trans = k.Fecha_Trans
+     AND t.Tipo_Auth = k.Tipo_Auth",
   Db = Sql.Database("fiserv-reports.database.windows.net", "fiserv-db"),
   Result = Value.NativeQuery(Db, Qry, null, [EnableFolding=true])
 in

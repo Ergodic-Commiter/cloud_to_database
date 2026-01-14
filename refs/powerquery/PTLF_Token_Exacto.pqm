@@ -3,64 +3,46 @@
 //   SQL    num_tarjeta, f_posteo, num_autorizacion, monto_txn, tipo_auth
 
 let
-  Keys0 = Excel.CurrentWorkbook(){[Name="multiQ"]}[Content],
+  TextLit = (ss as text  ) as text => 
+    "'" & Text.Replace(ss, "'", "''") & "'",
+  DateLit = (dd as date  ) as text =>
+    "CAST(" & TextLit(Date.ToText(dd, "yyyy-MM-dd")) & " AS date)",
+  NumberLit  = (nn as number) as text =>
+    "CAST(" & Text.From(Number.Round(nn, 2), "en-US") & " AS decimal(19,2))",
+  IntLit  = (ii as number) as text =>
+    "CAST(" & Text.From(Number.Round(ii, 0), "en-US") & " AS int)",
 
-  // Normalize types (text, date, number). Keep it simple & explicit.
+  Keys0 = Excel.CurrentWorkbook(){[Name="multiQ"]}[Content],
   Keys = Table.TransformColumnTypes(Keys0,{
-      {"Num-Tarjeta", type text},
-      {"F-Posteo",  type date},
-      {"Num-Auth",  type text},
-      {"Monto-Txn", type number}, 
-      {"Tipo-Auth", type number}
+    {"Num-Tarjeta", type text},
+    {"F-Posteo",  type date},
+    {"Num-Auth",  type text},
+    {"Monto-Txn", type number}, 
+    {"Tipo-Auth", type number}
     }, "en-US"),
 
-  // --- Safe SQL literals -----------------------------------
-  TxtQuote = (ss as text  ) as text => 
-      "'" & Text.Replace(ss, "'", "''") & "'",
-  DateLit  = (dd as date  ) as text =>
-      "CAST(" & TxtQuote(Date.ToText(dd, "yyyy-MM-dd")) & " AS date)",
-  DecLit   = (nn as number) as text =>
-      "CAST(" & Text.From(Number.Round(nn, 2), "en-US") & " AS decimal(19,2))",
-  IntLit   = (ii as number) as text =>
-      "CAST(" & Text.From(Number.Round(ii, 0), "en-US") & " AS int)", 
-  
   RowToSql = (row as record) as text => "(" &
-      TxtQuote(Record.Field(row, "Num-Tarjeta")) & "," &
-      DateLit (Record.Field(row, "F-Posteo"   )) & "," &
-      TxtQuote(Record.Field(row, "Num-Auth"   )) & "," &
-      DecLit  (Record.Field(row, "Monto-Txn"  )) & "," &
-      IntLit  (Record.Field(row, "Tipo-Auth"  )) & ")",
+    TextLit(Record.Field(row, "Num-Tarjeta")) & "," &
+    DateLit(Record.Field(row, "F-Posteo"   )) & "," &
+    TextLit(Record.Field(row, "Num-Auth"   )) & "," &
+    NumberLit (Record.Field(row, "Monto-Txn"  )) & "," &
+    IntLit (Record.Field(row, "Tipo-Auth"  )) & ")",
   RowsText = List.Transform(Table.ToRecords(Keys), each RowToSql(_)),
-  ValuesClause =
-      if List.IsEmpty(RowsText)
-      then "VALUES (NULL, NULL, NULL, NULL, NULL)"  // harmless empty guard
-      else "VALUES " & Text.Combine(RowsText, ","),
+  ValuesClause = if List.IsEmpty(RowsText)
+    then "VALUES (NULL, NULL, NULL, NULL, NULL)"
+    else "VALUES " & Text.Combine(RowsText, ","),
 
-  Qry = "
-    ; SELECT t.*
-    FROM dbo.v_PTLF_Token AS t
-    JOIN ("& ValuesClause & "
-      ) AS k(num_tarjeta, f_posteo, num_autorizacion, monto_txn, tipo_auth) 
-      ON t.num_tarjeta = k.num_tarjeta
-     AND t.f_posteo = k.f_posteo
-     AND t.num_autorizacion = k.num_autorizacion
-     AND t.monto_txn = k.monto_txn
-     AND t.tipo_auth = k.tipo_auth",
-  Qry2 = "
-    ; WITH k(num_tarjeta, f_posteo, num_autorizacion, monto_txn, tipo_auth) 
-    AS ( SELECT * FROM (" & ValuesClause & "
-       ) v(num_tarjeta, f_posteo, num_autorizacion, monto_txn, tipo_auth)
+  Query = "; 
     SELECT t.*
     FROM dbo.v_PTLF_Token AS t
-    JOIN k
-      ON t.num_tarjeta = k.num_tarjeta
-     AND t.f_posteo = k.f_posteo
-     AND t.num_autorizacion = k.num_autorizacion
-     AND t.monto_txn = k.monto_txn
-     AND t.tipo_auth = k.tipo_auth",
-  
-  // 2) Execute as a native query (runs entirely on SQL Server, uses your composite index)
-  Db = Sql.Database("fiserv-reports.database.windows.net", "fiserv-db"),
-  Result = Value.NativeQuery(Db, Qry, null, [EnableFolding=true])
+    JOIN ("& ValuesClause & "
+        ) AS k(num_tarjeta, f_posteo, num_autorizacion, monto_txn, tipo_auth) 
+      ON  t.num_tarjeta = k.num_tarjeta
+      AND t.f_posteo = k.f_posteo
+      AND t.num_autorizacion = k.num_autorizacion
+      AND t.monto_txn = k.monto_txn
+      AND t.tipo_auth = k.tipo_auth",
+  Database = Sql.Database("fiserv-reports.database.windows.net", "fiserv-db"),
+  Result = Value.NativeQuery(Database, Query, null, [EnableFolding=true])
 in
   Result

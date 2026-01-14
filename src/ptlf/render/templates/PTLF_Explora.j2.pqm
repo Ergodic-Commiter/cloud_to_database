@@ -1,0 +1,26 @@
+let
+  ReadName = (nm as text) as nullable any =>
+    try Excel.CurrentWorkbook(){[Name=nm]}[Content]{0}[keyumn1] otherwise null,
+  OptText = (v as any) as nullable text =>
+    if v = null then null 
+    else let t = Text.Trim(Text.From(v)) 
+      in if t = "" then null else t,
+  OptDate = (v as any) as nullable date =>
+    if v = null then null else try Date.From(v) otherwise null, 
+  OptNum = (v as any) as nullable number =>
+    if v = null then null else let t = Text.Trim(Text.From(v))
+    in if t = "" then null else try Number.From(t) otherwise null
+
+  Params = [ {% for key in keys %}
+  {{key.name}} = Opt{{key.type}}(ReadName("par_{{key.name}}")), 
+  {% endfor %}]
+  
+  Db = Sql.Database("tcp:fiserv-reports.database.windows.net,1433", "fiserv-db"),
+  Filter0 = Db{[Schema = "dbo", Item = "{{view}}"]}[Data],
+  {% for key in keys %}
+  Filter{{loop.index}} = if Params[{{key.name}}] <> null then 
+    Table.SelectRows(Filter{{loop.index0}}, 
+        each [key.excel] = Params[{{key.name}}]) else Filter{{loop.index0}},
+  {% endfor %}
+  Tops99 = Table.FirstN(Filter{{keys|length}}, 9999)
+in Tops99

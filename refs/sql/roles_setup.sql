@@ -55,8 +55,9 @@ ALTER ROLE r_admin ADD MEMBER [dumdv001@bineo];     -- ❌
 ALTER ROLE r_dev   ADD MEMBER [diego.v@bineo.com];  -- ✅
 ALTER ROLE r_etl   ADD MEMBER [ptlf-etl-sp];
 
-CREATE USER [prevencion.fraudes] WITH PASSWORD = 'Untold-Litigate-Culminate';
-ALTER ROLE r_ops   ADD MEMBER [prevencion.fraudes];  -- ❌
+CREATE USER [liliana.hernandez] WITH PASSWORD = 'Backtrack-Buckshot-Prorate';
+ALTER ROLE r_ops ADD MEMBER [liliana.hernandez];  -- ❌
+GRANT SELECT ON dbo.v_PTLF_Fraudes TO r_ops; 
 
 -- ### 5. Sanity Checks. 
 -- See who you are (login/user as seen by SQL)

@@ -11,7 +11,7 @@ from warnings import warn
 import pandas as pd
 import sqlalchemy as alq
 from sqlalchemy.dialects import mssql
-from toolz import functoolz as fz
+from toolz import curried as cz, functoolz as fz
 
 from ptlf import tools
 from .. import errors as ee
@@ -24,14 +24,21 @@ from .. import errors as ee
 
 @dataclass
 class FieldSpecs: 
-    Name1 : str
-    From : int
-    Length : int
-    Format : str    
+    Name1: str
+    From: int
+    Length: int
+    Format: str    
     @property
     def slice(self): 
         ff, ll = ɑ('From', 'Length')(self)
         return slice(ff, ff+ll)
+
+@dataclass
+class PQMTemplater:
+    name: str
+    pq_type: str
+    pq_lit: str
+    excel: str
 
 
 class Converter: 
@@ -68,6 +75,8 @@ class Converter:
     @classmethod
     def get_valid_converters(cls, raw_row:tuple, stage=None):
         stage = stage or 'raw'
+        if stage not in ['raw', 'ops']: 
+            raise ValueError(f"STAGE {stage} must be [raw, ops]")
         χ_valid = lambda typeid: cls.registry[typeid](raw_row).validate(stage)
         return list(filter(χ_valid, cls.registry))    
     
@@ -136,6 +145,22 @@ class Converter:
             return self._finalize(parsed)
         return mutate
 
+    def pqm_templater(self, user_col): 
+        ops_types = self.get_valid_converters(self._specs, 'ops')
+        if len(ops_types) != 1: 
+            raise ValueError(f"Column {self.specs.Name1} OPS type is not unique.")
+        pq_translate = {
+            'str': 'text', 
+            'int': 'int', 
+            'date': 'date', 
+            'decimal': 'number'} 
+        name = self._specs[user_col]
+        pq_type = pq_translate[ops_types[1]]
+        pq_lit = pq_type.title() + "Lit"
+        excel = fz.pipe(name.split('-'), cz.map(str.title), '_'.join)
+        return PQMTemplater(name, pq_type, pq_lit, excel)
+        
+
     def slice_df(self, df, row_name='value'): 
         return df[row_name].str[self.specs.slice]
 
@@ -182,9 +207,10 @@ class IntConverter(Converter):
     pytype = int
     _pandas_dtype = 'Int64'
     
-    def validate(self, stage): 
+    def validate(self, stage):
         base, len_, v9 = self.format_groups
         return (base == '9') and (len_ <= 9) and (v9 is None)
+        
     
     def mssql_col(self): 
         return mssql.INTEGER()
@@ -203,11 +229,9 @@ class IntConverter(Converter):
 class BigIntConverter(IntConverter): 
     typeid = 'bigint'
     def validate(self, stage): 
-        if stage == 'raw': 
-            base, len_, v9 = self.format_groups
-            return (base == '9') and (len_ > 9) and (v9 is None)
-        raise TypeError
-
+        base, len_, v9 = self.format_groups
+        return (base == '9') and (len_ > 9) and (v9 is None)
+        
     def mssql_col(self): 
         return mssql.BIGINT()
     

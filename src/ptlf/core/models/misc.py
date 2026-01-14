@@ -8,7 +8,7 @@ from toolz import functoolz as fz
 
 from ptlf import tools
 from ptlf.core import settings
-from .typer import Converter
+from .converter import Converter
 
 
 def reload_specs(): 
@@ -20,7 +20,9 @@ def reload_specs():
     to_path = Path('src/ptlf/data/ptlf_cols.feather')
     specs_ref = tools.OpenTable(*cfg.xl_ref)
     pre_df = specs_ref.get_dataframe()
-    specs_df = pre_df.assign(**λ_mutate)
+    specs_df = (pre_df
+        .loc[:, ~pre_df.columns.str.strip().str.endswith('*')]
+        .assign(**λ_mutate))
     specs_df.to_feather(to_path)
 
 

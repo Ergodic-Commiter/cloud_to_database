@@ -4,8 +4,15 @@
 class ErrorControversias(Exception):
     """Base de errores en flujo de PTLF."""
 
+class COBOL_FormatError(ErrorControversias): 
+    def __init__(self, *args): 
+        super().__init__(f"Error de formato COBOL: {args}")
 
-class PTLFConnError(Exception):
+class UniqueConverterError(ErrorControversias): 
+    def __init__(self, *args): 
+        super().__init__(f"Error de convertidor: {args}")
+
+class PTLFConnError(ErrorControversias):
     def __init__(self, process): 
         super().__init__(f"Error de conexión en {process}.")
 

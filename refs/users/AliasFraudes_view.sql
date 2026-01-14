@@ -1,11 +1,11 @@
 
 ALTER VIEW dbo.v_PTLF_Fraudes AS
 SELECT 
-	dbo.[PTLF_raw].[NGBBSE24-HEAD-CRD-CARD-NUM] AS [Tarjeta],
-	dbo.[PTLF_raw].[NGBBSE24-AUTH-APPRV-CDE] AS [Codigo_Aprov],
-	CAST(dbo.[PTLF_raw].[NGBBSE24-AUTH-POST-DAT] AS DATE) AS [Fecha_Trans],
-	dbo.[PTLF_raw].[NGBBSE24-AUTH-TYP] AS [Tipo_Auth],
-	dbo.[PTLF_raw].[NGBBSE24-HEAD-CRD-FIID] AS [FID],
+	dbo.[PTLF_raw].[NGBBSE24-HEAD-CRD-CARD-NUM] AS [Tarjeta],  --VARCHAR 
+	dbo.[PTLF_raw].[NGBBSE24-AUTH-APPRV-CDE] AS [Codigo_Aprov],  --varchar
+	CAST(dbo.[PTLF_raw].[NGBBSE24-AUTH-POST-DAT] AS DATE) AS [Fecha_Trans],  --DATE
+	dbo.[PTLF_raw].[NGBBSE24-AUTH-TYP] AS [Tipo_Auth],  --integer
+	dbo.[PTLF_raw].[NGBBSE24-HEAD-CRD-FIID] AS [FID],  
 	CAST(dbo.[PTLF_raw].[NGBBSE24-AUTH-TRAN-DAT] AS DATE) AS [Fecha_Posteo],
 	dbo.[PTLF_raw].[NGBBSE24-HEAD-RETL-ID] AS [Afiliacion],
 	dbo.[PTLF_raw].[NGBBSE24-AUTH-TERM-OWNER-NAME] AS [Comercio],

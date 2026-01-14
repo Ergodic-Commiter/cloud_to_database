@@ -1,5 +1,4 @@
 let
-  // Para leer parámetros. 
   ReadName = (nm as text) as nullable any =>
       try Excel.CurrentWorkbook(){[Name=nm]}[Content]{0}[Column1] otherwise null,
   OptText = (v as any) as nullable text =>
@@ -12,29 +11,23 @@ let
     if v = null then null
     else let t = Text.Trim(Text.From(v))
         in if t = "" then null
-          else try Number.From(t) otherwise null
+          else try Number.From(t) otherwise null, 
 
-  // Los parámetros
-, Params = [fid = OptText(ReadName("par_fid")), 
-    tarjeta = OptNum(ReadName("par_tarjeta")), 
-    afiliacion = OptText(ReadName("par_afiliacion")), 
-    posteo = OptDate(ReadName("par_posteo"))]
+  Params = [tarjeta = OptText(ReadName("par_tarjeta")), 
+    codigo_aprov = OptNum(ReadName("par_codigo_aprov")), 
+    fecha_trans = OptDate(ReadName("par_fecha_trans")), 
+    tipo_auth = OptNum(ReadName("par_tipo_auth"))], 
 
-// las fuentes de datos
-, Db = Sql.Database("tcp:fiserv-reports.database.windows.net,1433", "fiserv-db")
-, BaseView = Db{[Schema = "dbo", Item = "v_PTLF_Fraudes"]}[Data]
-, FilterFID = if Params[fid] <> null then 
-    Table.SelectRows(BaseView, each [FID] = Params[fid]) else BaseView
-, FilterTarjeta = if Params[tarjeta] <> null then 
-    Table.SelectRows(FilterFID, each [Tarjeta] >= Params[tarjeta]) else FilterFID
-, FilterAfiliacion = if Params[afiliacion] <> null then 
-    Table.SelectRows(FilterTarjeta, each [Afiliacion] = Params[afiliacion]) else FilterTarjeta
-, FilterPosteo = if Params[posteo] <> null then 
-    Table.SelectRows(FilterAfiliacion, each [Fecha_Posteo] = Params[posteo]) else FilterAfiliacion
-, Tops99 = Table.FirstN(FilterPosteo, 9999)
-, WTypes = Table.TransformColumnTypes(Tops99, {{"Fecha_Posteo", type date}
-    , {"Fecha_Trans", type date}, {"Monto", Currency.Type}
-})
-  
+  Db = Sql.Database("tcp:fiserv-reports.database.windows.net,1433", "fiserv-db"), 
+  Filter0 = Db{[Schema = "dbo", Item = "v_PTLF_Fraudes"]}[Data], 
+  Filter1 = if Params[tarjeta] <> null then 
+    Table.SelectRows(Filter0, each [Tarjeta] = Params[tarjeta]) else Filter0, 
+  Filter2 = if Params[codigo_aprov] <> null then 
+    Table.SelectRows(Filter1, each [Codigo_Aprov] >= Params[codigo_aprov]) else Filter1, 
+  Filter3 = if Params[fecha_trans] <> null then 
+    Table.SelectRows(Filter2, each [Fecha_Trans] = Params[fecha_trans]) else Filter2, 
+  Filter4 = if Params[tipo_auth] <> null then 
+    Table.SelectRows(Filter3, each [Tipo_Auth] = Params[tipo_auth]) else Filter3, 
+  Tops99 = Table.FirstN(Filter4, 9999)
 in
-  WTypes
+  Tops99

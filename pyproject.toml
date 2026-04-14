@@ -40,6 +40,7 @@ mac-alias = "^2.2"
 msgraph-sdk = "^1.31"
 python-dotenv = "^1.1"
 office365-rest-python-client = "^2.6"
+alembic = "^1.18.4"
 
 [tool.pytest.ini_options]
     addopts = "--tb=line"

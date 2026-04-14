@@ -1,7 +1,9 @@
 .env*
 config.cfg
 **local.settings.json
+appsettings.json
 
+.venv**
 .vscode
 
 **.egg-info**

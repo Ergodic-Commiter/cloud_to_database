@@ -3,7 +3,7 @@ from decimal import Decimal
 from datetime import datetime as dt
 from operator import attrgetter as ɑ
 import re
-from typing import Any, ClassVar, Dict, Literal, NamedTuple, Optional, Type
+from typing import Any, ClassVar, Dict, Literal, Optional, Type
 from warnings import warn
 
 import pandas as pd
@@ -38,7 +38,7 @@ class Converter:
         super().__init_subclass__()
         if (type_id := getattr(cls, 'typeid', None)) is None: 
             return 
-        Converter.registry[typeid] = cls
+        Converter.registry[type_id] = cls
         
     def __init__(self, raw_row:FieldSpecs):
         """Subclasses usually start with RAW-ROW (from dataframe)"""

@@ -2,6 +2,8 @@
 config.cfg
 **settings.json
 
+.venv
+
 .vscode
 
 **.egg-info**

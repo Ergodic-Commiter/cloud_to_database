@@ -19,7 +19,6 @@ from .. import errors as ee
 # pylint:disable=invalid-name
 # pylint:disable=no-member
 # pylint:disable=no-self-argument
-# pylint:disable=protected-access
 
 
 @dataclass
@@ -52,6 +51,7 @@ class Converter:
     # Registro de Converter's como subclases. 
     registry = {}
     typeid: ClassVar[Optional[str]] = None
+
     def __init_subclass__(cls):
         """Registers subclass based on typeid."""
         super().__init_subclass__()

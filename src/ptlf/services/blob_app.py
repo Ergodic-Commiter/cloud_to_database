@@ -3,13 +3,12 @@ from functools import lru_cache
 import azure.functions as func
 from azurefunctions.extensions.bindings import blob
 
-from ptlf.infra import get_logger
+from infra import get_logger
 from ptlf.core import errors as ee, settings, flow, engine
 
 @lru_cache
 def get_alq_engine():
-    cfg = settings.Settings()
-    return engine.get_engine(cfg)
+    return engine.get_engine(settings.config)
 
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.FUNCTION)

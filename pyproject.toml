@@ -36,7 +36,6 @@ pylint = "^3.3"
 ipython = "^9.3"
 mac-alias = "^2.2"
 msgraph-sdk = "^1.31"
-python-dotenv = "^1.1"
 office365-rest-python-client = "^2.6"
 
 [tool.pytest.ini_options]
@@ -44,7 +43,7 @@ office365-rest-python-client = "^2.6"
 
 [tool.pylint."MESSAGES CONTROL"]
 disable = ["missing-class-docstring", "missing-final-newline", 
-    "missing-function-docstring", "missing-module-docstring", "multiple-imports", 
+    "missing-function-docstring", "missing-module-docstring",  
     "non-ascii-module-import", "non-ascii-name", "superfluous-parens", 
     "trailing-whitespace", "trailing-newlines", "unnecessary-lambda-assignment", 
     "use-dict-literal", "useless-return", "consider-using-f-string"]

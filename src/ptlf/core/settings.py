@@ -84,3 +84,5 @@ class Settings(BaseSettings):
             is_auto = self.env in {'prod', 'azure'}
             self.data_loc = Path(gettempdir()) if is_auto else Path("data/temp")
         return 
+
+config = Settings()

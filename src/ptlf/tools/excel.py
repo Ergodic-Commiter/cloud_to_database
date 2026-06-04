@@ -6,9 +6,6 @@ import re
 from openpyxl import load_workbook
 from openpyxl.utils import range_boundaries
 from openpyxl.worksheet.table import Table as XLTable
-# pylint:disable=import-outside-toplevel
-# pylint:disable=broad-exception-raised
-# pylint:disable=import-error
 # pylint:disable=super-init-not-called
 # pylint:disable=too-many-arguments
 
@@ -87,12 +84,12 @@ class ShortcutPath(Path):
         if isinstance(self.obj, WindowsPath):
             file_ext = re.findall(r"\.([A-Za-z]{3,4})\.lnk", self.obj.name)[0]
         else:
-            raise Exception("Couldn't determine file extension.")
+            raise ValueError("Couldn't determine file extension.")
         file_regex = fr'(C:\\.*\.{file_ext})'
         with self.obj.open('r', encoding='ISO-8859-1') as _f:
             a_path = re.findall(file_regex, _f.read(), flags=re.DOTALL)
         if len(a_path) != 1:
-            raise Exception('Not unique or no shortcut targets found in link.')
+            raise ValueError('Not unique or no shortcut targets found in link.')
         return a_path[0]
 
     def _windows_shortcut_2(self): 
@@ -100,6 +97,3 @@ class ShortcutPath(Path):
         with self.obj.open('rb') as _f: 
             return Path(parse(_f).path)
 
-
-def str_camel_to_snake(a_str:str): 
-    raise NotImplementedError("Function 'str_camel_to_snake' is not implemented.")

@@ -3,7 +3,7 @@
 from operator import attrgetter as ɑ
 from pathlib import Path
 
-from ibis import _, backends, cases 
+from ibis import _, backends, cases
 import sqlalchemy as alq
 
 from ptlf.core import engine as eng, errors as ee, models as mm, settings as ss
@@ -39,15 +39,18 @@ def create_view(user_col, to_file:Path=None):
     Path(to_file).write_text(sql_stmt, encoding='utf8')
 
 
-def check_status(desc=True):
+def check_status(query: str|int = None):
+    query = query or 15
     conn = eng.get_connection(conn_type='ibis')
-    status_df = (_subquery(conn)
-        .order_by(_['file_name'].desc() if desc else _['file_name'])
-        .limit(15)
-        .to_pandas()
-        .assign(n_data = lambda df: df['n_data'].astype('Int64')))
-    # Es para quitar el '.0' en el print de n_data 
-    return status_df
+    subq = _ptlf_subquery(conn).order_by(_['file_name'].desc())
+    λ_ndata = lambda df: df['n_data'].astype('Int64')
+
+    match query: 
+        case int() as kk: 
+            pre_q = subq.limit(kk).to_pandas()
+        case str() as qq: 
+            pre_q = subq.limit(100).to_pandas().query(qq)
+    return pre_q.assign(n_data = λ_ndata)
 
 
 def create_pqms(user_col, to_dir:Path=None):
@@ -76,7 +79,7 @@ def create_pqms(user_col, to_dir:Path=None):
 
 
 
-def _subquery(conn:backends.BaseBackend):
+def _ptlf_subquery(conn:backends.BaseBackend):
     track = conn.table('PTLF_track')
     status_q = (conn.table('PTLF_raw')
         .group_by(date_str = _['NGBBSE24-AUTH-POST-DAT'])

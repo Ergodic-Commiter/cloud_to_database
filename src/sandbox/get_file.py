@@ -2,7 +2,7 @@ from datetime import datetime as dt
 from sys import argv
 import zipfile as zp
 
-from ptlf import infra
+import infra
 
 # pylint: disable=invalid-name
 # pylint: disable=redefined-outer-name

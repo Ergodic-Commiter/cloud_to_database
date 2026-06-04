@@ -9,14 +9,3 @@ app.add_typer(data_app, name='data')
 app.add_typer(user_app, name='user')
 
 
-# Not yet implemented.
-infra_app = typer.Typer(help="for setting infrastructure resources up")
-
-
-### Init Group: Not yet implemented
-
-@infra_app.command()
-def setup_database(): 
-    pass
-
-

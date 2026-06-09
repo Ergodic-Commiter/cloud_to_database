@@ -1,8 +1,8 @@
 from operator import methodcaller as σ
 import sqlalchemy as alq
 
-from ptlf import core
-from ptlf.core import models
+from ptlf import engine
+from ptlf.core import models, settings as ss
 # pylint: disable=invalid-name
 
 
@@ -13,8 +13,8 @@ if __name__ == '__main__':
     # from_specs = models.Converter.from_specs
     # [ from_specs(spec_tpl).alq_mssql for spec_tpl in ptlf_df.itertuples() ]
     
-    cfg = core.Settings()
-    alq_eng = core.get_engine(cfg)
+    cfg = ss.Settings()
+    alq_eng = engine.get_engine(cfg)
     alq_meta = alq.MetaData()
     ptlf_tbl = alq.Table('PTLF_raw', alq_meta, *ptlf_cols)
     

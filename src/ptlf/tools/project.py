@@ -49,13 +49,11 @@ def file_meta(path:Path|str) -> dict:
 
 
 ### Ya no se usan: 
-
  
 def prev_datestr(datestr, dt_format='%y%m%d'): 
     a_date = dt.strptime(datestr, dt_format)
     p_date = a_date + delta(days=-1)
     return p_date.strftime(dt_format)
-
 
 def check_file_rows(file, mode='all-equal', **kwargs):
     """Revisar la longitud de las filas de los archivos fixed-widths: 
@@ -76,7 +74,6 @@ def check_file_rows(file, mode='all-equal', **kwargs):
     err_msg = f"Check rows mode {mode} can only be one of [all_equal, less_than]"
     raise ValueError(err_msg)
 
-
 def trim_file(a_file, length):
     """Hubieron algunos fixed-widths con filas más largas que lo supuestos.""" 
     a_file = Path(a_file)
@@ -86,8 +83,6 @@ def trim_file(a_file, length):
         for line in r: 
             w.write(λ_trim(line))
     return str(trim_2)
-
-
 
 def files_to_dataframe(data_dir:Optional[Path]=None): 
     data_dir = data_dir or Path('data/temp')

@@ -1,12 +1,13 @@
-# pylint: disable=not-callable
-# pylint: disable=no-name-in-module
 from operator import attrgetter as ɑ
 from pathlib import Path
+from warnings import warn
 
 from ibis import _, backends, cases
+import pandas as pd
 import sqlalchemy as alq
 
-from ptlf.core import engine as eng, errors as ee, models as mm, settings as ss
+from ptlf import engine as eng
+from ptlf.core import errors as ee, models as mm, settings as ss
 from ptlf.render import setup_j2
 
 
@@ -39,20 +40,6 @@ def create_view(user_col, to_file:Path=None):
     Path(to_file).write_text(sql_stmt, encoding='utf8')
 
 
-def check_status(query: str|int = None):
-    query = query or 15
-    conn = eng.get_connection(conn_type='ibis')
-    subq = _ptlf_subquery(conn).order_by(_['file_name'].desc())
-    λ_ndata = lambda df: df['n_data'].astype('Int64')
-
-    match query: 
-        case int() as kk: 
-            pre_q = subq.limit(kk).to_pandas()
-        case str() as qq: 
-            pre_q = subq.limit(100).to_pandas().query(qq)
-    return pre_q.assign(n_data = λ_ndata)
-
-
 def create_pqms(user_col, to_dir:Path=None):
     u_key = user_col.replace('Alias', '')
     to_dir = to_dir or Path('refs/powerquery')
@@ -77,15 +64,33 @@ def create_pqms(user_col, to_dir:Path=None):
     file_2.write_text(user_2, encoding='utf8')
 
 
+def check_status(query: str|int = 15) -> pd.DataFrame:
+    conn = eng.get_connection(conn_type='ibis')
+    match query: 
+        case int():
+            (kk, post_check) = (query, False)
+            qry_0 = _ptlf_subquery(conn)
+        case str():
+            (kk, post_check) = (100, True)
+            qry_0 = (_ptlf_subquery(conn).alias('qry_0')
+                .sql(f"select * from qry_0 where {query}"))
+    qry_1 = (qry_0
+        .order_by(_['file_name'].desc()).limit(kk)
+        .to_pandas()
+        .assign(n_data = lambda df_: df_['n_data'].astype('Int64')))
+    if post_check and len(qry_1) == kk: 
+        warn(f"String query result hit limit ({kk}), output may be truncated.")
+    return qry_1
+
 
 
 def _ptlf_subquery(conn:backends.BaseBackend):
     track = conn.table('PTLF_track')
     status_q = (conn.table('PTLF_raw')
         .group_by(date_str = _['NGBBSE24-AUTH-POST-DAT'])
-        .aggregate(n_data = _.count())
+        .aggregate(n_data = _.count().cast('Int64'))
         .right_join(track, _.date_str == track.data_date)
-        .mutate(data_date = _['data_date'].cast('date'),
+        .mutate(data_date = _['data_date'].cast('date'),  
             n_meta = _['n_records'], 
             estatus = cases(
             (_.n_data.isnull(), 'en ejecucion'), 

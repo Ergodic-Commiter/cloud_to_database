@@ -5,7 +5,8 @@ import re
 import zipfile
 
 import sqlalchemy as alq
-from ptlf.core import flow, settings, engine as ptlf_eng, models
+from ptlf import engine as ptlf_eng, flow
+from ptlf.core import settings, models
 
 
 RE_PTLF_DAT = re.compile(r"^PTLF_([\d\-]{10})$")

@@ -27,7 +27,6 @@ def reload_specs():
 
 
 def read_specs(output='dict') -> Union[dict, pd.DataFrame]:
-    # Antes regresaba el DataFrame, pero es mejor el dccionario convertido.
     with as_file(files('ptlf.data')/'ptlf_cols.feather') as ff:
         specs_df = pd.read_feather(ff)
     if output == 'dataframe': 

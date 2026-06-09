@@ -24,7 +24,7 @@ dependencies = [
     "deepmerge (>=2.0,<3.0)" ]
 
 [project.scripts]
-ptlf = "ptlf.cli.main:app"
+ptlf = "cli.main:app"
 
 [tool.poetry]
 packages = [ 
@@ -37,16 +37,30 @@ ipython = "^9.3"
 mac-alias = "^2.2"
 msgraph-sdk = "^1.31"
 office365-rest-python-client = "^2.6"
+pylnk3 = "^0.4.3"
+sqlacodegen = "^4.0.3"
+ruff = "^0.15.16"
 
 [tool.pytest.ini_options]
     addopts = "--tb=line"
+
+[tool.pylint.MASTER]
+ignore-paths = [
+  "src/ptlf/core/models/converterx",  
+  "src/notebooks",
+  "src/sandbox", 
+  "src/infra" ]
 
 [tool.pylint."MESSAGES CONTROL"]
 disable = ["missing-class-docstring", "missing-final-newline", 
     "missing-function-docstring", "missing-module-docstring",  
     "non-ascii-module-import", "non-ascii-name", "superfluous-parens", 
-    "trailing-whitespace", "trailing-newlines", "unnecessary-lambda-assignment", 
-    "use-dict-literal", "useless-return", "consider-using-f-string"]
+    "too-many-lines", "trailing-whitespace", "trailing-newlines", 
+    "unnecessary-lambda-assignment", "use-dict-literal", "useless-return", 
+    "consider-using-f-string"]
+
+[tool.ruff.format]
+skip-magic-trailing-comma = true
 
 [build-system]
 requires = [ "poetry-core>=2.0.0" ]

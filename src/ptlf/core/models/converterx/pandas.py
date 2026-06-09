@@ -3,14 +3,13 @@ from typing import ClassVar, DefaultDict, List, Optional, Tuple
 import pandas as pd
 
 from ptlf import tools
-from .base import Merger
+from . import base
 # pylint: disable=no-self-argument
 # pylint: disable=too-few-public-methods
 # pylint: disable=no-member
 
 
-class PandasMerger(Merger): 
-    registry = {}
+class PandasMixin: 
     _pandas_dtype: ClassVar[Optional[object]] = None
 
     @tools.classproperty
@@ -18,7 +17,7 @@ class PandasMerger(Merger):
         return cls._pandas_dtype or cls.pytype
 
     def pd_fromrow(self, row_name='value', *, 
-        report:DefaultDict[str, List[Tuple]]=None):
+    report:DefaultDict[str, List[Tuple]]=None):
         """Procesa con Pandas la fila completa del Fixed Width"""
         def mutate(df): 
             a_slice = self.slice_df(df, row_name)
@@ -42,13 +41,13 @@ class PandasMerger(Merger):
         return prs_srs
 
 
-class StrPandas(PandasMerger):
+class StrPandas(PandasMixin, base.StrConverter):
     typeid = 'str'
     _pandas_dtype = 'string'
     def _coerce(self, str_srs):
         return str_srs.str.strip().replace('', pd.NA)
     
-class IntPandas(PandasMerger): 
+class IntPandas(PandasMixin, base.IntConverter): 
     typeid = 'int'
     _pandas_dtype = 'Int64'
     def _coerce(self, str_srs):
@@ -59,7 +58,7 @@ class IntPandas(PandasMerger):
     def _finalize(self, prs_srs):
         return prs_srs.astype(self.pandas_dtype)
  
-class DecimalPandas(PandasMerger): 
+class DecimalPandas(PandasMixin, base.DecimalConverter): 
     typeid = 'decimal'
     _pandas_dtype = 'Float64'
     def _coerce(self, str_srs): 
@@ -71,7 +70,7 @@ class DecimalPandas(PandasMerger):
         _b, _l, v9 = self.format_groups
         return prs_srs.astype(self.pandas_dtype).div(10**v9).round(v9)
 
-class DatetimePandas(PandasMerger): 
+class DatetimePandas(PandasMixin, base.DatetimeConverter): 
     typeid = 'datetime'
     def _coerce(self, str_srs: pd.Series) -> pd.Series:
         return pd.to_datetime(str_srs, errors="coerce", unit="D", origin="julian")
@@ -80,7 +79,7 @@ class DatetimePandas(PandasMerger):
     def _finalize(self, prs_srs): 
         return prs_srs
 
-class DatePandas(PandasMerger): 
+class DatePandas(PandasMixin, base.DateConverter): 
     typeid = 'date'
     def _coerce(self, str_srs): 
         return pd.to_datetime(str_srs, "%y%m%d").dt.date
@@ -89,7 +88,7 @@ class DatePandas(PandasMerger):
     def _finalize(self, prs_srs): 
         return prs_srs 
 
-class FracTimePandas(PandasMerger): 
+class FracTimePandas(PandasMixin, base.FracTimeConverter): 
     typeid = 'fractime'
     def _coerce(self, str_srs): 
         raise NotImplementedError

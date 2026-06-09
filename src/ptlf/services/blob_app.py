@@ -4,7 +4,8 @@ import azure.functions as func
 from azurefunctions.extensions.bindings import blob
 
 from infra import get_logger
-from ptlf.core import errors as ee, settings, flow, engine
+from ptlf import engine, flow
+from ptlf.core import errors as ee, settings
 
 @lru_cache
 def get_alq_engine():

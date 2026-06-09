@@ -314,7 +314,6 @@ class DatetimeConverter(Converter):
         return prs_srs
 
 
-
 class DateConverter(Converter): 
     typeid = 'date'
     pytype = dt.date

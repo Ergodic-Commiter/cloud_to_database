@@ -5,7 +5,7 @@ from sqlalchemy.dialects import mssql
 # pylint: disable=no-member
 
 
-class MSSQLMerger: 
+class MSSQLMixin: 
     def alq_mssql(self):  
         """Genera columna para SQLALCHEMY al crear la table en SQL"""
         name = self.specs.Name1

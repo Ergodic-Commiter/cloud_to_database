@@ -14,6 +14,7 @@ from ptlf import tools
 from ptlf.core import errors as ee
 # pylint: disable=invalid-name
 # pylint: disable=no-self-argument
+# pylint: disable=too-few-public-methods
 
 
 class FieldSpecs(BaseModel): 
@@ -98,8 +99,7 @@ class Converter:
         return f"<{self.__class__.__name__} ({self.typeid}: {self.specs})>"
 
 
-class StrConverter(Converter):
-    typeid = 'str'
+class StrConverter(Converter, typeid='str'):
     pytype = str
     def validate(self, stage):
         b_, l_, _v9 = self.format_groups
@@ -113,23 +113,20 @@ class StrConverter(Converter):
         is_time = ('TIM' in name) and (l_ == 8)
         return not is_dt and not is_date and not is_time
     
-class IntConverter(Converter): 
-    typeid = 'int'
+class IntConverter(Converter, typeid='int'): 
     pytype = int
     def validate(self, stage): 
         base, len_, v9 = self.format_groups
         return (base == '9') and (len_ <= 9) and (v9 is None)
     
-class BigIntConverter(IntConverter): 
-    typeid = 'bigint'
+class BigIntConverter(IntConverter, typeid='bigint'): 
     def validate(self, stage): 
         if stage == 'raw': 
             base, len_, v9 = self.format_groups
             return (base == '9') and (len_ > 9) and (v9 is None)
         raise TypeError
 
-class DecimalConverter(Converter): 
-    typeid = 'decimal'
+class DecimalConverter(Converter, typeid='decimal'): 
     pytype = Decimal
     warn_v9 = defaultdict(int)
     @property
@@ -156,8 +153,7 @@ class DecimalConverter(Converter):
         base, _l, v9 = self.format_groups
         return re.match(r'S?9', base) and (v9 is not None)
 
-class DatetimeConverter(Converter): 
-    typeid = 'datetime'
+class DatetimeConverter(Converter, typeid='datetime'): 
     pytype = dt
     def validate(self, stage): 
         if stage == 'raw': 
@@ -168,8 +164,7 @@ class DatetimeConverter(Converter):
             return (b_ == 'X') and (l_ == 19) and ('TIM' in name)
         raise ValueError(f"stage validator {stage} must be [raw, ops]")
 
-class DateConverter(Converter): 
-    typeid = 'date'
+class DateConverter(Converter, typeid='date'): 
     pytype = dt.date
     def validate(self, stage): 
         if stage == 'raw': 
@@ -180,8 +175,7 @@ class DateConverter(Converter):
             return (b_ == 'X') and (l_ == 6) and ('DAT' in name)
         raise ValueError(f"stage validator {stage} must be [raw, ops]")
 
-class FracTimeConverter(Converter): 
-    typeid = 'fractime'
+class FracTimeConverter(Converter, typeid='fractime'): 
     pytype = dt 
     def validate(self, stage): 
         if stage == 'raw': 

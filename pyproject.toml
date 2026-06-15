@@ -21,7 +21,8 @@ dependencies = [
     "typer>=0.19,<1.0", 
     "ibis-framework[mssql] (>=11.0.0,<12.0.0)", 
     "jinja2 (>=3.1.6,<4.0.0)", 
-    "deepmerge (>=2.0,<3.0)" ]
+    "deepmerge (>=2.0,<3.0)", 
+    "pandera (>=0.31.1,<0.32.0)" ]
 
 [project.scripts]
 ptlf = "cli.main:app"
@@ -54,10 +55,10 @@ ignore-paths = [
 [tool.pylint."MESSAGES CONTROL"]
 disable = ["missing-class-docstring", "missing-final-newline", 
     "missing-function-docstring", "missing-module-docstring",  
-    "non-ascii-module-import", "non-ascii-name", "superfluous-parens", 
-    "too-many-lines", "trailing-whitespace", "trailing-newlines", 
-    "unnecessary-lambda-assignment", "use-dict-literal", "useless-return", 
-    "consider-using-f-string"]
+    "non-ascii-module-import", "non-ascii-name", "superfluous-parens",
+    "too-few-public-methods", "too-many-lines", "trailing-whitespace", 
+    "trailing-newlines", "unnecessary-lambda-assignment", "use-dict-literal", 
+    "useless-return", "consider-using-f-string"]
 
 [tool.ruff.format]
 skip-magic-trailing-comma = true

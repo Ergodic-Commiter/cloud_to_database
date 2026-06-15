@@ -27,9 +27,11 @@ def check_status(query:Annotated[str|None, Option('--query', '-q')]=None):
     print_df = status_df.to_csv(sep='\t', index=False)
     print(print_df)
 
+
 @data_app.command('reload')
 def reload_data(filename:Path, *, debug=False): 
     services.reload_data(filename, debug=debug)
+
 
 @data_app.command('delete')
 def delete_date(a_date:dt, *, debug=False):

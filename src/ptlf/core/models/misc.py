@@ -1,7 +1,6 @@
 from importlib.resources import as_file, files
 from operator import attrgetter as ɑ, methodcaller as ρ
 from pathlib import Path
-from typing import Union
 
 import pandas as pd
 from toolz import functoolz as fz
@@ -9,6 +8,8 @@ from toolz import functoolz as fz
 from ptlf import tools
 from ptlf.core import settings
 from .converter import Converter
+
+
 
 
 def reload_specs(): 
@@ -26,7 +27,7 @@ def reload_specs():
     specs_df.to_feather(to_path)
 
 
-def read_specs(output='dict') -> Union[dict, pd.DataFrame]:
+def read_specs(output='dict') -> dict|pd.DataFrame:
     with as_file(files('ptlf.data')/'ptlf_cols.feather') as ff:
         specs_df = pd.read_feather(ff)
     if output == 'dataframe': 

@@ -24,6 +24,7 @@ def upload_data(path:Path, *, debug:bool=False):
     else: 
         _single_run(path, specs, alq_eng, debug)
 
+
 def reload_data(path:Path, *, debug:bool=False): 
     cfg = settings.Settings()
     specs = models.read_specs() 

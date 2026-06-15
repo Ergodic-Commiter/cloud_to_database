@@ -3,27 +3,29 @@ from jinja2 import Environment, FileSystemLoader
 
 
 def setup_j2(**kwargs):
+    kwargs = dict(trim_blocks=True, lstrip_blocks=True) | kwargs
     env = Environment(loader=FileSystemLoader('src/ptlf/render/templates'), **kwargs)
     env.filters['mapper'] = mapper
     return env
 
 def mapper(f_name, *args):
-    funcs = {
-        'query': _query, 
-        'nulls': _nulls,
-        'records': _records, 
-        'transforms': _transforms}
+    funcs = dict(
+        query = _query, 
+        nulls = _nulls,
+        records = _records, 
+        transforms = _transforms)
     return funcs[f_name](*args)   
 
 
 def _query(view, keys): 
+    join_on = "\n\t  AND ".join(f"t.{kk} = k.{kk}" for kk in keys)
+    
     q_template = f"""
     SELECT t.*
     FROM {view} AS t
     JOIN ("& ValuesClause &"
       ) AS k{tuple(keys)}
       ON  {{0}}"""
-    join_on = "\n\t  AND ".join(f"t.{kk} = k.{kk}" for kk in keys)
     return q_template.format(join_on)
 
 def _nulls(keys):

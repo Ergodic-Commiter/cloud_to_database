@@ -2,7 +2,7 @@ from operator import attrgetter as ɑ
 from pathlib import Path
 from warnings import warn
 
-from ibis import _, backends, cases
+from ibis import backends, cases, _
 import pandas as pd
 import sqlalchemy as alq
 
@@ -11,9 +11,9 @@ from ptlf.core import errors as ee, models as mm, settings as ss
 from ptlf.render import setup_j2
 
 
-def create_user(name, password): 
+def create_user(name, password): # pylint: disable=unused-argument 
     # CREATE USER [prevencion.fraudes] WITH PASSWORD = 'Untold-Litigate-Culminate';
-    # ALTER ROLE r_ops   ADD MEMBER [prevencion.fraudes]; 
+    # ALTER ROLE r_ops ADD MEMBER [prevencion.fraudes]; 
     # GRANT SELECT ON dbo.v_PTLF_Fraudes TO r_ops;    
     pass 
 
@@ -43,12 +43,12 @@ def create_view(user_col, to_file:Path=None):
 def create_pqms(user_col, to_dir:Path=None):
     u_key = user_col.replace('Alias', '')
     to_dir = to_dir or Path('refs/powerquery')
-    tmpl_env = setup_j2(trim_blocks=True, lstrip_blocks=True)
+    tmpl_env = setup_j2()
 
     u_specs = (mm.read_specs(output='dataframe')
         .assign(new_name = lambda df: df[user_col].str.replace('*', ''), 
             is_key = lambda df: df[user_col].str.contains('*', regex=False, na=False))
-        .query("is_key")) 
+        .query("is_key"))
             
     u_cols = mm.Converter.dataframe_to_dict(u_specs)
     u_pqms = [spec.pqm_templater(u_key) for spec in u_cols.values()]
@@ -64,27 +64,28 @@ def create_pqms(user_col, to_dir:Path=None):
     file_2.write_text(user_2, encoding='utf8')
 
 
-def check_status(query: str|int = 15) -> pd.DataFrame:
+def check_status(query: str|int = None) -> pd.DataFrame:
+    query = query or 15
     conn = eng.get_connection(conn_type='ibis')
     match query: 
-        case int():
-            (kk, post_check) = (query, False)
-            qry_0 = _ptlf_subquery(conn)
-        case str():
+        case int() as kk:
+            post_check = False
+            stmt = _ptlf_stmt(conn)
+        case str() as qq:
             (kk, post_check) = (100, True)
-            qry_0 = (_ptlf_subquery(conn).alias('qry_0')
-                .sql(f"select * from qry_0 where {query}"))
-    qry_1 = (qry_0
+            stmt = (_ptlf_stmt(conn).alias('ptlf')
+                .sql(f"select * from ptlf where {qq}"))
+    df = (stmt
         .order_by(_['file_name'].desc()).limit(kk)
         .to_pandas()
         .assign(n_data = lambda df_: df_['n_data'].astype('Int64')))
-    if post_check and len(qry_1) == kk: 
-        warn(f"String query result hit limit ({kk}), output may be truncated.")
-    return qry_1
+    if post_check and len(df) == kk: 
+        warn(f"String query result has limit ({kk}), possibly truncated result.")
+    return df
 
 
 
-def _ptlf_subquery(conn:backends.BaseBackend):
+def _ptlf_stmt(conn:backends.BaseBackend):
     track = conn.table('PTLF_track')
     status_q = (conn.table('PTLF_raw')
         .group_by(date_str = _['NGBBSE24-AUTH-POST-DAT'])

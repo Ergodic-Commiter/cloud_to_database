@@ -4,8 +4,7 @@ from dataclasses import dataclass
 from datetime import datetime as dt
 from operator import attrgetter as ɑ
 import re
-from typing import (Any, ClassVar, DefaultDict, 
-    Dict, List, NamedTuple, Optional, Tuple, Type)
+import typing as typ
 from warnings import warn
 
 import pandas as pd
@@ -45,22 +44,22 @@ class Converter:
     Each converter reads a Pandas (specs) tuple representing a column of a wider table. 
     """
     # Atributos para las subclases.
-    pytype: ClassVar[Optional[Type[Any]]] = None
-    _pandas_dtype: ClassVar[Optional[object]] = None
+    pytype: typ.ClassVar[typ.Type[typ.Any] | None] = None
+    _pandas_dtype: typ.ClassVar[object|None] = None
     
     # Registro de Converter's como subclases. 
     registry = {}
-    typeid: ClassVar[Optional[str]] = None
+    typeid: typ.ClassVar[str|None] = None
 
     def __init_subclass__(cls):
         """Registers subclass based on typeid."""
         super().__init_subclass__()
         if not hasattr(cls, 'typeid') or cls.typeid is None:
-            raise TypeError(f"{cls.__name__} must define 'typeid'.")
+            raise typ.TypeError(f"{cls.__name__} must define 'typeid'.")
         Converter.registry[cls.typeid] = cls
 
     # Inicialización (de subclases). 
-    def __init__(self, raw_row:NamedTuple):
+    def __init__(self, raw_row:typ.NamedTuple):
         """Subclasses usually start with RAW-ROW (from dataframe)"""
         self._specs = raw_row
 
@@ -85,7 +84,7 @@ class Converter:
 
     # Conjunción de muchos Converter's en diccionario
     @classmethod
-    def dataframe_to_dict(cls, types_df: pd.DataFrame) -> Dict[str, 'Converter']: 
+    def dataframe_to_dict(cls, types_df: pd.DataFrame) -> typ.Dict[str, 'Converter']: 
         λ_prepare = dict(
             Name0 = lambda df: df['Field_Name'].str.replace(' ', ''), 
             Name1 = lambda df: tools.index_duplicates(df['Name0']), 
@@ -134,7 +133,7 @@ class Converter:
         raise NotImplementedError
 
     def pd_fromrow(self, row_name='value', *, 
-        report:DefaultDict[str, List[Tuple]]=None):
+        report:typ.DefaultDict[str, typ.List[typ.Tuple]]=None):
         """Procesa con Pandas la fila completa del Fixed Width"""
         def mutate(df): 
             a_slice = self.slice_df(df, row_name)

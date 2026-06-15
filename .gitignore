@@ -3,8 +3,8 @@ config.cfg
 **settings.json
 
 .venv
-
 .vscode
+.ruff_cache
 
 **.egg-info**
 **__pycache__

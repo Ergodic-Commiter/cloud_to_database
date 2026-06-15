@@ -1,101 +1,99 @@
-from typing import ClassVar, DefaultDict, List, Optional, Tuple
+from abc import ABC, abstractmethod
+import typing as typ
 
 import pandas as pd
-
-from ptlf import tools
-from . import base
-# pylint: disable=no-self-argument
-# pylint: disable=too-few-public-methods
-# pylint: disable=no-member
+from .base import FieldSpec
 
 
-class PandasMixin: 
-    _pandas_dtype: ClassVar[Optional[object]] = None
+Mutate = typ.Callable[[pd.Series], pd.Series]
 
-    @tools.classproperty
-    def pandas_dtype(cls):  
-        return cls._pandas_dtype or cls.pytype
+class PandasIntake(ABC):
+    # Definition
+    registry: typ.ClassVar[dict[str, type[typ.Self]]] = {}
 
-    def pd_fromrow(self, row_name='value', *, 
-    report:DefaultDict[str, List[Tuple]]=None):
-        """Procesa con Pandas la fila completa del Fixed Width"""
-        def mutate(df): 
-            a_slice = self.slice_df(df, row_name)
-            novalid = ~self._is_valid(a_slice)
-            if ((nosum := novalid.sum()) > 0) and (report is not None): 
-                report[self.typeid].append((self.specs.Name1, int(nosum)))
-            parsed = self._coerce(a_slice).where(~novalid)
-            return self._finalize(parsed)
+    def __init_subclass__(cls, kind:str, **kw): 
+        super().__init_subclass__(**kw)
+        PandasIntake.registry[kind] = cls
+
+    # Instantiation
+    @classmethod
+    def from_spec(cls, spec:FieldSpec) -> typ.Self: 
+        intake = PandasIntake.registry[spec.kind]
+        return intake(spec)
+
+    def __init__(self, spec:FieldSpec): 
+        self.spec = spec 
+
+    # Operation
+    def make_lambda(self) -> Mutate:
+        slice_  = self.slice_df()
+        valid_  = self.is_valid()
+        coerce_ = self.coerce()
+        finish_ = self.finalize()
+        def mutate(srs:pd.Series) -> pd.Series: 
+            a_slice = slice_(srs)
+            novalid = ~valid_(a_slice)
+            parsed = coerce_(a_slice).where(~novalid)
+            return finish_(parsed)
         return mutate
 
-    def slice_df(self, df, row_name='value'): 
-        return df[row_name].str[self.specs.slice]
+    def slice_df(self) -> Mutate:
+        return lambda srs: srs.str[self.spec.slice]
 
-    def _coerce(self, str_srs):
-        raise NotImplementedError
+    def is_valid(self) -> Mutate: 
+        return lambda srs: pd.Series(True, index=srs.index)
+
+    @abstractmethod
+    def coerce(self) -> Mutate: ...
+
+    def finalize(self) -> Mutate: 
+        return lambda srs: srs
+
+
+class StrIntake(PandasIntake, kind='str'): 
+    def coerce(self) -> Mutate:
+        return lambda srs: srs.str.strip().replace('', pd.NA)
     
-    def _is_valid(self, str_srs): 
-        return pd.Series(True, index=str_srs.index)
-    
-    def _finalize(self, prs_srs): 
-        return prs_srs
+
+class IntIntake(PandasIntake, kind='int'):
+    def coerce(self) -> Mutate:
+        def λ_coerce(srs:pd.Series) -> pd.Series: 
+            pre = srs.str.strip().replace("", pd.NA, regex=False)
+            return pd.to_numeric(pre, errors="coerce")
+        return λ_coerce
 
 
-class StrPandas(PandasMixin, base.StrConverter):
-    typeid = 'str'
-    _pandas_dtype = 'string'
-    def _coerce(self, str_srs):
-        return str_srs.str.strip().replace('', pd.NA)
-    
-class IntPandas(PandasMixin, base.IntConverter): 
-    typeid = 'int'
-    _pandas_dtype = 'Int64'
-    def _coerce(self, str_srs):
-        pre = str_srs.str.strip().replace("", pd.NA, regex=False)
-        return pd.to_numeric(pre, errors="coerce")
-    def _is_valid(self, str_srs):
-        return str_srs.str.fullmatch(r"\s*\d*", na=False)
-    def _finalize(self, prs_srs):
-        return prs_srs.astype(self.pandas_dtype)
- 
-class DecimalPandas(PandasMixin, base.DecimalConverter): 
-    typeid = 'decimal'
-    _pandas_dtype = 'Float64'
-    def _coerce(self, str_srs): 
-        pre = str_srs.str.strip().replace('', pd.NA)
-        return pd.to_numeric(pre, errors='coerce')
-    def _is_valid(self, str_srs): 
-        return str_srs.str.fullmatch(r'\s*[\-\+]?\d*', na=False)
-    def _finalize(self, prs_srs): 
-        _b, _l, v9 = self.format_groups
-        return prs_srs.astype(self.pandas_dtype).div(10**v9).round(v9)
+class DecimalIntake(IntIntake, kind='decimal'): 
+    def is_valid(self) -> Mutate:
+        return lambda srs: srs.str.fullmatch(r'\s*[\-\+]?\d*', na=False)
 
-class DatetimePandas(PandasMixin, base.DatetimeConverter): 
-    typeid = 'datetime'
-    def _coerce(self, str_srs: pd.Series) -> pd.Series:
-        return pd.to_datetime(str_srs, errors="coerce", unit="D", origin="julian")
-    def _is_valid(self, str_srs): 
-        return str_srs.str.fullmatch(r'\d{19}')
-    def _finalize(self, prs_srs): 
-        return prs_srs
+    def finalize(self) -> Mutate: 
+        v9 = self.spec.cobol.v9
+        return lambda srs: srs.astype('Float64').div(10**v9).round(v9)
 
-class DatePandas(PandasMixin, base.DateConverter): 
-    typeid = 'date'
-    def _coerce(self, str_srs): 
-        return pd.to_datetime(str_srs, "%y%m%d").dt.date
-    def _is_valid(self, str_srs): 
-        return str_srs.str.fullmatch(r'\d{6}')
-    def _finalize(self, prs_srs): 
-        return prs_srs 
 
-class FracTimePandas(PandasMixin, base.FracTimeConverter): 
-    typeid = 'fractime'
-    def _coerce(self, str_srs): 
-        raise NotImplementedError
-    def _is_valid(self, str_srs): 
-        pass
-    def _finalize(self, prs_srs): 
+class DatetimeIntake(PandasIntake, kind='datetime'): 
+    def coerce(self) -> Mutate: 
+        dt_args = dict(errors="coerce", unit="D", origin="julian")
+        return lambda srs: pd.to_datetime(srs, **dt_args)
+
+    def is_valid(self) -> Mutate: 
+        return lambda srs: srs.str.fullmatch(r'\d{19}')
+
+
+class DateIntake(PandasIntake, kind='date'):     
+    def coerce(self) -> Mutate: 
+        return lambda srs: pd.to_datetime(srs, "%y%m%d").dt.date
+
+    def is_valid(self) -> Mutate: 
+        return lambda srs: srs.str.fullmatch(r'\d{6}')
+
+
+class FractimeIntake(PandasIntake, kind='fractime'):
+    def coerce(self) -> Mutate: 
         pass 
 
+    def is_valid(self) -> Mutate: 
+        pass
 
 

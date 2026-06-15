@@ -79,10 +79,11 @@ class PTLFRaw(Base):
                 "NGBBSE24-AUTH-ORIG-CRNCY-CDE", "NGBBSE24-C0-CVD-FLD-PRESENT",
                 "NGBBSE24-CRDHLDR-ID-METHOD", "NGBBSE24-CH-CRD-VRFY-FLG2",
                 "NGBBSE24-B3-CVM-RSLTS"]),
-        alq.Index("IX_PTLF_Token", "NGBBSE24-AUTH-TYP", "NGBBSE24-AUTH-POST-DAT",
-            "NGBBSE24-HEAD-CRD-CARD-NUM", "NGBBSE24-AUTH-SEQ-NUM", "NGBBSE24-AUTH-AMT-1",
+        alq.Index("IX_PTLF_Token", 
+            "NGBBSE24-AUTH-TYP", "NGBBSE24-AUTH-POST-DAT", "NGBBSE24-HEAD-CRD-CARD-NUM", 
+            "NGBBSE24-AUTH-SEQ-NUM", "NGBBSE24-AUTH-AMT-1",
             mssql_clustered=False,
-            mssql_include=[ "NGBBSE24-C0-E-COM-FLG", "NGBBSE24-C0-AUTHN-COLL-IND",
+            mssql_include=["NGBBSE24-C0-E-COM-FLG", "NGBBSE24-C0-AUTHN-COLL-IND",
                 "NGBBSE24-C4-TERM-ATTEND-IND", "NGBBSE24-C4-TERM-LOC-IND",
                 "NGBBSE24-C4-CHLDR-PRES-IND", "NGBBSE24-C4-CHLDR-ACT-TRM-IND",
                 "NGBBSE24-TERM-INPUT-CAP-IND", "NGBBSE24-CRDHLDR-ID-METHOD",
@@ -93,7 +94,7 @@ class PTLFRaw(Base):
                 "NZBBSE24-S8-SF2", "NZBBSE24-CE-CAP-TKN_2"]),
         alq.Index("IX_PTLF_raw_member_bucket", "member_bucket", mssql_clustered=False),
         alq.Index("IX_PTLF_raw_member_prefix", "member_prefix", mssql_clustered=False),
-        alq.Index( "IX_PTLX_raw_date_key", "NGBBSE24-AUTH-POST-DAT", mssql_clustered=False))
+        alq.Index("IX_PTLX_raw_date_key", "NGBBSE24-AUTH-POST-DAT", mssql_clustered=False))
 
     row_id: orm.Mapped[int] = orm.mapped_column(
         alq.BigInteger, alq.Identity(start=1, increment=1), primary_key=True)
@@ -1127,12 +1128,11 @@ class PTLFRaw(Base):
         "NZBBSE24-F3-TRNSPRT-MDE-IND", alq.Integer)
     NZBBSE24_F3_USER_FLD_ACI: orm.Mapped[Optional[str]] = orm.mapped_column(
         "NZBBSE24-F3-USER-FLD-ACI", alq.String(4))
-    member_prefix: orm.Mapped[Optional[str]] = orm.mapped_column(
-        alq.String(6),
+    
+    member_prefix: orm.Mapped[Optional[str]] = orm.mapped_column(alq.String(6),
         alq.Computed("(left([NGBBSE24-HEAD-MBR-NUM],(6)))", persisted=True))
-    member_bucket: orm.Mapped[Optional[int]] = orm.mapped_column(
-        alq.Integer,
+    member_bucket: orm.Mapped[Optional[int]] = orm.mapped_column(alq.Integer,
         alq.Computed("(abs(checksum([NGBBSE24-HEAD-MBR-NUM]))%(256))", persisted=True))
 
-    PTLF_track: orm.Mapped[Optional["PTLFTrack"]] = orm.relationship(
-        "PTLFTrack", back_populates="PTLF_raw")
+    PTLF_track: orm.Mapped[Optional["PTLFTrack"]] = orm.relationship("PTLFTrack",
+        back_populates="PTLF_raw")

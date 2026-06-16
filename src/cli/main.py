@@ -9,3 +9,5 @@ app.add_typer(data_app, name='data')
 app.add_typer(user_app, name='user')
 
 
+if __name__ == "__main__": 
+    app()

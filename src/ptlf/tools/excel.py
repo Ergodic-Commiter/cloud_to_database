@@ -6,9 +6,9 @@ import re
 from openpyxl import load_workbook
 from openpyxl.utils import range_boundaries
 from openpyxl.worksheet.table import Table as XLTable
+# pylint:disable=import-outside-toplevel
 # pylint:disable=super-init-not-called
 # pylint:disable=too-many-arguments
-# pylint:disable=import-outside-top-level
 
 
 class OpenTable(XLTable): 

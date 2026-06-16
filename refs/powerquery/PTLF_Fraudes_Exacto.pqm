@@ -10,33 +10,32 @@ let
   
   Keys0 = Excel.CurrentWorkbook(){[Name="B_Exacta"]}[Content],
   Keys = Table.TransformColumnTypes(Keys0, {
-      {"Tarjeta", type text},
-      {"Codigo_Aprov",  type text},
-      {"Fecha_Trans",  type date},
-      {"Tipo_Auth", type number}
+      { "Tarjeta", type text },
+      { "Tipo_Auth", type number },
+      { "Fecha_Trans", type date },
+      { "Codigo_Aprov", type text }
     }, "en-US"),
 
   RowToSql = (row as record) as text => "(" &
-      TextLit(Record.Field(row, "Tarjeta"))      & "," &
-      TextLit(Record.Field(row, "Codigo_Aprov")) & "," &
-      DateLit(Record.Field(row, "Fecha_Trans" )) & "," &
-      IntLit (Record.Field(row, "Tipo_Auth"   )) & ")", 
+    TextLit(Record.Field(row, "Tarjeta")) & "," &
+    IntLit(Record.Field(row, "Tipo_Auth")) & "," &
+    DateLit(Record.Field(row, "Fecha_Trans")) & "," &
+    TextLit(Record.Field(row, "Codigo_Aprov")) & ")",
   RowsText = List.Transform(Table.ToRecords(Keys), each RowToSql(_)),
-  ValuesClause =
-      if List.IsEmpty(RowsText)
-      then "VALUES (NULL, NULL, NULL, NULL)"
-      else "VALUES " & Text.Combine(RowsText, ","),
+  ValuesClause = if List.IsEmpty(RowsText)
+    then "VALUES (NULL, NULL, NULL, NULL)"
+    else "VALUES " & Text.Combine(RowsText, ","),
   
-  Qry = "
-    ; SELECT t.*
-    FROM dbo.v_PTLF_Fraudes AS t
-    JOIN ("& ValuesClause & "
-      ) AS k(Tarjeta, Codigo_Aprov, Fecha_Trans, Tipo_Auth) 
-      ON t.Tarjeta = k.Tarjeta
-     AND t.Codigo_Aprov = k.Codigo_Aprov
-     AND t.Fecha_Trans = k.Fecha_Trans
-     AND t.Tipo_Auth = k.Tipo_Auth",
-  Db = Sql.Database("fiserv-reports.database.windows.net", "fiserv-db"),
-  Result = Value.NativeQuery(Db, Qry, null, [EnableFolding=true])
+  Query = ";
+    SELECT t.*
+    FROM v_PTLF_Fraudes AS t
+    JOIN ("& ValuesClause &"
+      ) AS k(Tarjeta, Tipo_Auth, Fecha_Trans, Codigo_Aprov) 
+      ON  t.Tarjeta = k.Tarjeta
+      AND t.Tipo_Auth = k.Tipo_Auth
+      AND t.Fecha_Trans = k.Fecha_Trans
+      AND t.Codigo_Aprov = k.Codigo_Aprov",
+  Database = Sql.Database("fiserv-reports.database.windows.net", "fiserv-db"),
+  Result = Value.NativeQuery(Database, Query, null, [EnableFolding=true])
 in
   Result

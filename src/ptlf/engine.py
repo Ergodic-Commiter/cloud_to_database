@@ -8,7 +8,7 @@ from ptlf.core import errors as ee, settings as ss
 # pylint:disable=c-extension-no-member
 
 def get_params(cfg:ss.Settings=None, user_type:str='sp'):
-    cfg = cfg or ss.Settings()
+    cfg = cfg or ss.config
     user_creds = cfg.get_creds(user_type)
     auths = dict(
         personal = 'ActiveDirectoryPassword', 

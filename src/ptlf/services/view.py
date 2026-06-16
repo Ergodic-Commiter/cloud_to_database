@@ -2,6 +2,7 @@ from operator import attrgetter as ɑ
 from pathlib import Path
 from warnings import warn
 
+# pylint: disable=no-name-in-module
 from ibis import backends, cases, _
 import pandas as pd
 import sqlalchemy as alq
@@ -9,9 +10,10 @@ import sqlalchemy as alq
 from ptlf import engine as eng
 from ptlf.core import errors as ee, models as mm, settings as ss
 from ptlf.render import setup_j2
+# pylint: disable=unused-argument
+  
 
-
-def create_user(name, password): # pylint: disable=unused-argument 
+def create_user(name, password): 
     # CREATE USER [prevencion.fraudes] WITH PASSWORD = 'Untold-Litigate-Culminate';
     # ALTER ROLE r_ops ADD MEMBER [prevencion.fraudes]; 
     # GRANT SELECT ON dbo.v_PTLF_Fraudes TO r_ops;    
@@ -19,13 +21,13 @@ def create_user(name, password): # pylint: disable=unused-argument
 
 
 def create_view(user_col, to_file:Path=None): 
-    to_file = to_file or Path(f'refs/users/{user_col}_view.sql')
+    cfg = ss.config
+    to_file = to_file or cfg.refs_dir/f"users/{user_col}_view.sql"
     print(f"Query at: {to_file}")
     ptlf_specs = mm.read_specs(output='dataframe')
     if user_col not in ptlf_specs.columns:
         raise ee.SpecsPTLF_Error(user_col)
 
-    cfg = ss.Settings()
     meta = alq.MetaData()
     alq_eng = eng.get_engine(cfg)
     ptlf_tbl = alq.Table('PTLF_raw', meta, schema='dbo', autoload_with=alq_eng)
@@ -41,18 +43,18 @@ def create_view(user_col, to_file:Path=None):
 
 
 def create_pqms(user_col, to_dir:Path=None):
+    cfg = ss.config
+    to_dir = to_dir or cfg.refs_dir/'powerquery'
     u_key = user_col.replace('Alias', '')
-    to_dir = to_dir or Path('refs/powerquery')
-    tmpl_env = setup_j2()
-
+    
     u_specs = (mm.read_specs(output='dataframe')
         .assign(new_name = lambda df: df[user_col].str.replace('*', ''), 
             is_key = lambda df: df[user_col].str.contains('*', regex=False, na=False))
-        .query("is_key"))
-            
+        .query("is_key"))            
     u_cols = mm.Converter.dataframe_to_dict(u_specs)
-    u_pqms = [spec.pqm_templater(u_key) for spec in u_cols.values()]
+    u_pqms = [spec.pqm_templater() for spec in u_cols.values()]
 
+    tmpl_env = setup_j2()
     tmpl_1 = tmpl_env.get_template('PTLF_Exacto.j2.pqm')
     user_1 = tmpl_1.render(view=f'v_PTLF_{u_key}', keys=u_pqms)
     file_1 = to_dir/f'_PTLF_{u_key}_Exacto.pqm'

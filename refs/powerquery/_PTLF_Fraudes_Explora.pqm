@@ -8,29 +8,29 @@ let
   Opt_date = (v as any) as nullable date =>
     if v = null then null else try Date.From(v) otherwise null, 
   Opt_number = (v as any) as nullable number =>
-    if v = null then null
+    if v = null then null   
     else let t = Text.Trim(Text.From(v))
-      in if t = "" then null else try Number.From(t) otherwise null, 
+      in if t = "" then null else try Number.From(t) otherwise null,
 
   Params = [
-    Tarjeta = Opt_text(ReadName("par_tarjeta")), 
-    Tipo_Auth = Opt_number(ReadName("par_tipo_auth")), 
-    Fecha_Trans = Opt_date(ReadName("par_fecha_trans")), 
-    Codigo_Aprov = Opt_number(ReadName("par_codigo_aprov"))], 
-
-  Db = Sql.Database("tcp:fiserv-reports.database.windows.net,1433", "fiserv-db"), 
-  Filter0 = Db{[Schema = "dbo", Item = "v_PTLF_Fraudes"]}[Data], 
+    Tarjeta = Opt_text(ReadName("par_Tarjeta")),
+		Tipo_Auth = Opt_number(ReadName("par_Tipo_Auth")),
+		Fecha_Trans = Opt_date(ReadName("par_Fecha_Trans")),
+		Codigo_Aprov = Opt_text(ReadName("par_Codigo_Aprov"))], 
+  
+  Db = Sql.Database("tcp:fiserv-reports.database.windows.net,1433", "fiserv-db"),
+  Filter0 = Db{[Schema = "dbo", Item = "v_PTLF_Fraudes"]}[Data],
   Filter1 = if Params[Tarjeta] <> null 
     then Table.SelectRows(Filter0, each [Tarjeta] = Params[Tarjeta]) 
-    else Filter0, 
-  Filter2 = if Params[Tipo_Auth] <> null 
+    else Filter0,
+	Filter2 = if Params[Tipo_Auth] <> null 
     then Table.SelectRows(Filter1, each [Tipo_Auth] = Params[Tipo_Auth]) 
-    else Filter1, 
-  Filter3 = if Params[Fecha_Trans] <> null 
+    else Filter1,
+	Filter3 = if Params[Fecha_Trans] <> null 
     then Table.SelectRows(Filter2, each [Fecha_Trans] = Params[Fecha_Trans]) 
-    else Filter2, 
-  Filter4 = if Params[Codigo_Aprov] <> null 
+    else Filter2,
+	Filter4 = if Params[Codigo_Aprov] <> null 
     then Table.SelectRows(Filter3, each [Codigo_Aprov] = Params[Codigo_Aprov]) 
-    else Filter3, 
+    else Filter3,
   Tops99 = Table.FirstN(Filter4, 9999)
 in Tops99

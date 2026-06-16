@@ -144,18 +144,22 @@ class Converter:
             return self._finalize(parsed)
         return mutate
 
-    def pqm_templater(self, user_col): 
+    def pqm_templater(self): 
         ops_types = self.get_valid_converters(self._specs, 'ops')
         if len(ops_types) != 1: 
             raise ValueError(f"Column {self.specs.Name1} OPS type is not unique.")
-        pq_translate = {
-            'str': 'text', 
-            'int': 'int', 
-            'date': 'date', 
-            'decimal': 'number'} 
-        name = self._specs[user_col]
-        pq_type = pq_translate[ops_types[1]]
-        pq_lit = pq_type.title() + "Lit"
+        pq_types = dict(
+            str = 'text', 
+            int = 'number', 
+            date = 'date', 
+            decimal = 'number')
+        pq_lits = dict(str = 'TextLit', 
+            int = 'IntLit', 
+            date = 'DateLit', 
+            decimal = 'NumberLit')
+        name = getattr(self._specs, 'new_name')
+        pq_type = pq_types[ops_types[0]]
+        pq_lit = pq_lits[ops_types[0]]
         excel = fz.pipe(name.split('-'), cz.map(str.title), '_'.join)
         return PQMTemplater(name, pq_type, pq_lit, excel)
         
@@ -209,7 +213,6 @@ class IntConverter(Converter):
     def validate(self, stage):
         base, len_, v9 = self.format_groups
         return (base == '9') and (len_ <= 9) and (v9 is None)
-        
     
     def mssql_col(self): 
         return mssql.INTEGER()

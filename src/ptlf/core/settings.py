@@ -20,6 +20,7 @@ class Settings(BaseSettings):
     env: str = Field(default='dev', validation_alias='PTLF_ENV')
     data_loc: Optional[Path] = None  # Se configura en model_post_init
     xl_ref: Tuple[Path, str, str] = (Path('data/PTLF-cols.xlsx'), 'LO', 'ptlf_cols')
+    refs_dir: Optional[Path] = Path("refs")
     
     # Azure Service Principal
     tenant_id: Optional[str] = Field(None, validation_alias='AZURE_TENANT_ID')

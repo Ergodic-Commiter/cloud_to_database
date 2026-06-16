@@ -16,7 +16,7 @@ let
     Tarjeta = Opt_text(ReadName("par_Tarjeta")),
 		Tipo_Auth = Opt_number(ReadName("par_Tipo_Auth")),
 		Fecha_Trans = Opt_date(ReadName("par_Fecha_Trans")),
-		Codigo_Aprov = Opt_text(ReadName("par_Codigo_Aprov"))], 
+		Codigo_Aprov = Opt_text(ReadName("par_Codigo_Aprov")) ], 
   
   Db = Sql.Database("tcp:fiserv-reports.database.windows.net,1433", "fiserv-db"),
   Filter0 = Db{[Schema = "dbo", Item = "v_PTLF_Fraudes"]}[Data],

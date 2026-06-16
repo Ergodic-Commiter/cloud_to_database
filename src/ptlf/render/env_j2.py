@@ -8,6 +8,7 @@ TEMPLATES = Path(__file__).parent/'templates'
 
 def setup_j2(**kwargs):
     kwargs = dict(trim_blocks=True, lstrip_blocks=True) | kwargs
+    # kwargs sólo aplican para los bloques de jinja2 {% for kk in keys %} 
     env = Environment(loader=FileSystemLoader(TEMPLATES), **kwargs)
     env.filters['mapper'] = mapper
     return env
@@ -24,18 +25,19 @@ def mapper(f_name, *args):
 
 
 def _query(view, keys): 
-    join_on = "\n\t\t\tAND ".join(f"t.{kk.name} = k.{kk.name}" for kk in keys)
-    k_call = ", ".join(kk.name for kk in keys)
+    k_temp = ", ".join(kk.name for kk in keys)
+    join_on = """
+      AND """.join(f"t.{kk.name} = k.{kk.name}" for kk in keys)
     q_template = f""";
     SELECT t.*
     FROM {view} AS t
     JOIN ("& ValuesClause &"
-      ) AS k({k_call})
-      ON  {{0}}"""
-    return q_template.format(join_on)
+      ) AS k({k_temp})
+      ON  {join_on}"""
+    return q_template
 
 def _nulls(keys):
-    λ_key = 'NULL'.format
+    λ_key = lambda k: 'NULL'
     return ', '.join(λ_key(kk) for kk in keys)
 
 def _records(keys): 
@@ -43,8 +45,8 @@ def _records(keys):
     return ' & "," &\n\t\t'.join(λ_key(kk) for kk in keys)
 
 def _transforms(keys): 
-    λ_key = lambda k: f'\t\t\t{{ "{k.name}", type {k.pq_type} }}'
-    return ',\n'.join(λ_key(kk) for kk in keys)
+    λ_key = lambda k: f'{{ "{k.name}", type {k.pq_type} }}'
+    return ',\n\t\t'.join(λ_key(kk) for kk in keys)
 
 def _params(keys): 
     λ_key = lambda k: f'{k.excel} = Opt_{k.pq_type}(ReadName("par_{k.name}"))'

@@ -10,11 +10,11 @@ let
   
   Keys0 = Excel.CurrentWorkbook(){[Name="B_Exacta"]}[Content],
   Keys = Table.TransformColumnTypes(Keys0, {
-      { "Tarjeta", type text },
-      { "Tipo_Auth", type number },
-      { "Fecha_Trans", type date },
-      { "Codigo_Aprov", type text }
-    }, "en-US"),
+    { "Tarjeta", type text },
+    { "Tipo_Auth", type number },
+    { "Fecha_Trans", type date },
+    { "Codigo_Aprov", type text }
+  }, "en-US"),
 
   RowToSql = (row as record) as text => "(" &
     TextLit(Record.Field(row, "Tarjeta")) & "," &

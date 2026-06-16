@@ -13,7 +13,7 @@ let
       in if t = "" then null else try Number.From(t) otherwise null,
 
   Params = [
-    {{ 'params' | mapper(keys) }}], 
+    {{ 'params' | mapper(keys) }} ], 
   
   Db = Sql.Database("tcp:fiserv-reports.database.windows.net,1433", "fiserv-db"),
   Filter0 = Db{[Schema = "dbo", Item = "{{view}}"]}[Data],

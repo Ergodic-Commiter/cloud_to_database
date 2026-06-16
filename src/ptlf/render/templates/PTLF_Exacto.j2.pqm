@@ -10,8 +10,8 @@ let
   
   Keys0 = Excel.CurrentWorkbook(){[Name="B_Exacta"]}[Content],
   Keys = Table.TransformColumnTypes(Keys0, {
-{{ 'transforms' | mapper(keys) }}
-    }, "en-US"),
+    {{ 'transforms' | mapper(keys) }}
+  }, "en-US"),
 
   RowToSql = (row as record) as text => "(" & 
     {{ 'records' | mapper(keys) }} & ")", 

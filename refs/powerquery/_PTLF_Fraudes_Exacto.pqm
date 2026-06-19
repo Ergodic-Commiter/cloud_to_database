@@ -27,14 +27,14 @@ let
     else "VALUES " & Text.Combine(RowsText, ","),
 
   Query = ";
-    SELECT t.*
-    FROM v_PTLF_Fraudes AS t
-    JOIN ("& ValuesClause &"
-      ) AS k(Tarjeta, Tipo_Auth, Fecha_Trans, Codigo_Aprov)
-      ON  t.Tarjeta = k.Tarjeta
-      AND t.Tipo_Auth = k.Tipo_Auth
-      AND t.Fecha_Trans = k.Fecha_Trans
-      AND t.Codigo_Aprov = k.Codigo_Aprov",
+		SELECT t.*
+		FROM v_PTLF_Fraudes AS t
+		JOIN ("& ValuesClause &"
+		  ) AS k(Tarjeta, Tipo_Auth, Fecha_Trans, Codigo_Aprov)
+		  ON  t.Tarjeta = k.Tarjeta
+		  AND t.Tipo_Auth = k.Tipo_Auth
+		  AND t.Fecha_Trans = k.Fecha_Trans
+		  AND t.Codigo_Aprov = k.Codigo_Aprov",
   Database = Sql.Database("fiserv-reports.database.windows.net", "fiserv-db"),
   Result = Value.NativeQuery(Database, Query, null, [EnableFolding=true])
 in

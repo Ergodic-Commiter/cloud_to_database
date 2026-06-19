@@ -10,17 +10,17 @@ let
   
   Keys0 = Excel.CurrentWorkbook(){[Name="B_Exacta"]}[Content],
   Keys = Table.TransformColumnTypes(Keys0, {
-    {{ 'transforms' | mapper(keys) }}
+    {{ 'transforms' | mapper() }}
   }, "en-US"),
 
   RowToSql = (row as record) as text => "(" & 
-    {{ 'records' | mapper(keys) }} & ")", 
+    {{ 'records' | mapper() }} & ")", 
   RowsText = List.Transform(Table.ToRecords(Keys), each RowToSql(_)),
   ValuesClause = if List.IsEmpty(RowsText)
-    then "VALUES ({{ 'nulls' | mapper(keys) }})" 
+    then "VALUES ({{ 'nulls' | mapper() }})" 
     else "VALUES " & Text.Combine(RowsText, ","),
 
-  Query = "{{ 'query' | mapper(view, keys) }}",
+  Query = "{{ 'query' | mapper() }}",
   Database = Sql.Database("fiserv-reports.database.windows.net", "fiserv-db"),
   Result = Value.NativeQuery(Database, Query, null, [EnableFolding=true])
 in

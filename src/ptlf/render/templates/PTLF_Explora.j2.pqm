@@ -1,22 +1,24 @@
 let
   ReadName = (nm as text) as nullable any =>
-    try Excel.CurrentWorkbook(){[Name=nm]}[Content]{0}[Column1] otherwise null,
-  Opt_text = (v as any) as nullable text =>
+    try Excel.CurrentWorkbook(){[Name=nm]}[Content]{0}[Column1] 
+    otherwise null,
+  OptText = (v as any) as nullable text =>
     if v = null then null 
     else let t = Text.Trim(Text.From(v)) 
       in if t = "" then null else t,
-  Opt_date = (v as any) as nullable date =>
-    if v = null then null else try Date.From(v) otherwise null, 
-  Opt_number = (v as any) as nullable number =>
+  OptDate = (v as any) as nullable date =>
+    if v = null then null 
+    else try Date.From(v) otherwise null, 
+  OptNumber = (v as any) as nullable number =>
     if v = null then null   
     else let t = Text.Trim(Text.From(v))
       in if t = "" then null else try Number.From(t) otherwise null,
 
   Params = [
-    {{ 'params' | mapper(keys) }} ], 
+    {{ 'params' | mapper() }} ], 
   
   Db = Sql.Database("tcp:fiserv-reports.database.windows.net,1433", "fiserv-db"),
   Filter0 = Db{[Schema = "dbo", Item = "{{view}}"]}[Data],
-  {{ 'filters' | mapper(keys) }}
+  {{ 'filters' | mapper() }}
   Tops99 = Table.FirstN(Filter{{keys|length}}, 9999)
 in Tops99

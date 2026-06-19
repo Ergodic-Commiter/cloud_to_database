@@ -1,12 +1,10 @@
-from collections import defaultdict
 from dataclasses import dataclass
 from datetime import datetime as dt, timedelta as delta
 import logging
 from pathlib import Path
-from operator import methodcaller as ρ
 import os
 import re
-from typing import Optional
+from typing import Self
 import zipfile as zf
 
 from azure.storage.blob import ContainerClient, BlobClient
@@ -17,23 +15,27 @@ from sqlalchemy.exc import IntegrityError, OperationalError
 from toolz import dicttoolz as dz
 
 from ptlf import tools
-from ptlf.core import errors as ee, models as mm, settings as ss
+from ptlf.core import errors as ee, flow as flw, settings as ss, specs as spx
 
 fspath = tools.noner(os.fspath)
-
 # pylint: disable=anomalous-backslash-in-string
 # pylint: disable=too-many-locals
+
 
 @dataclass()
 class FlowConfig: 
     date: dt.date   
     work_dir: Path
-    zip_path: Optional[Path] = None
+    zip_path: Path|None = None
     debug: bool = False
 
 
 class DayDataFlow: 
     '''Cloud -> Zip -> File -> DataFrame -> SQL'''
+    _TEXT_FMT = re.compile(r"^(.*)/text/PTLF_([\d\-]{10}$)")
+    _ZIP_FMT = re.compile(r"(.*)/zips/(.*/)?PRD_TRXS_PTLF_([\d\-]{10}).ZIP")
+    _BLOB_FMT = re.compile(r"^fiserv/([\d/]{5,10})/PRD_TRXS_PTLF_([\d\-]{10}).ZIP$")
+
     def __init__(self, config:FlowConfig, logger:logging.Logger=None): 
         self.cfg = config
         self.dates_off = 0
@@ -41,15 +43,14 @@ class DayDataFlow:
         self.reports = {}
     
     @classmethod
-    def from_date(cls, date:dt.date, work_dir:Path, debug:bool=False) -> 'DayDataFlow':
+    def from_date(cls, date:dt.date, work_dir:Path, debug:bool=False) -> Self:
         return cls(FlowConfig(date, work_dir, None, debug)) 
         
 
     # Pasada la inicialización, las funciones se enlistan de alto nivel a bajo nivel. 
     @classmethod
     def from_data(cls, data_file:Path, debug=False) -> 'DayDataFlow': 
-        txt_fmt = r"^(.*)/text/PTLF_([\d\-]{10}$)"
-        if (data_match := re.match(txt_fmt, fspath(data_file))) is None: 
+        if (data_match := cls._TEXT_FMT.match(fspath(data_file))) is None: 
             raise ee.PTLF_FlowError(data_file.name, 'DataFileTitle') 
         _workdir, _datestr = data_match.groups()
         the_date = dt.strptime(_datestr, '%Y-%m-%d').date()
@@ -57,9 +58,8 @@ class DayDataFlow:
         return cls(FlowConfig(the_date, the_dir, None, debug))
 
     @classmethod
-    def from_zipfile(cls, zip_file:Path, missing_ok=False, debug=False) -> 'DayDataFlow': 
-        zip_fmt = r"(.*)/zips/(.*/)?PRD_TRXS_PTLF_([\d\-]{10}).ZIP"
-        if (zip_match := re.match(zip_fmt, fspath(zip_file))) is None: 
+    def from_zipfile(cls, zip_file:Path, missing_ok=False, debug=False) -> Self: 
+        if (zip_match := cls._ZIP_FMT.match(fspath(zip_file))) is None: 
             raise ee.PTLF_FlowError(zip_file.name, 'ZipFileName')
         _workdir, _, _datestr = zip_match.groups()
         the_date = dt.strptime(_datestr, '%Y-%m-%d').date()
@@ -70,12 +70,11 @@ class DayDataFlow:
 
     @classmethod
     def from_blob_client(cls, blob:BlobClient, 
-            logger:logging.Logger=None, debug=False) -> 'DayDataFlow':
+        *, logger:logging.Logger=None, debug=False) -> Self:
         out_cfg = ss.Settings()
         at_data = out_cfg.data_loc
 
-        blob_reg = r"^fiserv/([\d/]{5,10})/PRD_TRXS_PTLF_([\d\-]{10}).ZIP$"
-        if (blob_match := re.match(blob_reg, blob.blob_name)) is None:
+        if (blob_match := cls._BLOB_FMT.match(blob.blob_name)) is None:
             logger.info("ACC=%s, CONT=%s, NAME=%s", 
                 blob.account_name, blob.container_name, blob.blob_name) 
             raise ee.PTLF_FlowError(blob.blob_name, 'BlobName')
@@ -94,10 +93,9 @@ class DayDataFlow:
 
 
     def run(self, engine:Engine, specs=None):
-        """Este proceso se encarga del procesamiento de carga. 
-        Además es el único donde se hace error-handling."""
         if specs is None: 
-            specs = mm.read_specs()
+            specs_df = spx.read_specs()
+            specs = spx.FieldSpec.dataframe_dict(specs_df)
         try:
             data_df = self.read_data(specs)
         except ee.PTLF_FlowError as er:
@@ -114,7 +112,7 @@ class DayDataFlow:
 
 
     def delete_from(self, engine:Engine): 
-        mm.delete_raw(engine, self.datestr)
+        flw.delete_raw(engine, self.datestr)
 
 
     def clean_up(self, status): 
@@ -130,7 +128,7 @@ class DayDataFlow:
         self.cfg.zip_file = zip_to
 
 
-    def extract_zipfile(self, missing_ok=False): 
+    def extract_zipfile(self, missing_ok=False) -> None: 
         unzip_from = self.cfg.zip_path or self.get_path('unzip')
         data_to = self.get_path('data')
         if not zf.is_zipfile(fspath(unzip_from)) and missing_ok: 
@@ -141,20 +139,20 @@ class DayDataFlow:
 
     def read_data(self, specs=None) -> pd.DataFrame: 
         if specs is None: 
-            specs = mm.read_specs()
-        fwf_args = dict(dtype=str, header=None, colspecs=[(0, None)], 
-            names=['value'])
-        reporter = defaultdict(list)
-        λ_fromrow = ρ('pd_fromrow', row_name='value', report=reporter)
-        mutates = dz.valmap(λ_fromrow, specs)
-        df_0 = pd.read_fwf(self.datafile, encoding='latin1', **fwf_args)
+            specs_df = spx.read_specs()
+            specs = spx.FieldSpec.dataframe_dict(specs_df)
+        intakes = dz.valmap(spx.PandasIntake.from_spec, specs)
+        mutates = dz.valmap(lambda take: take.make_lambda(), intakes)
+
+        fwf_args = dict(dtype=str, header=None, colspecs=[(0, None)], names=['value'])
+        df_0 = pd.read_fwf(self.datafile, encoding='latin1', **fwf_args)['value']
         df_1 = pd.DataFrame({nm: λλ(df_0) for nm, λλ in mutates.items()})
-        self.reports['ReadData'] = reporter
-        df_key = df_1['NGBBSE24-AUTH-POST-DAT']
-        if (df_key != df_key[0]).all(): 
-            raise ee.PTLF_FlowError(self.datafile.name, 'PostingDatesNotEqual') 
-        data_date = dt.strptime(df_key[0], '%y%m%d').date()
-        self.dates_off = (data_date - self.cfg.date).days
+        
+        date_key = df_1['NGBBSE24-AUTH-POST-DAT']
+        if not (date_key == date_key[0]).all(): 
+            raise ee.PTLF_FlowError(self.datafile.name, 'PostingDatesNotEqual')
+        the_date = dt.strptime(date_key[0], '%y%m%d').date()
+        self.dates_off = (the_date - self.cfg.date).days
         return df_1
 
     
@@ -168,7 +166,7 @@ class DayDataFlow:
             data_date = self.cfg.date + delta(days=self.dates_off)
             meta['data_date'] = data_date.strftime('%y%m%d')
         try: 
-            an_id = mm.start_raw(engine, meta)
+            an_id = flw.start_raw(engine, meta)
         except IntegrityError as e1:
             raise ee.PTLF_FlowError(self.datafile.name, 'TrackIntegrity') from e1
         status = 'failed'
@@ -178,11 +176,10 @@ class DayDataFlow:
         except Exception as e1:
             raise ee.PTLF_FlowError(self.datafile.name, 'RawUpload') from e1
         finally: 
-            mm.finish_raw(engine, an_id, status)
+            flw.finish_raw(engine, an_id, status)
 
 
-    def determine_stage(self, engine:Engine,    
-            container:Optional[ContainerClient]=None):
+    def determine_stage(self, engine:Engine, container:ContainerClient=None):
         meta = alq.MetaData()
         try: 
             track_t = alq.Table('PTLF_track', meta, autoload_with=engine)
@@ -215,7 +212,6 @@ class DayDataFlow:
         cloud_name = self.get_path('cloud').name
         self.log.info("No blob found at %s", cloud_name)
         return -1
-        # raise ee.PTLF_FlowError(self.datafile, "Find Stage") 
          
 
     # Funciones y propiedades utilitarias.
@@ -231,7 +227,7 @@ class DayDataFlow:
     def datafile(self): 
         return self.at_dir('text')
     
-    def at_dir(self, a_dir): 
+    def at_dir(self, a_dir) -> Path: 
         wdir = self.cfg.work_dir
         fname = f'PTLF_{self.datestr2}'
         return wdir/a_dir/fname

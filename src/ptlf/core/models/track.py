@@ -1,50 +1,46 @@
-# Propuesto por ChatGPT, pero no me encanta este script. 
+from datetime import datetime as dt, date
 
 import sqlalchemy as alq
-from sqlalchemy import engine as eng, exc
+from sqlalchemy import orm
+from sqlalchemy.dialects import mssql
 
-from ptlf.core import errors as ee
-
-
-def _get_table(engine:eng.Engine, table=None):
-    table = table or 'PTLF_track' 
-    alq_meta = alq.MetaData()
-    try: 
-        return alq.Table(table, alq_meta, autoload_with=engine)
-    except exc.ProgrammingError as exx:
-        raise ee.PTLFConnError(table) from exx
+from .base import Base
 
 
-def start_raw(engine:eng.Engine, file_meta) -> int:
-    t_track = _get_table(engine)
-    insert_values = file_meta | dict(raw_status='running', raw_start=alq.func.sysutcdatetime())
-    insert_stmt = (alq.insert(t_track).values(**insert_values)
-        .returning(t_track.c.track_id))
-    with engine.begin() as conn:
-        track_id = conn.execute(insert_stmt).scalar_one()
-    return int(track_id)
+class PTLFTrack(Base):
+    __tablename__ = "PTLF_track"
+    __table_args__ = (
+        alq.PrimaryKeyConstraint("track_id", name="PK__PTLF_tra__24ECC82EF766E320"),
+        alq.Index("IX_PTLF_track_date", "date_file", mssql_clustered=False),        #
+        alq.Index("IX_PTLF_track_ops_status", "ops_status", mssql_clustered=False), #
+        alq.Index("IX_PTLF_track_raw_status", "raw_status", mssql_clustered=False), #
+        alq.Index("UX_PTLF_track_date_str", "data_date",    # Este no está en SQL-ref
+            mssql_clustered=False, unique=True),            # 
+        alq.Index("UX_PTLF_track_hash", "file_hash",        # ok
+            unique=True, mssql_clustered=False, mssql_where="([file_hash] IS NOT NULL)"))
 
+    track_id: orm.Mapped[int] = orm.mapped_column(alq.BigInteger,   #
+        alq.Identity(start=1, increment=1), primary_key=True)
+    file_name: orm.Mapped[str] = orm.mapped_column(alq.Unicode(260), nullable=False)    #
+    raw_status: orm.Mapped[str] = orm.mapped_column(alq.String(16), nullable=False,     # ??
+        server_default=alq.text("('pending')"))
+    ops_status: orm.Mapped[str] = orm.mapped_column(alq.String(16), nullable=False,     # ??
+        server_default=alq.text("('pending')"))
+    created_at: orm.Mapped[dt] = orm.mapped_column(     # ???
+        mssql.DATETIME2, nullable=False, server_default=alq.text("(sysutcdatetime())"))
+    updated_at: orm.Mapped[dt] = orm.mapped_column(     # ???
+        mssql.DATETIME2, nullable=False, server_default=alq.text("(sysutcdatetime())"))
+    data_date: orm.Mapped[str] = orm.mapped_column(alq.String(6),   
+        nullable=False, server_default=alq.text("((0250806))"))    # ???
+    file_path: orm.Mapped[str|None] = orm.mapped_column(alq.Unicode(1024)) #
+    file_size: orm.Mapped[int|None] = orm.mapped_column(alq.BigInteger)    #
+    file_hash: orm.Mapped[str|None] = orm.mapped_column(alq.CHAR(80))      #
+    date_file: orm.Mapped[date|None] = orm.mapped_column(alq.Date, nullable=False) #
+    n_records: orm.Mapped[int|None] = orm.mapped_column(alq.Integer)       #
+    raw_start: orm.Mapped[dt|None] = orm.mapped_column(mssql.DATETIME2)    #
+    raw_finish: orm.Mapped[dt|None] = orm.mapped_column(mssql.DATETIME2)   #
+    ops_start: orm.Mapped[dt|None] = orm.mapped_column(mssql.DATETIME2)    #
+    ops_finish: orm.Mapped[dt|None] = orm.mapped_column(mssql.DATETIME2)   #
 
-def finish_raw(engine:eng.Engine, track_id:int, raw_status:str) -> None:
-    t_track = _get_table(engine)
-    update_stmt = (alq.update(t_track)
-        .where(t_track.c.track_id == track_id)
-        .values(raw_finish = alq.func.sysutcdatetime(), 
-                raw_status = raw_status))
-    with engine.begin() as conn: 
-        conn.execute(update_stmt)
-    return
-
-
-def delete_raw(engine:eng.Engine, a_date:str) -> None: 
-    t_trk = _get_table(engine)
-    t_raw = _get_table(engine, 'PTLF_raw')
-    one_raw = (alq.delete(t_raw)
-        .where(t_raw.c["NGBBSE24-AUTH-POST-DAT"] == a_date))
-    two_trk = (alq.delete(t_trk)
-        .where(t_trk.c['data_date'] == a_date))
-    with engine.begin() as conn: 
-        conn.execute(one_raw)
-        conn.execute(two_trk)
-    return
-
+    PTLF_raw: orm.Mapped[list["PTLFRaw"]] = orm.relationship(
+        "PTLFRaw", back_populates="PTLF_track")

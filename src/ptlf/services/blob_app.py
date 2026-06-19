@@ -4,12 +4,12 @@ import azure.functions as func
 from azurefunctions.extensions.bindings import blob
 
 from infra import get_logger
-from ptlf import engine, flow
-from ptlf.core import errors as ee, settings
+from ptlf import engine
+from ptlf.core import errors as ee, flow as flw, settings as ss
 
 @lru_cache
 def get_alq_engine():
-    return engine.get_engine(settings.config)
+    return engine.get_engine(ss.config)
 
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.FUNCTION)
@@ -22,11 +22,11 @@ def blob_trigger(a_blob: blob.BlobClient):
     logger = get_logger("func.blob_ingest", blob=a_blob.blob_name)
     logger.info("Downloading Blob %s", a_blob.blob_name)
     try:
-        the_flow = flow.DayDataFlow.from_blob_client(a_blob, logger=logger)
+        the_flow = flw.DayDataFlow.from_blob_client(a_blob, logger=logger)
     except ee.PTLF_FlowError as er:
         logger.exception("Bad blob name or format; skipping: %s", a_blob.blob_name)
         raise er
-    the_flow = flow.DayDataFlow.from_blob_client(a_blob, logger=logger)
+    the_flow = flw.DayDataFlow.from_blob_client(a_blob, logger=logger)
     the_flow.extract_zipfile()
     the_flow.run(alq_eng)
     logger.info("Blob %s successful", a_blob.blob_name)

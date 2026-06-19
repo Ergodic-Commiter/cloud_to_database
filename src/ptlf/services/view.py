@@ -6,10 +6,10 @@ from warnings import warn
 from ibis import backends, cases, _
 import pandas as pd
 import sqlalchemy as alq
+from toolz import functoolz as fz
 
-from ptlf import engine as eng
-from ptlf.core import errors as ee, models as mm, settings as ss
-from ptlf.render import setup_j2
+from ptlf import engine as eng, render as rr
+from ptlf.core import errors as ee, settings as ss, specs as spx
 # pylint: disable=unused-argument
   
 
@@ -24,7 +24,8 @@ def create_view(user_col, to_file:Path=None):
     cfg = ss.config
     to_file = to_file or cfg.refs_dir/f"users/{user_col}_view.sql"
     print(f"Query at: {to_file}")
-    ptlf_specs = mm.read_specs(output='dataframe')
+    ptlf_specs = spx.read_specs()
+
     if user_col not in ptlf_specs.columns:
         raise ee.SpecsPTLF_Error(user_col)
 
@@ -43,28 +44,24 @@ def create_view(user_col, to_file:Path=None):
 
 
 def create_pqms(user_col, to_dir:Path=None):
-    cfg = ss.config
-    to_dir = to_dir or cfg.refs_dir/'powerquery'
+    to_dir = to_dir or ss.config.refs_dir/'powerquery'
     u_key = user_col.replace('Alias', '')
     
-    u_specs = (mm.read_specs(output='dataframe')
+    u_df = (spx.read_specs()
         .assign(new_name = lambda df: df[user_col].str.replace('*', ''), 
             is_key = lambda df: df[user_col].str.contains('*', regex=False, na=False))
-        .query("is_key"))            
-    u_cols = mm.Converter.dataframe_to_dict(u_specs)
-    u_pqms = [spec.pqm_templater() for spec in u_cols.values()]
-
-    tmpl_env = setup_j2()
-    tmpl_1 = tmpl_env.get_template('PTLF_Exacto.j2.pqm')
-    user_1 = tmpl_1.render(view=f'v_PTLF_{u_key}', keys=u_pqms)
-    file_1 = to_dir/f'_PTLF_{u_key}_Exacto.pqm'
-    file_1.write_text(user_1, encoding='utf8')
+        .query("is_key"))
+    spec_2_pqm = fz.compose_left(
+        spx.FieldSpec.model_validate, 
+        spx.PqmTemplate)
+    u_pqms = [spec_2_pqm(spec) 
+        for spec in u_df.to_dict('records')]
+    renderers = [
+        rr.Renderer.create('exacto', f'v_PTLF_{u_key}', u_pqms),
+        rr.Renderer.create('explora', u_pqms)]
+    for renderer in renderers: 
+        renderer.write(to_dir/f"_PTLF_{u_key}_{renderer.key.title()}.pqm")
     
-    tmpl_2 = tmpl_env.get_template('PTLF_Explora.j2.pqm')
-    user_2 = tmpl_2.render(view=f'v_PTLF_{u_key}', keys=u_pqms)
-    file_2 = to_dir/f'_PTLF_{u_key}_Explora.pqm'
-    file_2.write_text(user_2, encoding='utf8')
-
 
 def check_status(query: str|int = None) -> pd.DataFrame:
     query = query or 15

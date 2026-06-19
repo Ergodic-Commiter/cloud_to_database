@@ -68,11 +68,6 @@ def thread(val, *forms):
     return reduce(eval_ff, forms, val)
 
   
-def star(func:Callable) -> Callable:
-    """Unpacks star operator:  star(func)(args) := func(*args)"""
-    return lambda args: func(*args)
-
-
 def noner(func:Callable) -> Callable: 
     """Para funciones que se quiebran con None."""
     return lambda x: func(x) if x is not None else None

@@ -1,0 +1,19 @@
+datetimes: 
+< VARCHAR(19) 
+> DATETIME2
+
+dates: 
+< VARCHAR(6)
+> DATE 
+
+times: 
+< VARCHAR(8)
+> TIME 
+
+fractions: 
+< DECIMAL(24, 2)
+> DECIMAL(24, 9)
+
+bigint: 
+< INTEGER
+> BIGINT

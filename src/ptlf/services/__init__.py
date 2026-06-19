@@ -1,5 +1,5 @@
 # from . import blob_app
-from .ingest import delete_date, reload_data, upload_data 
+from .ingest import Ingestor
 from .view import create_pqms, check_status, create_view, create_user
 
 # Quitamos blob_app porque carga cosas pesadas. 

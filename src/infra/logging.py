@@ -14,7 +14,7 @@ class ContextAdapter(logging.LoggerAdapter):
 def setup(cfg:core.Settings):
     root = logging.getLogger()
     root.handlers.clear()   # reset (avoid duplicate handlers)
-    root.setLevel(logging.INFO)
+    root.setLevel(logging.WARNING)
     
     ch = logging.StreamHandler()
     ch.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(name)s: %(message)s"))

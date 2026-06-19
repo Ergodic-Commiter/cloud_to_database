@@ -13,3 +13,7 @@ A nivel técnico personal:
   - Utilizar los Mixin para funcionalidades adicionales.  
 - Estructura de conexión, infraestructura, servicios se puede revisar mejor.  
 
+Ajustes de Versión 2. 
+- PTLF_TRACK.data_date <=> PTLF_raw["NGBBSE24-AUTH-POST-DAT"] pero una es fecha y 
+  la otra string.  Quién sabe cómo pasó eso. 
+- 

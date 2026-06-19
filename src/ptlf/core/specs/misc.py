@@ -6,14 +6,11 @@ import pandas as pd
 from toolz import functoolz as fz
 
 from ptlf import tools
-from ptlf.core import settings
-from .converter import Converter
-
-
+from ptlf.core import settings as ss, specs as spx
 
 
 def reload_specs(): 
-    cfg = settings.Settings() 
+    cfg = ss.config
     λ_mutate = dict(
         Name0 = lambda df: df['Field_Name'].str.replace(' ', ''), 
         Name1 = lambda df: tools.index_duplicates(df['Name0']), 
@@ -27,16 +24,13 @@ def reload_specs():
     specs_df.to_feather(to_path)
 
 
-def read_specs(output='dict') -> dict|pd.DataFrame:
+def read_specs() -> pd.DataFrame:
     with as_file(files('ptlf.data')/'ptlf_cols.feather') as ff:
-        specs_df = pd.read_feather(ff)
-    if output == 'dataframe': 
-        return specs_df
-    return Converter.dataframe_to_dict(specs_df)
+        return pd.read_feather(ff)
 
 
 def specs_plus(specs_0):
-    attrs = Converter.dataframe_to_dict(specs_0.values())
+    attrs = spx.FieldSpec.dataframe_to_dict(specs_0.values())
     meta = dict(
         Name0=ɑ('_specs.Field_Name'),  # corresponds to "Field Name"
         Name1=ɑ('specs.Name1'), 
@@ -47,8 +41,8 @@ def specs_plus(specs_0):
     return pd.DataFrame(attrs_data, columns=list(meta.keys()))
 
 
-def specs_plus_to_excel(specs_1:pd.DataFrame, cfg:settings.Settings=None):
-    cfg = cfg or settings.Settings() 
+def specs_plus_to_excel(specs_1:pd.DataFrame, cfg:ss.Settings=None):
+    cfg = cfg or ss.Settings() 
     specs_ref = tools.OpenTable(*cfg.XL_REF)
     _, min_row, max_col, _ = specs_ref.boundaries
     writer_args = dict(engine='openpyxl', mode='a', if_sheet_exists='overlay')  

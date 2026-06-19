@@ -38,6 +38,3 @@ def delete_date(a_date:dt, *, debug=False):
     ingestor = services.Ingestor(debug)
     ingestor.delete_date(a_date)
 
-
-if __name__ == '__main__': 
-    upload_data(Path('data/temp/zips/OneDrive_1_6-17-2026/PRD_TRXS_PTLF_2026-06-15.ZIP'))

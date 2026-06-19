@@ -20,7 +20,6 @@ class Ingestor:
     PTLF_DAT = re.compile(r"^PTLF_([\d\-]{10})$")
     PTLF_ZIP = re.compile(r"^PRD_TRXS_PTLF_([\d\-]{10}).ZIP$")
 
-
     def upload_data(self, path:Path):
         mm_zip = self.PTLF_ZIP.match(path.name)
         if zipfile.is_zipfile(os.fspath(path)) and not mm_zip:
@@ -45,12 +44,10 @@ class Ingestor:
         for ff in zip_dir.iterdir(): 
             self._single_run(ff)
 
-
     def reload_data(self, path:Path): 
         the_flow = flw.DayDataFlow.from_data(path, debug=self.debug)
         the_flow.delete_from(self.engine)
         the_flow.run(self.engine, self.specs)
-
 
     def delete_date(self, date:dt.date): 
         the_flow = flw.DayDataFlow.from_date(date, self.config.data_loc, debug=self.debug)

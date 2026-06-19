@@ -14,6 +14,7 @@ A nivel técnico personal:
 - Estructura de conexión, infraestructura, servicios se puede revisar mejor.  
 
 Ajustes de Versión 2. 
-- PTLF_TRACK.data_date <=> PTLF_raw["NGBBSE24-AUTH-POST-DAT"] pero una es fecha y 
-  la otra string.  Quién sabe cómo pasó eso. 
-- 
+- Las fechas, datetimes, y times se guardan como strings.  Cambiarlos a fechas. 
+- Cuando un day-data-flow no se sube completo, a veces se queda la entrada de track, 
+  y crea problemas para comletarlo.  Hay que "ptlf data delete <el día>" y volver 
+  a subirlo. 

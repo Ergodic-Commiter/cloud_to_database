@@ -3,7 +3,6 @@ from pathlib import Path
 from ptlf import core
 
 
-
 class ContextAdapter(logging.LoggerAdapter):
     def process(self, msg, kwargs):
         extra = {**getattr(self, 'extra', {}), **kwargs.get('extra', {})}

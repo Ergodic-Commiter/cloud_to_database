@@ -6,7 +6,7 @@ import pandas as pd
 from toolz import functoolz as fz
 
 from ptlf import settings as ss, tools
-from ptlf.core import specs as spx
+from .base import FieldSpec
 
 
 def reload_specs(): 
@@ -30,7 +30,7 @@ def read_specs() -> pd.DataFrame:
 
 
 def specs_plus(specs_0):
-    attrs = spx.FieldSpec.dataframe_to_dict(specs_0.values())
+    attrs = FieldSpec.dataframe_to_dict(specs_0.values())
     meta = dict(
         Name0=ɑ('_specs.Field_Name'),  # corresponds to "Field Name"
         Name1=ɑ('specs.Name1'), 

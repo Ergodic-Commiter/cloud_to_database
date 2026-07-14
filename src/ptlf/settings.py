@@ -29,19 +29,19 @@ class Settings(BaseSettings):
     client_secret: Optional[str] = Field(None, validation_alias='AZURE_CLIENT_SECRET')
     
     # Azure Resources
-    storage_account_url: Optional[str] = Field(None, validation_alias='STORAGE_ACCOUNT_URL')
-    storage_container: Optional[str] = Field(None, validation_alias='STORAGE_CONTAINER')
+    storage_account_url: Optional[str] 
+    storage_container: Optional[str] 
     sql_driver: Optional[str] = "{ODBC Driver 18 for SQL Server}"  # Configurar el driver. 
-    sql_server_url: Optional[str] = Field(None, validation_alias='SQL_SERVER_URL')
-    sql_database: Optional[str] = Field(None, validation_alias='SQL_DATABASE')
+    sql_server_url: Optional[str]
+    sql_database: Optional[str] 
     registry_container: Optional[str] = Field(None, validation_alias='AZURE_CONTAINER')
     
     # Other credentials
-    sql_user: Optional[str] = Field(None, validation_alias='SQL_USER')
-    sql_password: Optional[str] = Field(None, validation_alias='SQL_PASSWORD')
+    sql_user: Optional[str] 
+    sql_password: Optional[str] 
     
     # Sandbox stuff
-    onedrive_path: Optional[str] = Field(None, validation_alias='ONEDRIVE_PATH')
+    onedrive_path: Optional[str] 
     my_user: Optional[str] = Field(None, validation_alias='AZURE_USER_PERSONAL')
     my_password: Optional[str] = Field(None, validation_alias='AZURE_PASS_PERSONAL')
     proj_user: Optional[str] = Field(None, validation_alias='AZURE_USER_PROJECT')

@@ -1,5 +1,8 @@
 { "version": "2.0",
   "logging": {
+    "logLevel": {
+      "default": "Warning", 
+      "Function.PTLF-Blob-To-SQL": "Information" },
     "applicationInsights": {
       "samplingSettings": {
         "isEnabled": true,

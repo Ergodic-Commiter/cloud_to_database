@@ -15,7 +15,8 @@ from sqlalchemy.exc import IntegrityError, OperationalError
 from toolz import dicttoolz as dz
 
 from ptlf import settings as ss, tools
-from ptlf.core import errors as ee, flow as flw, specs as spx
+from ptlf.core import errors as ee, specs as spx
+from .tasks import delete_raw, start_raw, finish_raw 
 
 fspath = tools.noner(os.fspath)
 # pylint: disable=anomalous-backslash-in-string
@@ -86,7 +87,7 @@ class DayDataFlow:
         down_to = the_flow.get_path('unzip')
         down_to.parent.mkdir(parents=True, exist_ok=True)
         with open(down_to, 'wb') as f:
-            blob_stream = blob.download_blob()
+            blob_stream = blob.download_blob(logging_enable=False)
             f.write(blob_stream.readall())  
         the_flow.cfg.zip_path = down_to
         return the_flow
@@ -100,6 +101,7 @@ class DayDataFlow:
             data_df = self.read_data(specs)
         except ee.PTLF_FlowError as er:
             self.log.error("ReadData error in %s", er.event) 
+            raise er
 
         if self.reports.get('ReadData'):
             self.log.warning("Check types in ReadData:")
@@ -112,7 +114,7 @@ class DayDataFlow:
 
 
     def delete_from(self, engine:Engine): 
-        flw.delete_raw(engine, self.datestr)
+        delete_raw(engine, self.datestr)
 
 
     def clean_up(self, status): 
@@ -166,7 +168,7 @@ class DayDataFlow:
             data_date = self.cfg.date + delta(days=self.dates_off)
             meta['data_date'] = data_date.strftime('%y%m%d')
         try: 
-            an_id = flw.start_raw(engine, meta)
+            an_id = start_raw(engine, meta)
         except IntegrityError as e1:
             raise ee.PTLF_FlowError(self.datafile.name, 'TrackIntegrity') from e1
         status = 'failed'
@@ -176,7 +178,7 @@ class DayDataFlow:
         except Exception as e1:
             raise ee.PTLF_FlowError(self.datafile.name, 'RawUpload') from e1
         finally: 
-            flw.finish_raw(engine, an_id, status)
+            finish_raw(engine, an_id, status)
 
 
     def determine_stage(self, engine:Engine, container:ContainerClient=None):

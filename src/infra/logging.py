@@ -15,6 +15,9 @@ def setup(cfg:ss.Settings):
     root.handlers.clear()   # reset (avoid duplicate handlers)
     root.setLevel(logging.WARNING)
     
+    for noisy in ("azure", "azure.core.pipeline.policies.http_logging_policy", "urllib3"):
+        logging.getLogger(noisy).setLevel(logging.WARNING)
+    
     ch = logging.StreamHandler()
     ch.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(name)s: %(message)s"))
     root.addHandler(ch)

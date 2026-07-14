@@ -27,3 +27,5 @@ AND name NOT LIKE '##%';
 
 -- ## Cambiar el nombre de la tabla. 
 -- EXEC sp_rename 'dbo.PTLF', 'PTLF_raw';
+
+

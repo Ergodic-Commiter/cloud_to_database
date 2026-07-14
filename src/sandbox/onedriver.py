@@ -7,7 +7,7 @@ from office365.sharepoint.files.file import File
 from openpyxl import load_workbook
 import pandas as pd
 
-from ptlf import config as cfg
+from ptlf import core 
 # pylint: disable=inconsistent-return-statements
 # pylint: disable=invalid-name
 
@@ -30,7 +30,7 @@ def download_from_sharepoint(f_url, context, down_as='pickle'):
     
 
 if __name__ == "__main__": 
-    creds = cfg.get_creds('persona')
+    creds = core.get_creds('persona')
     site_url = "https://bineomex.sharepoint.com/sites/medios-pago-2/SitePages/ProjectHome.aspx"
     file_url = "/sites/medios-pago-2/_layouts/15/Doc.aspx"
     file_attrs = {'sourcedoc':"{36F6A715-2476-4958-8D5F-1F98A91DD69F}", 

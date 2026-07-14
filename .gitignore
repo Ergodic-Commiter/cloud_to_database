@@ -1,10 +1,15 @@
 .env*
 config.cfg
+
 **local.settings.json
+**settings.json
 appsettings.json
 
+
 .venv**
+.venv
 .vscode
+.ruff_cache
 
 **.egg-info**
 **__pycache__

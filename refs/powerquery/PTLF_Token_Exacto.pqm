@@ -1,0 +1,48 @@
+// Nombres Excel: 
+// MultiQuery: Num-Tarjeta, F-Posteo, Num-Auth, Monto, Tipo-Auth
+//   SQL    num_tarjeta, f_posteo, num_autorizacion, monto_txn, tipo_auth
+
+let
+  TextLit = (ss as text  ) as text => 
+    "'" & Text.Replace(ss, "'", "''") & "'",
+  DateLit = (dd as date  ) as text =>
+    "CAST(" & TextLit(Date.ToText(dd, "yyyy-MM-dd")) & " AS date)",
+  NumberLit  = (nn as number) as text =>
+    "CAST(" & Text.From(Number.Round(nn, 2), "en-US") & " AS decimal(19,2))",
+  IntLit  = (ii as number) as text =>
+    "CAST(" & Text.From(Number.Round(ii, 0), "en-US") & " AS int)",
+
+  Keys0 = Excel.CurrentWorkbook(){[Name="multiQ"]}[Content],
+  Keys = Table.TransformColumnTypes(Keys0,{
+    {"Num-Tarjeta", type text},
+    {"F-Posteo",  type date},
+    {"Num-Auth",  type text},
+    {"Monto-Txn", type number}, 
+    {"Tipo-Auth", type number}
+    }, "en-US"),
+
+  RowToSql = (row as record) as text => "(" &
+    TextLit(Record.Field(row, "Num-Tarjeta")) & "," &
+    DateLit(Record.Field(row, "F-Posteo"   )) & "," &
+    TextLit(Record.Field(row, "Num-Auth"   )) & "," &
+    NumberLit (Record.Field(row, "Monto-Txn"  )) & "," &
+    IntLit (Record.Field(row, "Tipo-Auth"  )) & ")",
+  RowsText = List.Transform(Table.ToRecords(Keys), each RowToSql(_)),
+  ValuesClause = if List.IsEmpty(RowsText)
+    then "VALUES (NULL, NULL, NULL, NULL, NULL)"
+    else "VALUES " & Text.Combine(RowsText, ","),
+
+  Query = "; 
+    SELECT t.*
+    FROM dbo.v_PTLF_Token AS t
+    JOIN ("& ValuesClause & "
+        ) AS k(num_tarjeta, f_posteo, num_autorizacion, monto_txn, tipo_auth) 
+      ON  t.num_tarjeta = k.num_tarjeta
+      AND t.f_posteo = k.f_posteo
+      AND t.num_autorizacion = k.num_autorizacion
+      AND t.monto_txn = k.monto_txn
+      AND t.tipo_auth = k.tipo_auth",
+  Database = Sql.Database("fiserv-reports.database.windows.net", "fiserv-db"),
+  Result = Value.NativeQuery(Database, Query, null, [EnableFolding=true])
+in
+  Result

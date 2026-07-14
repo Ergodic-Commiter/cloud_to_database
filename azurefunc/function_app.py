@@ -1,0 +1,1 @@
+from ptlf.services.blob_app import app

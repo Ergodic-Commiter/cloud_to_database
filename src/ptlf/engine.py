@@ -1,20 +1,15 @@
-from operator import attrgetter as ɑ
-from pathlib import Path
-from typing import Literal
-
-# pylint:disable=no-name-in-module
-from pyodbc import connect 
+import ibis
+import pyodbc 
 import sqlalchemy as alq
 from sqlalchemy.engine import URL
+from toolz import dicttoolz as dz
 
-import ptlf
-from ptlf import errors as ee
-from ptlf.config import Settings
+from ptlf import settings as ss
+from ptlf.core import errors as ee
+# pylint:disable=c-extension-no-member
 
-
-def get_params(cfg:Settings, 
-    user_type:Literal['personal', 'project', 'entra', 'sql', 'sp']='sp'):
-    cfg = cfg or Settings()
+def get_params(cfg:ss.Settings=None, user_type:str='sp') -> dict:
+    cfg = cfg or ss.config
     user_creds = cfg.get_creds(user_type)
     auths = dict(
         personal = 'ActiveDirectoryPassword', 
@@ -36,49 +31,45 @@ def get_params(cfg:Settings,
     return params
 
 
-def get_connection(user_type='sp', conn_type='sqlalchemy'):
-    db_params = get_params(user_type)
-    conn_str = ''.join('{}={};'.format(*k_v) for k_v in db_params.items())
-    # ... join(map(star("{}={};".format), db_params.items())))
-    if conn_type == 'pyodbc': 
-        return connect(conn_str) 
-    if conn_type == 'sqlalchemy': 
-        conn_query = dict(odbc_connect=conn_str)
-        conn_url = alq.engine.URL.create("mssql+pyodbc", query=conn_query)
-        return alq.create_engine(conn_url).connect()
-    raise ee.KeyCredentialsError(conn_type, 'Conexión base de datos')
-        
-
-def get_engine(cfg:Settings, **kwargs): 
+def get_engine(cfg:ss.Settings=None, debug=False, **kwargs) -> alq.Engine: 
+    cfg = cfg or ss.config
+    defaults = ({} if not debug else 
+        dict(fast_executemany=False, echo='debug')) 
+    eng_args = defaults | kwargs
     db_params = get_params(cfg)
     conn_str = ''.join('{}={};'.format(*k_v) 
             for k_v in db_params.items())
     conn_qry = {'odbc_connect': conn_str}
     conn_url = URL.create('mssql+pyodbc', query=conn_qry)
-    return alq.create_engine(conn_url, **kwargs)
+    return alq.create_engine(conn_url, **eng_args)
+
+def get_pyodbc(user_type='sp') -> pyodbc.Connection: 
+    db_params = get_params(user_type=user_type)
+    conn_str = ''.join(f'{k}={v};' for k,v in db_params.items())
+    return pyodbc.connect(conn_str)
+
+def get_ibis(user_type='sp') -> ibis.BaseBackend: 
+    db_params = get_params(user_type=user_type)
+    ibis_keys = dict(UID='user', PWD='password', Server='host', 
+        Database='database', Driver='driver')
+    λ_ibis = lambda kk: ibis_keys.get(kk, kk) 
+    ibis_params = dz.keymap(λ_ibis, db_params) 
+    return ibis.mssql.connect(**ibis_params)
 
 
-def make_query(cfg:Settings, by_col=None, to_file=Path): 
-    by_col = by_col or 'AliasToken'
-    to_file = Path(to_file)
+def get_connection(user_type='sp', conn_type='sqlalchemy', *, debug=False):
+    if conn_type == 'sqlalchemy': 
+        return get_engine(debug=debug).connect()
+    if conn_type == 'pyodbc': 
+        return get_pyodbc(user_type)
+    if conn_type == 'ibis': 
+        return get_ibis()
+    raise ee.KeyCredentialsError(conn_type, 'Conexión base de datos')
+     
 
-    ptlf_specs = ptlf.typer.read_specs(output='dataframe')
-    if by_col not in ptlf_specs.columns: ## Se cambió PTLF_SPECS de data_frame a diccionario.  
-        raise ee.SpecsPTLF_Error(by_col)
+_SessionLocal = alq.orm.sessionmaker(bind=get_engine())
 
-    meta = alq.MetaData()
-    alq_eng = get_engine(cfg)
-    ptlf_tbl = alq.Table('PTLF_raw', meta, schema='dbo', autoload_with=alq_eng)
-    def λ_sqlcol(row): 
-        name, label = ɑ('Name1', by_col)(row)
-        return ptlf_tbl.c[name].label(label)
-
-    new_specs = ptlf_specs[~ptlf_specs[by_col].isnull()]
-    alq_stmt = alq.select(*map(λ_sqlcol, new_specs.itertuples()))
-    sql_stmt = (alq_stmt.compile(alq_eng, compile_kwargs=dict(literal_binds=True))
-        .string.replace(', dbo', ',\n\tdbo'))
-    Path(to_file).write_text(sql_stmt, encoding='utf8')
-    
-
+def get_session() -> alq.orm.Session: 
+    return _SessionLocal()
 
     

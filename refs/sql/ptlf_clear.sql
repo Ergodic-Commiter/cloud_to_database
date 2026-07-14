@@ -4,21 +4,21 @@ TRUNCATE TABLE dbo.PTLF_raw;
 DELETE FROM dbo.PTLF_track;
 DBCC CHECKIDENT ([dbo.PTLF_track], RESEED, 0);  
 
--- Delete bad dates:
-with bad_dates as (
-select f_posteo, 
+-- DELETE bad dates:
+WITH bad_dates AS (
+SELECT f_posteo, 
   k_positivos
-from (
-  select f_posteo, 
-    sum(iif(monto_txn > 0, 1, 0)) as k_positivos
-  from v_ptlf_token
-  group by f_posteo) tt
-where k_positivos = 0)
+FROM (
+  SELECT f_posteo, 
+    SUM(IIF(monto_txn > 0, 1, 0)) AS k_positivos
+  FROM v_ptlf_token
+  GROUP BY f_posteo) tt
+WHERE k_positivos = 0)
 
-delete r 
-from [dbo].[PTLF_raw] as r 
-join bad_dates as b
-  on r.[NGBBSE24-AUTH-POST-DAT] = b.f_posteo 
+DELETE r 
+FROM [dbo].[PTLF_raw] AS r 
+JOIN bad_dates AS b
+  ON r.[NGBBSE24-AUTH-POST-DAT] = b.f_posteo 
 
 
 DELETE t

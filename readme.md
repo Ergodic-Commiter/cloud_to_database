@@ -3,8 +3,8 @@
 Este repositorio es el componente de programación correspondiente al proyecto de Controversias.  
 La documentación se encuentra en el [_sharepoint_ de Medios de Pago II][medios].  
 El _sharepoint_ anterior contiene vinculación a documentos de _OneDrive_, pero aún
-se pudiera beneficiar de una presentación en el portal.  Para conocer tus comentarios, 
-te agradeceré que me escribas por [Teams][teams]. 
+se pudiera beneficiar de una presentación en el portal.  
+Para comentarios escríbenos por [Teams][teams]. 
 
 - [Fiserv FPSL, Controversias](#fiserv-fpsl-controversias)
   - [Runbook de Azure](#runbook-de-azure)
@@ -15,16 +15,21 @@ te agradeceré que me escribas por [Teams][teams].
 
 
 ## Runbook de Azure
-- `data-fiserv`:      _Resource group_
-- `fiserv-reports`:   _SQL server_      
-- `fiserv-db`:        _SQL database_    ($5.25 USD)
-- `medios-pago-data-dev`: _Service Principal_  
-- `mediospago`:       _Azure Container_ (ya existe)
-- `fiserv-blob-to-sql`: _Azure Functions_ 
-  - `cae-bh-microsrv-data-dev`: _Container Apps environment_??
-  - `fiserv-blob-to-sql`: _Container details_ 
-  - `acrcommonacrsdatadev`: _Container_ ❌ no sirve (admin credentials disabled)
-  - `dataappsregistry`: _Registry_ ✅
+- `data-fiserv`:      _Resource group_  
+- `fiserv-reports`:   _SQL server_       
+- `fiserv-db`:        _SQL database_    ($5.25 USD)  
+- `medios-pago-data-dev`: _Service Principal_   
+- `mediospago`:       _Azure Container_ (ya existe)  
+- `fiserv-blob-to-sql`: _Azure Functions_   
+  - `cae-bh-microsrv-data-dev`: _Container Apps environment_??  
+  - `fiserv-blob-to-sql`: _Container details_  
+  - `acrcommonacrsdatadev`: _Container_ ❌ no sirve (admin credentials disabled)  
+  - `dataappsregistry`: _Registry_ ✅  
+  - `funcs/ptlf`: _Registry Repository_  
+  - plan: Elastic Premium   
+- `vnet-fiserv`:  _Virtual network_
+  - conectar a SQL Server
+  - Ajustar conn-string
 
 
 El servidor SQL tiene muchas configuraciones truculentas: 
@@ -58,9 +63,9 @@ El servidor SQL tiene muchas configuraciones truculentas:
   $ brew update
   ```
 
-- El repositorio se clonar con `git`: 
+- El repositorio se clona con `git`: 
   ```
-  $ git clone https://github.com/diego-v_bineo/data-fiserv-ptlf.git <NOMBRE-LOCAL>
+  $ git clone https://github.com/Bineo2/data-fiserv-controversias.git <NOMBRE-LOCAL>
   $ pyenv activate fiserv312
   $ pyenv local
   $ pip install -r requirements.txt

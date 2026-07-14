@@ -1,0 +1,41 @@
+let
+  TextLit = (vv as text  ) as text => 
+    "'" & Text.Replace(vv, "'", "''") & "'",
+  DateLit = (vv as date  ) as text =>
+    "CAST(" & TextLit(Date.ToText(vv, "yyyy-MM-dd")) & " AS date)",
+  DecLit  = (vv as number) as text =>
+    "CAST(" & Text.From(Number.Round(vv, 2), "en-US") & " AS decimal(19,2))",
+  IntLit  = (vv as number) as text =>
+    "CAST(" & Text.From(Number.Round(vv, 0), "en-US") & " AS int)", 
+  
+  Keys0 = Excel.CurrentWorkbook(){[Name="B_Exacta"]}[Content],
+  Keys = Table.TransformColumnTypes(Keys0, {
+    { "Tarjeta", type text },
+		{ "Tipo_Auth", type number },
+		{ "Fecha_Trans", type date },
+		{ "Codigo_Aprov", type text }
+  }, "en-US"),
+
+  RowToSql = (row as record) as text => "(" & 
+    TextLit(Record.Field(row, "Tarjeta")) & "," &
+		IntLit(Record.Field(row, "Tipo_Auth")) & "," &
+		DateLit(Record.Field(row, "Fecha_Trans")) & "," &
+		TextLit(Record.Field(row, "Codigo_Aprov")) & ")", 
+  RowsText = List.Transform(Table.ToRecords(Keys), each RowToSql(_)),
+  ValuesClause = if List.IsEmpty(RowsText)
+    then "VALUES (NULL, NULL, NULL, NULL)" 
+    else "VALUES " & Text.Combine(RowsText, ","),
+
+  Query = ";
+		SELECT t.*
+		FROM v_PTLF_Fraudes AS t
+		JOIN ("& ValuesClause &"
+		  ) AS k(Tarjeta, Tipo_Auth, Fecha_Trans, Codigo_Aprov)
+		  ON  t.Tarjeta = k.Tarjeta
+		  AND t.Tipo_Auth = k.Tipo_Auth
+		  AND t.Fecha_Trans = k.Fecha_Trans
+		  AND t.Codigo_Aprov = k.Codigo_Aprov",
+  Database = Sql.Database("fiserv-reports.database.windows.net", "fiserv-db"),
+  Result = Value.NativeQuery(Database, Query, null, [EnableFolding=true])
+in
+  Result

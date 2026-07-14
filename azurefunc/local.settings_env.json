@@ -1,0 +1,20 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "FUNCTIONS_WORKER_RUNTIME": "python",
+    "BlobConn": "DefaultEndpointsProtocol=https;AccountName=<SENSITIVE-VALUE>;AccountKey=+/<SENSITIVE-VALUE>==;EndpointSuffix=core.windows.net",
+		"AzureWebJobsStorage": "DefaultEndpointsProtocol=https;AccountName=datafiservb4b2;AccountKey=<ANOTHER-KEY>==;EndpointSuffix=core.windows.net",
+    "PTLF_ENV":"dev",
+		"AZURE_TENANT_ID": "2332bff0-c61d-442a-80c7-0861cedb52c5",
+		"AZURE_SUBSCRIPTION_ID": "fccd8683-9ca6-4fb4-a627-1639ed1882f4",
+		"AZURE_CLIENT_ID": "<SENSITIVE-VALUE>",
+		"AZURE_CLIENT_SECRET": "<SENSITIVE-VALUE>",
+		"SQL_USER": "CloudSAf1cb7562",
+		"SQL_PASSWORD": "<SENSITIVE-VALUE>",
+		"SQL_SERVER_URL": "fiserv-reports.database.windows.net", 
+		"SQL_DATABASE": "fiserv-db",
+		"AZURE_CONTAINER": "acrcommonAcrsdatadev",
+		"STORAGE_ACCOUNT_URL": "https://<THE-NAME-OF-THE-ACCOUNT>.blob.core.windows.net",
+		"STORAGE_CONTAINER": "<THATS-AN-INFRA-VALUE-THERE>"
+  }
+}

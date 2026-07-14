@@ -1,6 +1,6 @@
 import logging
 from pathlib import Path
-from ptlf import core
+from ptlf import core, settings as ss
 
 
 class ContextAdapter(logging.LoggerAdapter):
@@ -10,7 +10,7 @@ class ContextAdapter(logging.LoggerAdapter):
         return msg, kwargs
 
 
-def setup(cfg:core.Settings):
+def setup(cfg:ss.Settings):
     root = logging.getLogger()
     root.handlers.clear()   # reset (avoid duplicate handlers)
     root.setLevel(logging.WARNING)

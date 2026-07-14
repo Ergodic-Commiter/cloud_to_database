@@ -5,8 +5,8 @@ from pathlib import Path
 import pandas as pd
 from toolz import functoolz as fz
 
-from ptlf import tools
-from ptlf.core import settings as ss, specs as spx
+from ptlf import settings as ss, tools
+from ptlf.core import specs as spx
 
 
 def reload_specs(): 
@@ -42,7 +42,7 @@ def specs_plus(specs_0):
 
 
 def specs_plus_to_excel(specs_1:pd.DataFrame, cfg:ss.Settings=None):
-    cfg = cfg or ss.Settings() 
+    cfg = cfg or ss.config
     specs_ref = tools.OpenTable(*cfg.XL_REF)
     _, min_row, max_col, _ = specs_ref.boundaries
     writer_args = dict(engine='openpyxl', mode='a', if_sheet_exists='overlay')  

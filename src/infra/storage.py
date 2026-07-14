@@ -1,11 +1,11 @@
 from typing import Optional
 from azure.storage.blob import ContainerClient
 
-from ptlf import core 
+from ptlf import settings as ss 
 
 
-def get_container(cfg:Optional[core.Settings]=None): 
-    cfg = cfg or core.Settings()
+def get_container(cfg:Optional[ss.Settings]=None): 
+    cfg = cfg or ss.config
     if not cfg.storage_account_url or not cfg.storage_container: 
         raise ValueError("Missing STORAGE_ACCOUNT_URL or STORAGE_CONTAINER")
     az_creds = cfg.azure_creds()

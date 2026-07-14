@@ -14,8 +14,8 @@ from sqlalchemy.engine import Engine
 from sqlalchemy.exc import IntegrityError, OperationalError
 from toolz import dicttoolz as dz
 
-from ptlf import tools
-from ptlf.core import errors as ee, flow as flw, settings as ss, specs as spx
+from ptlf import settings as ss, tools
+from ptlf.core import errors as ee, flow as flw, specs as spx
 
 fspath = tools.noner(os.fspath)
 # pylint: disable=anomalous-backslash-in-string
@@ -71,7 +71,7 @@ class DayDataFlow:
     @classmethod
     def from_blob_client(cls, blob:BlobClient, 
         *, logger:logging.Logger=None, debug=False) -> Self:
-        out_cfg = ss.Settings()
+        out_cfg = ss.config
         at_data = out_cfg.data_loc
 
         if (blob_match := cls._BLOB_FMT.match(blob.blob_name)) is None:

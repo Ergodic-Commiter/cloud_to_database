@@ -4,7 +4,8 @@ import sqlalchemy as alq
 from sqlalchemy.engine import URL
 from toolz import dicttoolz as dz
 
-from ptlf.core import errors as ee, settings as ss
+from ptlf import settings as ss
+from ptlf.core import errors as ee
 # pylint:disable=c-extension-no-member
 
 def get_params(cfg:ss.Settings=None, user_type:str='sp') -> dict:

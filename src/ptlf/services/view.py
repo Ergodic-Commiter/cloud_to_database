@@ -8,8 +8,8 @@ import pandas as pd
 import sqlalchemy as alq
 from toolz import functoolz as fz
 
-from ptlf import engine as eng, render as rr
-from ptlf.core import errors as ee, settings as ss, specs as spx
+from ptlf import engine as eng, render as rr, settings as ss
+from ptlf.core import errors as ee, specs as spx
 # pylint: disable=unused-argument
   
 

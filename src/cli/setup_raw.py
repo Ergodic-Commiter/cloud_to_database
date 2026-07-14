@@ -1,7 +1,7 @@
 import sqlalchemy as alq
 
-from ptlf import engine
-from ptlf.core import specs as spx, settings as ss
+from ptlf import engine, settings as ss
+from ptlf.core import specs as spx
 # pylint: disable=invalid-name
 
 
